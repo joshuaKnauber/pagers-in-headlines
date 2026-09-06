@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One attack, two vocabularies — Lebanon ↔ Israel</title>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<style>
+  :root {
+    --lb: #d0212a;
+    --il: #0038b8;
+    --ink: #1c1b1a;
+    --muted: #8a857e;
+    --faint: #e9e6e1;
+    --bg: #fcfbf9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.65 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  main { max-width: 880px; margin: 0 auto; padding: 96px 32px 140px; }
+  h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 44px; line-height: 1.15; font-weight: 500;
+    letter-spacing: -0.01em; margin: 0 0 28px;
+  }
+  h2 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 26px; font-weight: 500; margin: 110px 0 10px;
+  }
+  h3 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 19px; font-weight: 500; margin: 64px 0 6px;
+  }
+  p.note.sub { margin: 4px 0 22px; }
+  p.lede { font-size: 19px; color: #444; max-width: 640px; margin: 0 0 12px; }
+  p.note { color: var(--muted); font-size: 14.5px; max-width: 640px; margin: 6px 0 34px; }
+  .legend { font-size: 14px; color: var(--muted); margin: 4px 0 18px; }
+  .legend span { display: inline-block; margin-right: 22px; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 7px; vertical-align: baseline; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin: 70px 0 0; }
+  .card { background: #fff; border-radius: 14px; padding: 26px 24px 22px; box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 6px 24px rgba(0,0,0,.04); }
+  .card .big { font-family: Georgia, serif; font-size: 34px; line-height: 1.1; margin-bottom: 8px; }
+  .card .big small { font-size: 20px; color: var(--muted); }
+  .card .sub { font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+  .card.lb .big { color: var(--lb); }
+  .card.il .big { color: var(--il); }
+  .card .flags { font-size: 21px; line-height: 1; margin-bottom: 12px; letter-spacing: 3px; }
+  svg { display: block; overflow: visible; }
+  svg text { font: 12.5px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: var(--ink); }
+  .axis text { fill: var(--muted); font-size: 11.5px; }
+  .axis line, .axis path { stroke: var(--faint); }
+  .tick-faint line { stroke: var(--faint); }
+  .mname { font-size: 13.5px; }
+  .val { font-size: 12px; font-weight: 600; }
+  .olabel { font-size: 11px; fill: var(--muted); }
+  .anno { font-size: 11.5px; fill: var(--muted); }
+  footer { margin-top: 130px; color: var(--muted); font-size: 13.5px; max-width: 640px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>One attack, two vocabularies</h1>
+  <p class="lede">The pager attacks of September 17–18, 2024, as covered
+  by Lebanese and Israeli news — every major outlet in both countries,
+  read in its own language.</p>
+  <p class="note">Counts articles, not audience reach (yet). Two-country
+  pass, v1.</p>
+
+  <div class="cards" id="cards"></div>
+
+  <h2>The words don’t cross the border</h2>
+  <p class="note">How often each country’s articles use each wording —
+  Lebanon on the left, Israel on the right.</p>
+  <div class="legend">
+    <span>🇱🇧 <span class="dot" style="background:var(--lb)"></span>Lebanon</span>
+    <span>🇮🇱 <span class="dot" style="background:var(--il)"></span>Israel</span>
+  </div>
+
+  <h3>How is it described?</h3>
+  <p class="note sub">85% of Israeli articles use wording with no actor —
+  “the pagers exploded”. Lebanese coverage is split down the middle.</p>
+  <div id="mirror-1"></div>
+
+  <h3>What is it called?</h3>
+  <p class="note sub">In Israel it’s an “operation”. In Lebanon,
+  “operation” barely exists — it’s a “massacre” or a “crime”.</p>
+  <div id="mirror-2"></div>
+
+  <h3>Who are the dead?</h3>
+  <p class="note sub">The cleanest split in the data. Israel: “terrorists”,
+  never “martyrs”. Lebanon: “martyrs”, almost never “terrorists”.</p>
+  <div id="mirror-3"></div>
+
+  <h3>Whose information?</h3>
+  <p class="note sub">“According to foreign reports” — the formula for
+  reporting what the military censor won’t confirm — exists only on the
+  Israeli side.</p>
+  <div id="mirror-4"></div>
+
+  <h2>Who says who did it?</h2>
+  <p class="note">You’d expect the attacker to boast and the victim to
+  accuse. The data says the opposite: Israeli outlets mostly write “the
+  pagers exploded” — no actor — a habit shaped by military censorship.
+  Lebanese outlets name one more often. Each dot is one outlet, sized by
+  article count. The extremes break ranks with their own side: Kikar
+  (Israeli haredi) names an actor every single time; Hezbollah’s Al-Manar
+  leads Lebanon.</p>
+  <div class="legend">
+    <span>🇱🇧 <span class="dot" style="background:var(--lb)"></span>Lebanese outlets</span>
+    <span>🇮🇱 <span class="dot" style="background:var(--il)"></span>Israeli outlets</span>
+    <span>hollow = niche outlet, included for perspective</span>
+  </div>
+  <div id="spectrum"></div>
+
+  <h2>Interest faded the same way</h2>
+  <p class="note">Share of each country’s coverage per day. Both peaked on
+  day 1 — the walkie-talkie wave, not the pagers themselves — and decayed
+  almost identically. Opposite words, same attention span.</p>
+  <div id="daycurve"></div>
+
+  <h2>The story died in six days</h2>
+  <p class="note">The pager story as a share of everything MTV Lebanon 🇱🇧
+  published. Not because interest faded — the newsroom’s output kept
+  rising — but because the war it started took its place.</p>
+  <div id="displacement"></div>
+
+  <footer>
+    <p>Sources: data/lebanon/corpus-v1.jsonl · data/israel/corpus-v1.jsonl ·
+    displacement-mtv.csv. Caveats: Israeli corpus lead-weighted for Ynet
+    (paywall flash/lead records); Abu Ali records are Telegram messages;
+    keyword-family presence without negation handling; reach-weighting not
+    yet applied. Generated __GENERATED__ by build_viz.py.</p>
+  </footer>
+</main>
+
+<script>
+const VIZ = __DATA__;
+const LB = getComputedStyle(document.documentElement).getPropertyValue('--lb').trim();
+const IL = getComputedStyle(document.documentElement).getPropertyValue('--il').trim();
+const MUTED = '#8a857e', FAINT = '#e9e6e1';
+const W = Math.min(880, document.querySelector('main').clientWidth - 0);
+
+/* ---- stat cards ---- */
+const cards = [
+  {cls: '', flags: '🇱🇧 🇮🇱', big: `${VIZ.n_lb + VIZ.n_il}`,
+   sub: 'articles from every major outlet in Lebanon and Israel, September–October 2024'},
+  {cls: 'il', flags: '🇮🇱', big: pick('no actor', 'il') + '%',
+   sub: 'of Israeli articles never say who did it — “the pagers exploded”. In Lebanon: ' + pick('no actor', 'lb') + '%.'},
+  {cls: 'il', flags: '🇮🇱', big: '“terrorists”',
+   sub: 'is what the dead are in Israel (' + pick('terrorists', 'il') + '% of articles). In Lebanon they’re “martyrs” (' + pick('martyrs', 'lb') + '%). Zero overlap.'},
+  {cls: 'lb', flags: '🇱🇧 🇮🇱', big: 'day 1',
+   sub: 'when coverage peaked in both countries — the walkie-talkie wave, not the pagers themselves'},
+];
+function pick(frag, side) {
+  const m = VIZ.measures.find(m => m.name.includes(frag));
+  return m ? m[side] : '—';
+}
+d3.select('#cards').selectAll('div').data(cards).join('div')
+  .attr('class', d => 'card ' + d.cls)
+  .html(d => `<div class="flags">${d.flags}</div><div class="big">${d.big}</div><div class="sub">${d.sub}</div>`);
+
+/* ---- mirror diverging bars, one small chart per question ---- */
+function drawMirror(sel, idxs) {
+  const rowH = 44, mid = 256, m = {t: 6, b: 4};
+  const half = (W - mid) / 2;
+  const x = d3.scaleLinear().domain([0, 90]).range([0, half]);
+  const rows = idxs.map((i, k) => ({...VIZ.measures[i], y: m.t + k * rowH}));
+  const svg = d3.select(sel).append('svg').attr('width', W)
+    .attr('height', m.t + rows.length * rowH + m.b);
+  // flag anchors at the outer ends of the axes
+  const yMid = m.t + rows.length * rowH / 2 + 5;
+  svg.append('text').attr('x', 0).attr('y', yMid)
+    .style('font-size', '17px').text('🇱🇧');
+  svg.append('text').attr('x', W).attr('y', yMid).attr('text-anchor', 'end')
+    .style('font-size', '17px').text('🇮🇱');
+  const row = svg.selectAll('g.row').data(rows).join('g')
+    .attr('transform', d => `translate(0,${d.y})`);
+  const cy = rowH / 2 - 4, barH = 16;
+  // guides behind the bars so empty sides still read as "zero"
+  row.append('line').attr('x1', half - 2).attr('x2', half - x(90))
+    .attr('y1', cy).attr('y2', cy).attr('stroke', FAINT);
+  row.append('line').attr('x1', half + mid + 2).attr('x2', half + mid + x(90))
+    .attr('y1', cy).attr('y2', cy).attr('stroke', FAINT);
+  row.append('rect')
+    .attr('x', d => half - x(d.lb)).attr('y', cy - barH / 2)
+    .attr('width', d => x(d.lb)).attr('height', barH).attr('rx', 8)
+    .attr('fill', LB);
+  row.append('rect')
+    .attr('x', half + mid).attr('y', cy - barH / 2)
+    .attr('width', d => x(d.il)).attr('height', barH).attr('rx', 8)
+    .attr('fill', IL);
+  row.append('text').attr('class', 'mname')
+    .attr('x', W / 2).attr('y', cy + 4).attr('text-anchor', 'middle')
+    .text(d => d.name);
+  row.append('text').attr('class', 'val')
+    .attr('x', d => half - x(d.lb) - 7).attr('y', cy + 4)
+    .attr('text-anchor', 'end').attr('fill', d => d.lb ? LB : MUTED)
+    .style('font-weight', d => d.lb ? 600 : 400)
+    .text(d => d.lb >= 1 ? Math.round(d.lb) + '%' : (d.lb ? d.lb + '%' : 'never'));
+  row.append('text').attr('class', 'val')
+    .attr('x', d => half + mid + x(d.il) + 7).attr('y', cy + 4)
+    .attr('fill', d => d.il ? IL : MUTED)
+    .style('font-weight', d => d.il ? 600 : 400)
+    .text(d => d.il >= 1 ? Math.round(d.il) + '%' : (d.il ? d.il + '%' : 'never'));
+}
+drawMirror('#mirror-1', [0, 1]);
+drawMirror('#mirror-2', [2, 3, 4]);
+drawMirror('#mirror-3', [5, 6]);
+drawMirror('#mirror-4', [7]);
+
+/* ---- spectrum dot plot ---- */
+(function () {
+  const rowH = 132, m = {l: 8, r: 8, t: 10, b: 30};
+  const ms = VIZ.spectrum_measures;
+  const h = m.t + ms.length * rowH + m.b;
+  const x = d3.scaleLinear().domain([0, 100]).range([m.l, W - m.r]);
+  const rr = d3.scaleSqrt().domain([0, d3.max(VIZ.outlets, o => o.n)]).range([3, 11]);
+  const svg = d3.select('#spectrum').append('svg').attr('width', W).attr('height', h);
+  ms.forEach((meas, mi) => {
+    const y0 = m.t + mi * rowH, cy = y0 + 72;
+    const g = svg.append('g');
+    g.append('text').attr('x', m.l).attr('y', y0 + 14).attr('class', 'mname')
+      .style('font-weight', 600).text(meas);
+    g.append('line').attr('x1', x(0)).attr('x2', x(100)).attr('y1', cy).attr('y2', cy)
+      .attr('stroke', FAINT).attr('stroke-width', 1.5);
+    [0, 25, 50, 75, 100].forEach(v => {
+      g.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', cy - 4).attr('y2', cy + 4)
+        .attr('stroke', FAINT);
+      if (mi === ms.length - 1)
+        g.append('text').attr('class', 'axis').attr('x', x(v)).attr('y', cy + 26)
+          .attr('text-anchor', 'middle').attr('fill', MUTED).text(v + '%');
+    });
+    const pts = VIZ.outlets.map(o => ({...o, v: o.values[meas]}))
+      .sort((a, b) => a.v - b.v);
+    // label only spread-out points; summarize the near-zero pileup in
+    // one muted line so labels never collide
+    const labeled = pts.filter(p => p.v >= 8), small = pts.filter(p => p.v < 8);
+    const levels = [-1, 1, -2, 2].map(l => ({l, end: -1e9}));
+    labeled.forEach(p => {
+      const px = x(p.v), w = (p.outlet.length + 4) * 6.4;
+      const lv = levels.find(L => px - w / 2 > L.end) || levels[0];
+      lv.end = px + w / 2 + 6;
+      p.ly = lv.l < 0 ? cy - 20 - (-lv.l - 1) * 15 : cy + 24 + (lv.l - 1) * 15;
+    });
+    if (small.length)
+      g.append('text').attr('class', 'olabel')
+        .attr('x', x(0)).attr('y', cy + 52)
+        .text('under 8%: ' + small.map(p => `${p.outlet} ${p.v}%`).join(' · '));
+    g.selectAll('circle').data(pts).join('circle')
+      .attr('cx', p => x(p.v)).attr('cy', cy).attr('r', p => rr(p.n))
+      .attr('fill', p => p.mass ? (p.country === 'Lebanon' ? LB : IL) : '#fff')
+      .attr('stroke', p => p.country === 'Lebanon' ? LB : IL)
+      .attr('stroke-width', 1.8).attr('fill-opacity', p => p.mass ? .85 : 1)
+      .append('title').text(p => `${p.outlet} — ${p.v}% (n=${p.n})`);
+    g.selectAll('text.plabel').data(labeled).join('text')
+      .attr('class', 'olabel')
+      .attr('x', p => x(p.v)).attr('y', p => p.ly)
+      .attr('text-anchor', 'middle')
+      .text(p => `${p.outlet} ${p.v}%`);
+  });
+})();
+
+/* ---- day curves ---- */
+(function () {
+  const m = {l: 46, r: 90, t: 16, b: 40}, h = 300;
+  const x = d3.scaleLinear().domain([0, 7]).range([m.l, W - m.r]);
+  const y = d3.scaleLinear().domain([0, 50]).range([h - m.b, m.t]);
+  const svg = d3.select('#daycurve').append('svg').attr('width', W).attr('height', h);
+  [0, 10, 20, 30, 40, 50].forEach(v => {
+    svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(v)).attr('y2', y(v))
+      .attr('stroke', FAINT);
+    svg.append('text').attr('class', 'axis').attr('x', m.l - 10).attr('y', y(v) + 4)
+      .attr('text-anchor', 'end').attr('fill', MUTED).text(v + '%');
+  });
+  d3.range(8).forEach(d => {
+    svg.append('text').attr('class', 'axis').attr('x', x(d)).attr('y', h - m.b + 22)
+      .attr('text-anchor', 'middle').attr('fill', MUTED)
+      .text(d === 0 ? 'day 0 · Sep 17' : 'day ' + d);
+  });
+  const line = d3.line().x(d => x(d.day)).y(d => y(d.pct)).curve(d3.curveMonotoneX);
+  VIZ.daycurve.forEach(c => {
+    const col = c.country === 'Lebanon' ? LB : IL;
+    svg.append('path').datum(c.days).attr('d', line)
+      .attr('fill', 'none').attr('stroke', col).attr('stroke-width', 2.5);
+    svg.selectAll(null).data(c.days).join('circle')
+      .attr('cx', d => x(d.day)).attr('cy', d => y(d.pct)).attr('r', 3.5)
+      .attr('fill', col)
+      .append('title').text(d => `${c.country} day ${d.day}: ${d.pct}%`);
+    const last = c.days[c.days.length - 1];
+    svg.append('text').attr('x', x(7) + 10).attr('y', y(last.pct) + (c.country === 'Lebanon' ? -4 : 12))
+      .attr('fill', col).style('font-weight', 600)
+      .text((c.country === 'Lebanon' ? '🇱🇧 ' : '🇮🇱 ') + c.country);
+  });
+})();
+
+/* ---- displacement ---- */
+(function () {
+  const m = {l: 46, r: 20, t: 34, b: 40}, h = 320;
+  const parse = d3.utcParse('%Y-%m-%d');
+  const data = VIZ.displacement.map(d => ({...d, dt: parse(d.date)}));
+  const x = d3.scaleUtc().domain(d3.extent(data, d => d.dt)).range([m.l, W - m.r]);
+  const y = d3.scaleLinear().domain([0, 10]).range([h - m.b, m.t]);
+  const svg = d3.select('#displacement').append('svg').attr('width', W).attr('height', h);
+  [0, 2, 4, 6, 8, 10].forEach(v => {
+    svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(v)).attr('y2', y(v))
+      .attr('stroke', FAINT);
+    svg.append('text').attr('class', 'axis').attr('x', m.l - 10).attr('y', y(v) + 4)
+      .attr('text-anchor', 'end').attr('fill', MUTED).text(v + '%');
+  });
+  svg.append('g').attr('class', 'axis').attr('transform', `translate(0,${h - m.b})`)
+    .call(d3.axisBottom(x).ticks(6).tickFormat(d3.utcFormat('%b %e')).tickSize(0).tickPadding(12))
+    .call(g => g.select('.domain').remove());
+  const area = d3.area().x(d => x(d.dt)).y0(y(0)).y1(d => y(d.share)).curve(d3.curveMonotoneX);
+  svg.append('path').datum(data).attr('d', area).attr('fill', LB).attr('fill-opacity', .12);
+  svg.append('path').datum(data)
+    .attr('d', d3.line().x(d => x(d.dt)).y(d => y(d.share)).curve(d3.curveMonotoneX))
+    .attr('fill', 'none').attr('stroke', LB).attr('stroke-width', 2.5);
+  const annos = [
+    ['2024-09-17', 'pager attack'],
+    ['2024-09-23', 'air campaign begins'],
+    ['2024-09-28', 'Nasrallah killed'],
+    ['2024-10-01', 'ground invasion'],
+  ];
+  annos.forEach(([d, label], i) => {
+    const px = x(parse(d));
+    svg.append('line').attr('x1', px).attr('x2', px).attr('y1', m.t - 6).attr('y2', h - m.b)
+      .attr('stroke', '#c9c4bc').attr('stroke-dasharray', '2,3');
+    svg.append('text').attr('class', 'anno').attr('x', px + 5).attr('y', m.t + 6 + (i % 2) * 14)
+      .text(label);
+  });
+  const peak = data.reduce((a, b) => b.share > a.share ? b : a);
+  svg.append('text').attr('x', x(peak.dt) + 10).attr('y', y(peak.share) + 18)
+    .attr('fill', LB).style('font-weight', 600).text(peak.share + '% of all MTV output');
+})();
+</script>
+</body>
+</html>

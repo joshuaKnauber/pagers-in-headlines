@@ -1,0 +1,27 @@
+outlet,tier,collection_gate,gate_reason,derived_from
+Ynet,mass,required,reach gate (mass tier),outlet-census-v1.csv
+Channel 12 News / N12,mass,required,reach gate (mass tier),outlet-census-v1.csv
+Channel 14 / Now 14,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Channel 13 News,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Kan 11 / Kan News (incl. Reshet Bet),substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Walla News,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Israel Hayom,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Yedioth Ahronoth (print),substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Haaretz (Hebrew),substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Maariv,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Galei Tzahal (Army Radio / GLZ),substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Globes,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Ynetnews (English),niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Jerusalem Post,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Times of Israel,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+i24NEWS,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Channel 9 / 9tv (Russian),niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Abu Ali Express,substantial,required-representative,documented representative of a mass-level category (project decision),outlet-census-v1.csv
+Makan 33 / Arabic-language Israeli media,substantial,required-representative,documented representative of a mass-level category (project decision),outlet-census-v1.csv
+Arutz Sheva / B'Sheva,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+103FM,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Calcalist,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Kikar HaShabbat,substantial,required-representative,documented representative of a mass-level category (project decision),outlet-census-v1.csv
+Behadrei Haredim,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Haaretz (English),niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
+Kul al-Arab,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census-v1.csv
