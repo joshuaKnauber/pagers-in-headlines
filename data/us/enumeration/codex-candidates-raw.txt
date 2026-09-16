@@ -1,0 +1,16 @@
+fox|https://www.foxnews.com/world/lebanon-explosions-dozens-wounded-after-pagers-detonate-state-media-report|2024-09-17|Lebanon explosions: Hezbollah apparently targeted as pagers detonate
+fox|https://www.foxnews.com/world/israel-degrades-iran-backed-hezbollah-terrorists-spectacular-pager-explosion-operation-experts|2024-09-18|Israel degrades Hezbollah in spectacular pager explosion operation
+fox|https://www.foxnews.com/world/israel-behind-lebanon-pager-attack-targeting-hezbollah-senior-us-official-says|2024-09-18|Israel was behind Lebanon pager attack, senior US official says
+fox|https://www.foxnews.com/world/how-did-hezbollah-pager-explosions-happen-things-know.amp|2024-09-19|How did the Hezbollah pager explosions happen? 5 things to know
+fox|https://www.foxnews.com/world/israel-strikes-hezbollah-targets-lebanon-after-two-rounds-device-explosions.amp|2024-09-19|Israel strikes Hezbollah targets in Lebanon after two rounds of device explosions
+fox|https://www.foxnews.com/world/israel-strikes-hezbollah-targets-inside-lebanon-idf-warns-residents-stay-near-bomb-shelters|2024-09-19|Israel strikes Hezbollah targets inside Lebanon
+fox|https://www.foxnews.com/world/hezbollah-launches-rockets-israel-overnight-airstrikes|2024-09-22|Hezbollah launches rockets at Israel after overnight airstrikes
+fox|https://www.foxnews.com/world/israel-hammers-lebanon-hezbollah-strikes-issues-warning-where-may-hit-next|2024-09-23|Israel hammers Hezbollah with strikes and issues warning
+nyt|https://www.nytimes.com/live/2024/09/17/world/israel-hamas-war-news|2024-09-17|Pagers Explode Across Lebanon in Apparent Attack on Hezbollah
+nyt|https://www.nytimes.com/2024/09/17/world/middleeast/israel-hezbollah-pagers-explosives.html|2024-09-17|How Hezbollah’s Pagers Exploded in Lebanon
+nyt|https://www.nytimes.com/2024/09/18/world/middleeast/israel-exploding-pagers-hezbollah.html|2024-09-18|How Israel Built a Modern-Day Trojan Horse: Exploding Pagers
+nyt|https://www.nytimes.com/2024/09/18/world/middleeast/hezbollah-israel-walkie-talkie-explosives.html|2024-09-18|Walkie-Talkies in Lebanon May Have Held More Explosives Than Pagers
+usatoday|https://www.usatoday.com/story/news/world/2024/09/17/hezbollah-pagers-lebanon-attack-israel/75261807007/|2024-09-17|Hundreds of Hezbollah pagers explode across Lebanon injuring thousands
+yahoo|https://news.yahoo.com/detonation-hezbollah-devices-did-not-211502767.html|2024-09-24|Detonation of Hezbollah devices did not include iPhones
+yahoo|https://news.yahoo.com/airline-bans-pagers-walkie-talkies-172044258.html|2024-09-20|Airport bans pagers, walkie-talkies after devices explode across Lebanon
+yahoo|https://news.yahoo.com/explosives-put-devices-arrived-194719857.html|2024-09-19|Explosives put in devices before they arrived in Lebanon, says Lebanon’s UN mission

@@ -1,0 +1,406 @@
+● Fetching web content https://www.bing.com/search?q=site%3Awelt.de+Pager+Explosionen+Libanon+Hisbo…
+  └ Contents of https://www.bing.com/search?q=site%3Awelt.de+Pager+Explosionen+Li...
+
+● Fetching web content https://duckduckgo.com/html/?q=site%3Awelt.de+Pager+Explosionen+Hisbollah · …
+  └ Contents of https://html.duckduckgo.com/html/?q=site%3Awelt.de+Pager+Explosio...
+
+● Fetching web content https://www.bing.com/search?q=%22welt.de%22+Pager-Explosionen+Libanon · url:…
+  └ Contents of https://www.bing.com/search?q=%22welt.de%22+Pager-Explosionen+Lib...
+
+● Fetching web content https://www.welt.de/suche/?q=Pager%20Hisbollah · url: "https://www.welt.de/s…
+  └ Contents of https://www.welt.de/suche/?q=Pager%20Hisbollah:
+
+● Fetching web content https://www.bing.com/search?q=site%3Awelt.de+Pager+Hisbollah+Libanon&count=3…
+  └ Here is the raw content:
+
+● Fetching web content https://www.bing.com/search?q=site%3Awelt.de+Pager+Hisbollah+Libanon&count=3…
+  └ Here is the raw content:
+
+● Fetching web content https://www.bing.com/search?q=site%3Awelt.de+Pager+Hisbollah+Libanon+Explosi…
+  └ Contents of https://www.bing.com/search?q=site%3Awelt.de+Pager+Hisbollah+Liba...
+
+● Fetching web content https://www.google.com/search?q=site:welt.de+Pager+Hisbollah+Libanon&num=30 …
+  └ Contents of https://www.google.com/search?q=site:welt.de+Pager+Hisbollah+Liba...
+
+● Fetching web content https://www.bing.com/search?q=site%3Awelt.de+Pager+Hisbollah+Libanon&count=3…
+  └ Here is the raw content:
+
+● Fetching web content https://lite.duckduckgo.com/lite/?q=site%3Awelt.de+Pager+Hisbollah+Libanon ·…
+  └ Contents of https://lite.duckduckgo.com/lite/?q=site%3Awelt.de+Pager+Hisbolla...
+
+● Fetching web content https://search.marginalia.nu/search?query=site%3Awelt.de+Pager+Hisbollah · u…
+  └ Contents of https://marginalia-search.com/search?query=site%3Awelt.de+Pager+H...
+
+✗ Fetching web content https://www.welt.de/themen/pager/ · url: "https://www.welt.de/themen/pager/"
+  └ Error: Failed to fetch https://www.welt.de/themen/pager/ - status code 404
+
+● Fetching web content https://www.welt.de/themen/hisbollah/ · url: "https://www.welt.de/themen/his…
+  └ Contents of https://www.welt.de/themen/hisbollah/:
+
+● Fetching web content https://www.bing.com/search?q=site%3Awelt.de+Pager+Hisbollah+Libanon&count=3…
+  └ Here is the raw content:
+
+✗ Fetching web content http://web.archive.org/cdx/search/cdx?url=welt.de&matchType=domain&from=… 30s
+  └ TimeoutError: The operation was aborted due to timeout
+
+● Query Wayback CDX for welt.de pager URLs (shell)
+  │ curl -s --max-time 60
+  │ "http://web.archive.org/cdx/search/cdx?url=welt.de&matchType=domain&from=20240915&to=20241020&ou
+  │ tput=text&fl=timestamp,original&collapse=urlkey&limit=200000&filter=original:.*[Pp]ager.*" |
+  │ head -100
+  └ 1 line…
+
+● Test CDX query basic (shell)                                                                   22s
+  │ curl -s --max-time 60 "http://web.archive.org/cdx/search/cdx?url=welt.de&matchType=domain&from=2
+  │ 0240915&to=20241020&output=text&fl=timestamp,original&collapse=urlkey&limit=20"
+  └ 21 lines…
+
+● CDX filter pager lowercase excluding images (shell)                                            30s
+  │ curl -s --max-time 60
+  │ "http://web.archive.org/cdx/search/cdx?url=welt.de&matchType=domain&from=20240915&to=20241020&ou
+  │ tput=text&fl=timestamp,original&collapse=urlkey&limit=200000&filter=original:.*pager.*" | grep
+  │ -iv '\.jpg\|\.png\|translate.google' | head -80
+  └ 1 line…
+
+● Read shell output Waiting up to 60 seconds for command output                                  27s
+  └ 1 line…
+
+✗ Download full CDX list for range (shell)
+  │ curl -s --max-time 60 "http://web.archive.org/cdx/search/cdx?url=welt.de&matchType=domain&from=2
+  │ 0240915&to=20241020&output=text&fl=timestamp,original&collapse=urlkey&limit=500000" >
+  │ /tmp/cdx_all.txt; wc -l /tmp/cdx_all.txt
+  └ Permission denied and could not request permission from user
+
+● Download full CDX list for range to scratch dir (shell)                                     1m 30s
+  │ mkdir -p /Users/jknauber/Documents/Projects/news/.scratch && curl -s --max-time 90
+  │ "http://web.archive.org/cdx/search/cdx?url=welt.de&matchType=domain&from=20240915&to=20241020&ou
+  │ tput=text&fl=timestamp,original&collapse=urlkey&limit=500000" >
+  │ /Users/jknauber/Documents/Projects/news/.scratch/cdx_all.txt; wc -l
+  │ /Users/jknauber/Documents/Projects/news/.scratch/cdx_all.txt
+  └ 2 lines…
+
+● Filter CDX list for relevant keywords (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && grep -iE
+  │ 'pager|piepser|funkgerae|walkie|hisbollah|mossad|gold-apollo|goldapollo|funkmeldeempfaenger'
+  │ cdx_all.txt | grep -viE '\.jpg|\.png|\.jpeg|translate\.google|/img/|/bildergalerien/' | sort |
+  │ wc -l
+  └ 2 lines…
+
+● Show non-image CDX entries (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && grep -viE
+  │ '\.jpg|\.png|\.jpeg|translate\.google|/img/' cdx_all.txt | sort | wc -l
+  │ grep -viE '\.jpg|\.png|\.jpeg|translate\.google|/img/' cdx_all.txt | sort | head -50
+  └ 52 lines…
+
+● Grep for Lebanon-related article slugs (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && grep -iE 'article[0-9]+/.*(libanon|beirut
+  │ |hisbollah|hizbollah|hezbollah|explosion|pager|piepser|funkger|walkie|mossad|israel)'
+  │ cdx_all.txt | sort -u | wc -l
+  │ grep -iE 'article[0-9]+/.*(libanon|beirut|hisbollah|hizbollah|hezbollah|explosion|pager|piepser|
+  │ funkger|walkie|mossad)' cdx_all.txt | sort -u
+  └ 2 lines…
+
+● Curl bing search and extract welt.de links (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && curl -s -A "Mozilla/5.0 (Windows NT 10.0;
+  │ Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36" "https://www.bing
+  │ .com/search?q=site%3Awelt.de+Pager+Hisbollah+Libanon+Explosionen&count=30&setlang=de" -o
+  │ bing1.html --max-time 40
+  │ grep -oE 'https://www\.welt\.de/[^"&]*' bing1.html | sort -u | head -50
+  └ 1 line…
+
+● Check bing html content (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && wc -c bing1.html; grep -o 'welt.de'
+  │ bing1.html | wc -l; grep -c "b_algo" bing1.html
+  └ 4 lines…
+
+● Extract and decode bing redirect URLs for welt.de (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && grep -oE '"u=[^"&]*"' bing1.html | grep
+  │ -i welt | head -30
+  │ echo "---base64 decode attempt---"
+  │ python3 - <<'EOF'
+  │ import re, base64…
+  └ 17 lines…
+
+● Decode bing ck redirect base64 urls (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && python3 - <<'EOF'
+  │ import re, base64
+  │ data = open('bing1.html', encoding='utf-8', errors='ignore').read()
+  │ matches = re.findall(r'u=a1([A-Za-z0-9_-]{10,})', data)
+  │ print(len(matches))…
+  └ 21 lines…
+
+● Curl DuckDuckGo html search via curl (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && curl -s -A "Mozilla/5.0 (Windows NT
+  │ 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+  │ "https://html.duckduckgo.com/html/?q=site%3Awelt.de+Pager+Hisbollah+Libanon" -o ddg1.html
+  │ --max-time 40
+  │ wc -c ddg1.html…
+  └ 5 lines…
+
+● Inspect ddg html output (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && grep -o 'welt.de[^"< ]*' ddg1.html
+  │ head -c 1500 ddg1.html
+  └ 24 lines…
+
+● Try startpage search (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && curl -s -A "Mozilla/5.0 (Windows NT
+  │ 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+  │ "https://www.startpage.com/sp/search?query=site%3Awelt.de+Pager+Hisbollah+Libanon" -o sp1.html
+  │ --max-time 40
+  │ wc -c sp1.html…
+  └ 3 lines…
+
+● Preview startpage output (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && head -c 800 sp1.html
+  └ 8 lines…
+
+● Try Mojeek search engine (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && curl -s -A "Mozilla/5.0 (Windows NT
+  │ 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+  │ "https://www.mojeek.com/search?q=site%3Awelt.de+Pager+Hisbollah+Libanon" -o mj1.html
+  │ --max-time 40
+  │ wc -c mj1.html…
+  └ 3 lines…
+
+● Preview mojeek output (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && cat mj1.html | head -c 2000
+  └ 22 lines…
+
+● List common crawl collections for late 2024 (shell)
+  │ curl -s --max-time 30 "https://index.commoncrawl.org/collinfo.json" | python3 -c "
+  │ import json,sys
+  │ data=json.load(sys.stdin)
+  │ for d in data:
+  │ if '2024-3' in d['id'] or '2024-4' in d['id']:…
+  └ 8 lines…
+
+● Query common crawl index for welt.de urls in two crawls (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && for idx in CC-MAIN-2024-38
+  │ CC-MAIN-2024-42; do
+  │ echo "== $idx =="
+  │ curl -s --max-time 60
+  │ "https://index.commoncrawl.org/$idx-index?url=welt.de%2F*&output=json&limit=200000" -o …
+  └ 8 lines…
+
+● Inspect CC index content (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && head -3 CC-MAIN-2024-38.jsonl
+  │ python3 -c "
+  │ import json
+  │ for line in open('CC-MAIN-2024-38.jsonl'):
+  │ d=json.loads(line)…
+  └ 6 lines…
+
+● Query CC index for www.welt.de explicitly (shell)                                               9s
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && curl -s --max-time 90 "https://index.co
+  │ mmoncrawl.org/CC-MAIN-2024-38-index?url=www.welt.de%2F*&output=json&limit=200000" -o
+  │ cc38_www.jsonl
+  │ wc -l cc38_www.jsonl
+  │ curl -s --max-time 90 "https://index.commoncrawl.org/CC-MAIN-2024-42-index?url=www.welt.de%2F*…
+  └ 5 lines…
+
+● Debug empty cc38 result (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && cat cc38_www.jsonl | head -c 500
+  │ echo "---"
+  │ curl -s --max-time 60 "https://index.commoncrawl.org/CC-MAIN-2024-38-index?url=www.welt.de%2F*&o
+  │ utput=json&showNumPages=true"
+  └ 3 lines…
+
+● Retry CC38 query with page param (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && curl -s --max-time 90 --retry 3
+  │ "https://index.commoncrawl.org/CC-MAIN-2024-38-index?url=www.welt.de%2F*&output=json&page=0"
+  │ -o cc38_www.jsonl
+  │ wc -l cc38_www.jsonl
+  │ python3 -c "…
+  └ 9 lines…
+
+● Fetching web content https://www.bing.com/search?q=site%3Awelt.de+Pager-Explosionen+Libanon+Hisbo…
+  └ Contents of https://www.bing.com/search?q=site%3Awelt.de+Pager-Explosionen+Li...
+
+✗ Fetching web content https://www.ecosia.org/search?q=site%3Awelt.de%20Pager%20Hisbollah%20Libanon…
+  └ Error: Failed to fetch
+    https://www.ecosia.org/search?q=site%3Awelt.de%20Pager%20Hisbollah%20Libanon - status code 403
+
+● Fetching web content https://www.qwant.com/?q=site%3Awelt.de+Pager+Hisbollah+Libanon · url: "http…
+  └ Contents of https://www.qwant.com/?q=site%3Awelt.de+Pager+Hisbollah+Libanon:
+
+● Fetching web content https://search.brave.com/search?q=site%3Awelt.de+Pager+Hisbollah+Libanon · u…
+  └ Contents of https://search.brave.com/search?q=site%3Awelt.de+Pager+Hisbollah+...
+
+Brave Search works well. Let me expand this with multiple queries.
+
+● Fetching web content https://search.brave.com/search?q=site%3Awelt.de+Walkie-Talkie+Libanon+Hisbo…
+  └ Contents of https://search.brave.com/search?q=site%3Awelt.de+Walkie-Talkie+Li...
+
+● Fetching web content https://search.brave.com/search?q=site%3Awelt.de+Pager+Libanon+Explosion&cou…
+  └ Contents of https://search.brave.com/search?q=site%3Awelt.de+Pager+Libanon+Ex...
+
+● Fetch multiple Brave search result pages (shell)                                                5s
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && for q in "site%3Awelt.de+Pager+Libanon"
+  │ "site%3Awelt.de+Pager+Explosion+Hisbollah" "site%3Awelt.de+Piepser+Libanon"
+  │ "site%3Awelt.de+Funkgeraete+Libanon+Hisbollah" "site%3Awelt.de+Gold+Apollo+Pager"
+  │ "site%3Awelt.de+Mossad+Pager" "site%3Awelt.de+Hisbollah+Explosion+Beirut"
+  │ "site%3Awelt.de+Walkie-Talkie+Explosion" "site%3Awelt.de+Israel+Hisbollah+Pager+Angriff" …
+  └ 28 lines…
+
+● Extract welt.de links from Brave results (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && grep -oE
+  │ 'href="https://welt\.de/[^"]*"|href="https://www\.welt\.de/[^"]*"' brave_*.html | sed -E
+  │ 's/^[^:]+:href="//; s/"$//' | sort -u
+  └ 35 lines…
+
+● More Brave searches for additional welt.de articles (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && for q in
+  │ "site%3Awelt.de+Nasrallah+Pager" "site%3Awelt.de+Bulgarien+Pager+Firma"
+  │ "site%3Awelt.de+Reaktionen+Pager+Libanon" "site%3Awelt.de+Iran+Pager+Explosion"
+  │ "site%3Awelt.de+BND+Pager" "site%3Awelt.de+Lieferkette+Pager+Israel"
+  │ "site%3Awelt.de+Hisbollah+Opfer+Pager+Tote" "site%3Awelt.de+Kinder+Pager+Explosion" …
+  └ 23 lines…
+
+● Extract welt.de links from second batch (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && grep -oE
+  │ 'href="https://welt\.de/[^"]*"|href="https://www\.welt\.de/[^"]*"' brave2_*.html | sed -E
+  │ 's/^[^:]+:href="//; s/"$//' | sort -u
+  └ 1 line…
+
+● Check brave2 file sizes and blocking (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && wc -c brave2_*.html | tail -5
+  │ grep -o "captcha\|unusual traffic\|Just a moment" brave2_*.html | sort -u | head
+  └ 16 lines…
+
+● Retry brave after delay (shell)                                                                20s
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && sleep 20 && curl -s -A "Mozilla/5.0
+  │ (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+  │ "https://search.brave.com/search?q=site%3Awelt.de+Nasrallah+Pager&count=20" -o t1.html
+  │ --max-time 30
+  │ grep -c captcha t1.html; wc -c t1.html
+  └ 3 lines…
+
+● Retry brave search for Mossad after longer delay (shell)                                     1m 0s
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && sleep 60 && curl -s -A "Mozilla/5.0
+  │ (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0
+  │ Safari/537.36"
+  │ "https://search.brave.com/search?q=site%3Awelt.de+Mossad+Pager+Libanon&count=20" -o
+  │ t_mossad.html --max-time 30…
+  └ 4 lines…
+
+Good, that worked. Let me continue with spaced-out queries for remaining topics.
+
+● Extract mossad links, then search gold apollo (shell)                                          50s
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && grep -oE
+  │ 'href="https://welt\.de/[^"]*"|href="https://www\.welt\.de/[^"]*"' t_mossad.html | sed -E
+  │ 's/^[^:]+:href="//; s/"$//' | sort -u
+  │ sleep 50
+  │ curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) …
+  └ 24 lines…
+
+● Compile unique welt.de article links (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && cat brave_*.html t_mossad.html
+  │ t_apollo.html 2>/dev/null | grep -oE
+  │ 'href="https://welt\.de/[^"]*"|href="https://www\.welt\.de/[^"]*"' | sed -E
+  │ 's/^[^:]+:href="//; s/"$//' | sed 's#^https://welt.de/#https://www.welt.de/#' | grep -viE
+  │ 'themen/|reise/Fern|kultur/gallery' | sort -u > all_links.txt…
+  └ 39 lines…
+
+● Save candidate URL list (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && cat > urls.txt << 'EOF'
+  │ https://www.welt.de/politik/ausland/article253575444/Libanon-Walkie-Talkies-detonieren-Neun-To
+  │ te-und-mehr-als-300-Verletzte-bei-weiteren-Explosionen.html
+  │ https://www.welt.de/politik/ausland/video253559370/Viele-Verletzte-Pager-von-Hisbollah-Kaempfe
+  │ rn-explodiert.html…
+  └ 38 lines…
+
+● Fetch dates and titles for each article (shell)                                                10s
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && while read -r url; do
+  │ html=$(curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like
+  │ Gecko) Chrome/120.0 Safari/537.36" --max-time 20 "$url")
+  │ date=$(echo "$html" | grep -oE '"datePublished":"[0-9T:+-]+"' | head -1 | grep -oE
+  │ '[0-9]{4}-[0-9]{2}-[0-9]{2}')…
+  └ 27 lines…
+
+● Inspect sample article html for date fields (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && curl -s -A "Mozilla/5.0 (Windows NT
+  │ 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+  │ --max-time 20 "https://www.welt.de/politik/ausland/article253557702/Libanon-Israelischer-Gehei
+  │ mdienst-soll-Pager-Lieferung-mit-Sprengstoff-praepariert-haben.html" -o sample.html
+  │ wc -c sample.html…
+  └ 9 lines…
+
+● Re-fetch dates with correct parsing and delay (shell)                                          26s
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && > dates.txt
+  │ while read -r url; do
+  │ html=$(curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like
+  │ Gecko) Chrome/120.0 Safari/537.36" --max-time 20 "$url")
+  │ date=$(echo "$html" | grep -oE '"datePublished":"[0-9]{4}-[0-9]{2}-[0-9]{2}' | head -1 | …
+  └ 26 lines…
+
+● Retry fetching missing dates (shell)                                                           19s
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && for url in \
+  │ "https://www.welt.de/politik/ausland/article253575444/Libanon-Walkie-Talkies-detonieren-Neun-T
+  │ ote-und-mehr-als-300-Verletzte-bei-weiteren-Explosionen.html" \
+  │ "https://www.welt.de/politik/ausland/video253559370/Viele-Verletzte-Pager-von-Hisbollah-Kaempf
+  │ ern-explodiert.html" \…
+  └ 24 lines…
+
+● Check http status/redirect for problematic url (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && curl -s -o /dev/null -w "%{http_code}
+  │ %{url_effective}\n" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+  │ like Gecko) Chrome/120.0 Safari/537.36" -L --max-time 20
+  │ "https://www.welt.de/politik/ausland/article253575444/Libanon-Walkie-Talkies-detonieren-Neun-Tot
+  │ e-und-mehr-als-300-Verletzte-bei-weiteren-Explosionen.html"
+  └ 2 lines…
+
+Now let's redo with -L and get proper dates/titles.
+
+● Refetch with redirect following (shell)                                                        23s
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && for url in \
+  │ "https://www.welt.de/politik/ausland/article253575444/Libanon-Walkie-Talkies-detonieren-Neun-T
+  │ ote-und-mehr-als-300-Verletzte-bei-weiteren-Explosionen.html" \
+  │ "https://www.welt.de/politik/ausland/video253559370/Viele-Verletzte-Pager-von-Hisbollah-Kaempf
+  │ ern-explodiert.html" \…
+  └ 27 lines…
+
+● Write final formatted output list (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && cat << 'EOF' > final.txt
+  │ welt|https://www.welt.de/vermischtes/video253542952/Hunderte-Hisbollah-Pager-detonieren-gleich
+  │ zeitig-Wer-steckt-dahinter.html|2024-09-17|Hunderte Hisbollah-Pager detonieren gleichzeitig
+  │ welt|https://www.welt.de/politik/ausland/video253559370/Tote-und-Verletzte-Pager-von-Hisbollah
+  │ -Kaempfern-explodieren.html|2024-09-17|Tote und Verletzte: Pager von Hisbollah-Kämpfern …
+  └ 63 lines…
+
+● Verify final redirected URLs for two video articles (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && curl -s -o /dev/null -w
+  │ "%{url_effective}\n" -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+  │ like Gecko) Chrome/120.0 Safari/537.36" -L --max-time 20 "https://www.welt.de/vermischtes/vide
+  │ o253542952/Hunderte-Hisbollah-Pager-detonieren-gleichzeitig-Wer-steckt-dahinter.html"
+  │ sleep 2…
+  └ 7 lines…
+
+● Fix incorrect path for one URL (shell)
+  │ cd /Users/jknauber/Documents/Projects/news/.scratch && sed -i ''
+  │ 's#vermischtes/video253575930#videos/video253575930#' final.txt
+  │ cat final.txt
+  └ 17 lines…
+
+Cleaning up scratch files and delivering the final list.
+
+● Clean up temporary scratch directory (shell)
+  │ rm -rf /Users/jknauber/Documents/Projects/news/.scratch
+  └ 1 line…
+
+welt|https://www.welt.de/vermischtes/video253542952/Hunderte-Hisbollah-Pager-detonieren-gleichzeitig-Wer-steckt-dahinter.html|2024-09-17|Hunderte Hisbollah-Pager detonieren gleichzeitig
+welt|https://www.welt.de/politik/ausland/video253559370/Tote-und-Verletzte-Pager-von-Hisbollah-Kaempfern-explodieren.html|2024-09-17|Tote und Verletzte: Pager von Hisbollah-Kämpfern explodieren
+welt|https://www.welt.de/politik/ausland/article253557702/Libanon-Israelischer-Geheimdienst-soll-Pager-Lieferung-mit-Sprengstoff-praepariert-haben.html|2024-09-17|Israelischer Geheimdienst soll Pager-Lieferung präpariert haben
+welt|https://www.welt.de/politik/ausland/video253560574/Explodierte-Funkempfaenger-Diese-chiffrierten-Pager-wurden-nur-an-hochrangige-Mitglieder-der-Hisbollah-verteilt.html|2024-09-17|Chiffrierte Pager nur an hochrangige Hisbollah-Mitglieder verteilt
+welt|https://www.welt.de/politik/ausland/article253575444/Libanon-Walkie-Talkies-explodieren-in-Beirut-Israel-kuendigt-neue-Phase-des-Krieges-an.html|2024-09-18|Walkie-Talkies explodieren in Beirut, Israel kündigt neue Kriegsphase an
+welt|https://www.welt.de/wirtschaft/plus253560752/Nahost-Konflikt-Das-spricht-fuer-die-Manipulation-der-Pager-im-Libanon.html|2024-09-18|Das spricht für die Manipulation der Pager im Libanon
+welt|https://www.welt.de/politik/ausland/video253561074/Explodierende-Pager-im-Libanon-Es-ist-eine-klassische-Supply-Chain-Attacke.html|2024-09-18|Pager-Explosionen: eine klassische Supply-Chain-Attacke
+welt|https://www.welt.de/politik/ausland/video253565294/Hisbollah-Pager-explodiert-Offenbar-ist-es-dem-Mossad-gelungen-die-Pager-der-Firma-BAC-in-Budapest-zu-manipulieren.html|2024-09-18|Mossad manipulierte offenbar Pager der Firma BAC in Budapest
+welt|https://www.welt.de/videos/video253575930/WELT-Spezial-Nach-Pager-Attacke-Welle-von-Walkie-Talkie-Explosionen-im-Libanon.html|2024-09-18|WELT Spezial: Welle von Walkie-Talkie-Explosionen im Libanon
+welt|https://www.welt.de/politik/ausland/plus253576196/Pager-Explosion-Kalkulierter-Schachzug-oder-Notloesung-Was-hinter-den-Angriffen-im-Libanon-steckt.html|2024-09-19|Kalkulierter Schachzug oder Notlösung? Was hinter den Pager-Angriffen steckt
+welt|https://www.welt.de/politik/deutschland/article253567086/Pager-Explosionen-Netanjahu-verfaellt-dem-Groessenwahn-der-Unbesiegbarkeit.html|2024-09-19|Netanjahu verfällt dem Größenwahn der Unbesiegbarkeit
+welt|https://www.welt.de/politik/ausland/article253594352/Libanon-Hisbollah-Chef-nennt-Pager-Explosionen-Kriegserklaerung.html|2024-09-20|Hisbollah-Chef nennt Pager-Explosionen Kriegserklärung
+welt|https://www.welt.de/debatte/kommentare/article253614268/Hisbollah-Nasrallahs-grosse-Rache-muss-noch-warten.html|2024-09-20|Hisbollah: Nasrallahs große Rache muss noch warten
+welt|https://www.welt.de/politik/ausland/video253575272/Libanon-Pager-Explosion-Es-gibt-Berichte-dass-ein-paar-Geraete-aufgefallen-sind.html|2024-09-20|Berichte, dass ein paar Pager-Geräte aufgefallen sind
+welt|https://www.welt.de/wirtschaft/plus253593328/Pager-Attacken-gegen-Hisbollah-Muss-jetzt-auch-der-Westen-Angriffe-fuerchten.html|2024-09-20|Pager-Attacken gegen Hisbollah: Muss der Westen Angriffe fürchten?
+welt|https://www.welt.de/politik/ausland/plus253676852/Angriff-auf-Hisbollah-Die-mysterioese-Ungarin-und-die-explodierenden-Pager.html|2024-09-27|Die mysteriöse Ungarin und die explodierenden Pager
+

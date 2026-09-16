@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where to dig next — deep-dive findings</title>
+<style>
+  :root { --ink:#1a1a1a; --muted:#8a8a8a; --lb:#d0212a; --il:#0038b8; --de:#1a1a1a; --us:#3c3b6e; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+         color:var(--ink); background:#fdfdfc; line-height:1.55; }
+  main { max-width:700px; margin:0 auto; padding:72px 24px 120px; }
+  h1 { font-size:30px; line-height:1.2; margin:0 0 12px; letter-spacing:-0.02em; }
+  .sub { color:var(--muted); font-size:15px; margin-bottom:64px; max-width:60ch; }
+  h2 { font-size:21px; margin:88px 0 6px; letter-spacing:-0.01em; }
+  .secnote { color:var(--muted); font-size:14px; margin:0 0 36px; max-width:62ch; }
+  .f { margin:0 0 40px; }
+  .f h3 { font-size:16.5px; margin:0 0 6px; line-height:1.35; }
+  .f p { font-size:15px; margin:0 0 8px; color:#333; }
+  .f .next { font-size:14px; color:var(--muted); }
+  .f .next b { color:#555; font-weight:600; }
+  .chips { margin-top:8px; }
+  .chip { display:inline-block; font-size:11.5px; padding:1px 9px; border-radius:99px;
+          background:#f0f0ed; color:#666; margin-right:6px; }
+  .chip.v { background:#e7f2e7; color:#2c6b2c; }
+  .chip.med { background:#f6efe2; color:#8a6d2f; }
+  code { font-family:ui-monospace,Menlo,monospace; font-size:12.5px; background:#f4f4f1;
+         padding:1px 5px; border-radius:4px; color:#444; }
+  .warn { background:#fbf4ee; border-radius:10px; padding:22px 26px; margin:0 0 40px; }
+  .warn p { font-size:14.5px; margin:0; color:#6b4a2a; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Where to dig next</h1>
+<p class="sub">Thirty leads from a deep-dive pass over all four corpora (LB&nbsp;338 · IL&nbsp;157 · DE&nbsp;176 · US&nbsp;134 primary records). Five independent analyst agents each worked the raw JSONL; every load-bearing count marked <span class="chip v">verified</span> was re-computed directly against the corpus files afterwards. Generated 2026-09-16.</p>
+
+<h2>Fix these first</h2>
+<p class="secnote">Six corpus defects that change numbers we've already published. Nothing below them should ship until these are repaired.</p>
+
+<div class="warn"><p><b>The headline problem:</b> body text in three of the four corpora still carries fetch-day site chrome or template residue, and several published shares are partly measuring that chrome. Headline-based measures are safe everywhere; body-based measures currently are not for Fox, CNN, Yahoo, Al Jadeed, Al-Manar, t-online, and Spiegel.</p></div>
+
+<div class="f">
+  <h3>US bodies carry September 2026 chrome — Fox's 91% "terrorists" doesn't survive cleaning</h3>
+  <p>The Fox "Right Arrow Left Arrow" nav ticker (Houthis, Nepal floods, "narco-terrorist") sits inside 20 of 23 Fox bodies; 19 of 30 CNN records are video pages stuffed with 2026 related-video markup; ~22–27 of 30 Yahoo bodies open with a Top-Stories rail or a Sept 2026 Reuters graf. On raw text "terrorist" hits 21/23 Fox records (the published 91%); after stripping the ticker it's ~52%, and ~36% on strong-only articles. CNN written-strong lands at 27% — the Fox–CNN gap shrinks from 81 points to roughly 10–25.</p>
+  <p class="next"><b>Next:</b> a de-chrome pass for Fox/CNN/Yahoo bodies, then rebuild every US body-based share in the viz.</p>
+  <div class="chips"><span class="chip v">verified: chrome extent + raw counts</span><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Al Jadeed bodies are still contaminated — the "names Israel 68%" figure is unsafe</h3>
+  <p>27 of 59 Al Jadeed bodies still carry the live site's 2026 "now watching" strip (including June 2026 copy about President Aoun calling Trump). "Israel" appears in 40/59 bodies — exactly the known 67.8% — but in only 9/59 headlines (15.3%), right in line with MTV (14.4%) and LBCI (10.9%). Al Jadeed's real day-0 signature is relaying wires (Reuters, WSJ, AP) without naming anyone; Israel enters its headlines on day 1 via Axios.</p>
+  <p class="next"><b>Next:</b> chrome-strip Al Jadeed or switch the attribution exhibit to headline-based rates. The "Al Jadeed names Israel twice as often" point must not ship.</p>
+  <div class="chips"><span class="chip v">verified: 27/59 + headline counts</span><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Dedup missed AMP twins and cross-outlet wire copies</h3>
+  <p>ABC has the AMP and desktop version of the same wire story both primary (<code>us_abc_41b079c45e</code> / <code>us_abc_b07e7d99bc</code>); Fox has the same pair for its explainer; a Reuters exclusive sits as primary at both Reuters and Yahoo with the identical headline; N12 has one article doubled across two mako URL paths (<code>news-money/2024_q3</code> vs <code>news-money/tech12</code>).</p>
+  <p class="next"><b>Next:</b> URL-canonicalization pass (strip <code>/amp</code>, mako path variants) plus near-duplicate collapse across outlets for syndication counting.</p>
+  <div class="chips"><span class="chip v">verified: all four pairs</span><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>The Al-Manar day-0 hole: Hezbollah's own first statements were collected and left untagged</h3>
+  <p>The corpus has zero Al-Manar records on day 0 — but the title sweep file still holds the day-0 flash ("Pagers explode in the hands of their carriers…"), Hezbollah's 3:30pm timing statement, and its formal attribution ("we hold the Israeli enemy fully responsible"), all with empty relevance tags. On top of that, 40/42 Al-Manar dates are id-interpolated (±1 day), and four newspaper-roundup dumps make up 82.8% of all Al-Manar body words. The "Al-Manar was slowest to respond" reading is at least partly a collection artifact.</p>
+  <p class="next"><b>Next:</b> recover the untagged day-0 cluster (plus the named-martyr obituaries around IDs 12483066–12483880), date them from homepage captures, and exclude the four roundups from any body-based rate.</p>
+  <div class="chips"><span class="chip v">verified: 0 day-0, untagged titles, 82.8% roundup mass</span><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>German corpus landmines: empty t-online headlines, Spiegel paywall shells, RND crossword tails</h3>
+  <p>All 36 t-online records have empty headlines (20% of the German corpus invisible to any headline measure). Four Spiegel bodies are paywall shells ("Sie können den Artikel leider nicht mehr aufrufen") — and they're the four most promising Spiegel pieces, including "Operation »Gold Apollo AR-924«". 17 of 21 RND bodies end in crossword-ad residue, one is <i>only</i> that (16 words). 21/26 Bild bodies carry an opinion-CTA that poisons any Kommentar/Meinung keyword.</p>
+  <p class="next"><b>Next:</b> rebuild t-online headlines from og:title in the raw HTML, re-extract the four Spiegel pieces from <code>data/germany/raw/spiegel/</code>, scrub the RND tail.</p>
+  <div class="chips"><span class="chip v">verified: 36/36, 4/33, 17/21</span><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Smaller defects worth one cleanup pass</h3>
+  <p>One Makan body is an Archive Team manifesto in English ("History is littered with hundreds of conflicts…") — verified. 30 Lebanon records (26 MTV) have no date and sit outside the decay curve. The Abu Ali tagging rule required a device word, so the gloat-only posts (the Genesis 34 quote, the 13:06 "evacuating the wounded") are missing from the 157. Yahoo's credit field is empty on 25/30 records despite being pure syndication.</p>
+  <p class="next"><b>Next:</b> re-extract the Makan record, date the MTV orphans, re-sweep Abu Ali 13:00–14:30 UTC without the device-word requirement, rebuild Yahoo credits from bylines.</p>
+  <div class="chips"><span class="chip v">verified: Makan body</span><span class="chip">confidence high</span></div>
+</div>
+
+<h2>🇱🇧 Lebanon</h2>
+<p class="secnote">The victim country's coverage is a ledger and a set of registers — and its English desk behaves like a different country.</p>
+
+<div class="f">
+  <h3>Day 0's master frame is one Reuters quote: "the biggest security breach"</h3>
+  <p>LBCI, MTV, and Al Jadeed all ran the identical Hezbollah-official-to-Reuters quote as their frame for the event. 23% of day-0 headlines are wire-voiced (Reuters/Axios/WSJ/AP); by day 2 that falls to 3.6%. The victim country initially processed its own attack through foreign wire copy.</p>
+  <p class="next"><b>Next:</b> trace the "security breach" frame's lifespan — when do Lebanese outlets stop saying breach (a Hezbollah-failure frame) and start saying aggression (an Israel-action frame)?</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>LBCI Arabic hedges "Israeli breach" in the headline; LBCI English deletes it</h3>
+  <p>LBCI's first Arabic ticker already floats "estimates that the cause may be an Israeli breach." Its own English translation of the same item strips the actor from the headline and moves the hedge to the body. LBCI is 40% English (44/110), so any single "LBCI rate" hides a bilingual split — the English desk writes for export like a small wire agency.</p>
+  <p class="next"><b>Next:</b> code first-mention-of-Israel by language edition, not by outlet. This is a possible standalone exhibit: one newsroom, two attribution policies.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>MTV scare-quotes "the party." Al-Manar says "the resistance." Nobody shares a name for Hezbollah</h3>
+  <p>MTV is the only outlet that puts Hezbollah in scare-quotes — "الحزب" / "the party's" devices, 13 headlines. Al-Manar alone says المقاومة (the resistance, 4/42) and puts "the enemy / Zionist" in 17% of headlines, which commercial Arabic almost never does. The neutral عناصر (elements) is commercial-only; Al-Manar never uses it. This split is cleaner and headline-safe, unlike the martyr/massacre rates.</p>
+  <p class="next"><b>Next:</b> pair the naming table with the انفجار/تفجير grammar finding as the within-Lebanon exhibit.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>The victim hierarchy: MPs' sons get names, the ambassador gets an eye, the child gets a count</h3>
+  <p>Commercial day-0/1 headlines name MP Ali Ammar's son, MP Fadlallah's son (then walk the death report back), and the Iranian ambassador's lost eye. The 9-year-old girl is "a 10-year-old girl" via AFP in one LBCI English headline — unnamed in every Arabic headline. Al-Manar's one human-interest feature isn't a victim at all: it's blood-donation logistics (mosque loudspeakers, tents on the Hadi Nasrallah highway, a kilometre of cars outside Nabatieh hospital) — a civic-solidarity story that exists in no other country's corpus.</p>
+  <p class="next"><b>Next:</b> pull the dropped Al-Manar martyr notices and test whether Hezbollah named the dead as fighters on day 0 while commercial TV named them as sons of MPs.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Nasrallah's "Tuesday Massacre" naming barely escaped Al-Manar</h3>
+  <p>Nasrallah appears in Al-Manar headlines as sliced ticker quotes — including the explicit naming move, "we will adopt the names Tuesday Massacre and Wednesday Massacre." MTV never headlines him (0/125), Al Jadeed once transcribes the speech. Hezbollah's own branding of the event failed to propagate even inside Lebanon's commercial media — a sharp contrast to how "operation" propagated on the Israeli/US side.</p>
+  <p class="next"><b>Next:</b> track "مجزرة الثلاثاء" uptake across all four corpora as a branding-failure case study.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Al-Manar reads the Israeli press — filed under "enemy circles"</h3>
+  <p>Al-Manar runs Yedioth analysis and "Yedioth citing US intelligence" items, with the source labeled "enemy circles ask…" — Israeli-sourced content with the polarity inverted. It's the structural mirror of Israel's "according to foreign reports": both sides launder the other side's information through a distancing formula.</p>
+  <p class="next"><b>Next:</b> code "enemy-cited" as its own attribution type opposite Israel's foreign-reports hedge; strong candidate for the final page.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<h2>🇮🇱 Israel</h2>
+<p class="secnote">The censorship signature is real but it lives in different grammar than we thought — and the timing story reverses.</p>
+
+<div class="f">
+  <h3>N12 beat Abu Ali by 20 minutes — "Telegram was first" is an artifact</h3>
+  <p>Recovered clocks from raw HTML: N12 published at 12:59 UTC, Ynet 13:02, Kikar 13:04 — all before Abu Ali's first pager post at 13:15 and the famous "the pager is gone (:" at 13:19. The date-only <code>published_at</code> field hid this. What Abu Ali actually won is register (the smiley), not speed.</p>
+  <p class="next"><b>Next:</b> re-time the whole day-0 sequence from raw timestamps; recover Abu Ali's untagged 13:00–14:30 gloat stream (Genesis 34, the Nasrallah revenge-index joke).</p>
+  <div class="chips"><span class="chip v">verified: 12:59 in raw HTML</span><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>The real hedge is Ynet's "דיווח:" prefix, not "foreign reports"</h3>
+  <p>The literal foreign-reports formula appears in just 3/157 records (1.9%). The workhorse is layered: 22 of 95 Ynet headlines start with "Report:" (verified), and a named Western masthead is the grammatical source in 31% of the whole corpus (39% of Ynet). Kikar declines the hedge entirely — its day-0 evening headline reads "Drone footage: the Mossad seized the pager shipment and booby-trapped them," no attribution formula at all. Ynet's first article names Israel in the body while the headline still says "mysterious."</p>
+  <p class="next"><b>Next:</b> code three hedge layers (prefix / named masthead / unhedged actor) instead of the single foreign-reports measure — the current viz number understates the mechanism by an order of magnitude.</p>
+  <div class="chips"><span class="chip v">verified: 22/95 prefix</span><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Same leak, two grammars: "forced on Israel" vs "Israel decided"</h3>
+  <p>On the morning-after leak (Hezbollah suspected the pagers, so they were detonated "at the 90th minute"), Ynet writes the passive twice — the explosion "was forced on Israel" — while Kikar writes "and Israel decided to detonate them," the only early headline making Israel the subject of the verb without a hedge. Meanwhile the communications minister tweets Nahum 2:11 (the desolation of Nineveh) and Ynet reads it as "hinting at responsibility."</p>
+  <p class="next"><b>Next:</b> pair every shared leak across Ynet/Kikar/N12 and score hedge vs agent; check whether German/US copies of the same leak kept the "forced" recasting.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Kikar classifies the bodies; the gloat channel doesn't</h3>
+  <p>Kikar's first two headlines of the day call the wounded מחבלים (terrorists) — it hits 41% of Kikar records vs 12.6% Ynet. The surprise is Abu Ali at 0/19: the gloating Telegram channel defaults to "operatives" and never uses the terrorist word. Israel's published 14.6% "terrorists" rate is a Kikar-weighted blend of two very different registers.</p>
+  <p class="next"><b>Next:</b> report Kikar and Ynet as two Israeli registers, not one country rate — same treatment as Bild vs Tagesschau.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Gloating has four distinct layers</h3>
+  <p>Performed (Abu Ali's eight-word smiley post), curated (N12's meme-roundup article "on Israeli networks, laughing as usual" — showing the jokes while standing next to them), aestheticized (Ynet's 1,900-word "Original, brilliant, surprising" behind-the-scenes), and moralized (a Ynet column arguing the vegetable-shop precision blast "advances a human-rights culture"). That last move — the attack as humanitarian achievement — exists in no other corpus.</p>
+  <p class="next"><b>Next:</b> a four-level gloat scale instead of a single "celebratory" flag; check if Ynet English carried the human-rights column.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>The wound is speakable; the named child is not</h3>
+  <p>Eye/blindness terms in 21.7% of Israeli records, child terms in 7%, Fatima Abdullah in zero. By October 6 the design of the wound is a proud headline — "we wanted the terrorists to use both hands," Mossad in the N12 headline, no hedge. Abu Ali goes furthest: a post about a 16-year-old's martyr poster instructs readers he is "a military operative for all intents. Not a child."</p>
+  <p class="next"><b>Next:</b> the maiming-vs-naming asymmetry against Lebanon's victim hierarchy is one of the strongest cross-corpus exhibits available.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Israel dropped the story on day 3 and came back with a success feature</h3>
+  <p>Day 3 is an Israeli collapse: 4 records, all spy-plot (shell companies, Taiwan), zero casualty updates — Israeli headlines froze the death toll at 9 and never printed the combined 32/37. Then in week 2 Israel returns hardest of all four countries (strong-only day_4+ share 24.3%, the highest) with "~1,500 Hezbollah terrorists blinded or lost a hand" as a military-effect headline that Lebanon ran once and buried.</p>
+  <p class="next"><b>Next:</b> plot strong-only attention curves — the attacker-side curve is two-humped (breaking news, then "what it cost them"), the victim-side is a ledger that fades.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<h2>🇩🇪 Germany</h2>
+<p class="secnote">Not one German voice — four. And a quarter of the German words are a single dpa text.</p>
+
+<div class="f">
+  <h3>Bild's casualties are "Hisbollah-Terroristen"; ARD/ZDF's are a militia with civilians nearby</h3>
+  <p>"Hisbollah-Terror" compounds appear in 13/26 Bild records (verified) and 3/150 everywhere else. "Terroristen": Bild 69% vs public broadcasters 7% — and the public-broadcaster hits are quoted Israeli officials, while Bild is labeling in its own voice ("2700 Hisbollah-Terroristen verwundet: Enthüllt!"). Civilians: Bild 4% vs public 50%. This is the German Fox-inflation analog, except Bild isn't quoting.</p>
+  <p class="next"><b>Next:</b> collocate study (Terroristen as victim-label vs quoted speech); Bild's unique compound will dominate any unweighted "Germany says terrorists" figure, so reach-weighting matters here first.</p>
+  <div class="chips"><span class="chip v">verified: 13/26</span><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Three publics: moral permission, strategic doubt, legal seminar</h3>
+  <p>Bild's signed Kommentar asks "May one rejoice at the death of terrorists?" and answers "Ja" in paragraph 4 (the operation is "filmreif"). WELT's two commentaries attack Netanyahu's "Größenwahn" while granting Mossad an impressive demonstration. ARD/ZDF don't opine — they commission law professors (Clapham: possible war crime; Burri: probably no IHL violation; Talmon: proportionality is complicated). Same event, three institutional stances, all explicitly labeled.</p>
+  <p class="next"><b>Next:</b> compare against the US, where the opinion lives inside the news voice (Fox) rather than in labeled commentary.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Völkerrecht is a German format, not a German volume</h3>
+  <p>Keyword volume is modest (law/war-crime family 10.8% DE vs 8.2% US) — Germany is not drowning in IHL talk. What's unique is the form: dedicated legal explainers with named professors, filed as news ("War das erlaubt?"), two of them on consecutive days, both public broadcasters. Everyone else quotes Türk or Lebanese politicians and moves on; the US equivalent is two Yahoo opinion pieces.</p>
+  <p class="next"><b>Next:</b> code who speaks in the 19 German law records (professor / UN / Lebanese politician) — the professor voice is the actual German specialty.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>A quarter of all German words are one dpa text</h3>
+  <p>Credited dpa at t-online alone is 17,344 words — 17.2% of the whole German corpus (verified). RND is uncredited dpa: 83 long sentences shared with t-online, ten articles overlapping 16–55%. Combined, ~27% of German words across 30 records are the same wire paragraphs counted repeatedly. Tagesschau/ZDF/Bild share essentially nothing with the wire — they're the original voices.</p>
+  <p class="next"><b>Next:</b> a wire-collapse (cluster shared sentences, keep one dpa canonical) before any "Germany said X" percentage ships; this also matters for reach-weighting since the same text reaches audiences via three brands.</p>
+  <div class="chips"><span class="chip v">verified: dpa word mass</span><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>The European supply-chain angle is a 48-hour dpa echo plus one real ARD investigation</h3>
+  <p>BAC/Hungary appears in 14.8% of German records vs 30.6% US — the "European connection" was covered <i>more</i> in America. The German exception: Tagesschau's NDR/WDR team physically went to the Zugló mailbox in Budapest, got the Hungarian denial, and pushed the trail to Bulgaria and Norway — the one German original. On Oct 6 the WaPo reconstruction closes the Hungary story in a single clause ("not in Hungary… but in Israel").</p>
+  <p class="next"><b>Next:</b> read the ARD investigation against the WaPo reconstruction; check if WELT's paywalled "mysterious Hungarian woman" piece has a full capture in raw/.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>German day-0 headlines treat Israel as unsayable while the bodies already say it</h3>
+  <p>Day 0: 84% of German bodies name Israel, 16% of headlines do. By day 1 Bild headlines the actor as scoop-fact ("Enthüllt! Darum schlug Israel jetzt zu") while Tagesschau still hedges through American media ("soll laut US-Medien"). "US-Medien/NYT" as the attribution vehicle appears in 12% of German records — Germany's cousin of Israel's foreign-reports formula, except here citing foreign press is how you <i>do</i> name Israel, not how you avoid it.</p>
+  <p class="next"><b>Next:</b> the known 92% agentless-grammar figure is probably a headline/lead phenomenon on top of bodies that name Israel — split headline vs body grammar before the final page.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>WELT and ntv are TV clips wearing article URLs; RND booked the ex-BND chief</h3>
+  <p>WELT: 16 records but median 38 words (verified), 11/16 flashes, 7 video captions — its real text journalism is five articles and two commentaries. ntv is 0.8% of German words. Meanwhile RND alone carries the intelligence-establishment voice: ex-BND president Schindler calling it "an outstanding intelligence operation that will go down in history" ("Niemand von euch ist sicher!"). German elected politics is absent — Scholz appears once in 176 records; the domestic angle is a Lufthansa flight cancellation.</p>
+  <p class="next"><b>Next:</b> restrict register tables to document_type=article with ≥200 words; a quote-attribution pass on who is allowed to evaluate the operation (spies vs professors) would make a great table.</p>
+  <div class="chips"><span class="chip v">verified: WELT shape</span><span class="chip">confidence high</span></div>
+</div>
+
+<h2>🇺🇸 United States</h2>
+<p class="secnote">The US corpus is a supply-chain whodunit wrapped in Gaza coverage — once you get past the chrome.</p>
+
+<div class="f">
+  <h3>Four networks, four incompatible accounts of what Washington knew</h3>
+  <p>CNN: "CNN has learned" it was a Mossad-IDF joint operation (day 0, the same sentence copy-pasted through five pieces). Fox: "A senior U.S. official has confirmed to Fox News" (in 7 of 11 strong records, nowhere else). NBC: "two U.S. officials told NBC News." AP (via ABC/Yahoo): Israel briefed the US <i>after</i> the attack. CBS alone: US officials got a 20-minute heads-up — while quoting Blinken saying the US "did not know." WaPo's October reconstruction: the US "was not informed." These never converged.</p>
+  <p class="next"><b>Next:</b> a timeline of the five sourcing formulas and which one later reporting treated as canonical — the 20-minute heads-up vs "did not know" is an unresolved story sitting in our own corpus.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>CNN's n=30 is a TV stack — the journalism is 11 written pieces</h3>
+  <p>19 of 30 CNN records are video pages (verified); after removing their 2026 markup almost no analyzable text remains. The 11 written pieces are all strong and highly consistent: "militant" 11/11, Gold Apollo 64%, NYT cited 64%, children 73%, war crime 0. One day-0 CNN video slate is headlined "Iran-backed terror group" — Fox vocabulary on CNN's video desk, which the written desk never uses.</p>
+  <p class="next"><b>Next:</b> split TV/video records from written journalism across all US outlets before any outlet-share table; the video desk and written desk are different speakers.</p>
+  <div class="chips"><span class="chip v">verified: 19/30</span><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>The war-crime question is ghettoized to the opinion pipe</h3>
+  <p>"War crime" appears in 1.9% of strong US records. The legal debate lives in Yahoo syndicated opinion ("Even Leon Panetta Says Israel's Pager Attack Is 'Terrorism'"; a USA Today op-ed: "Americans helped pay for it") and one NBC piece quoting Human Rights Watch — which is coded <i>related</i> and drops out of strong-only shares. CNN's only legality moment is one quiet Türk quote on booby traps.</p>
+  <p class="next"><b>Next:</b> recode the NBC civilian-impact piece (it is about this event), and contrast with Germany where the same question ran as broadcast news.</p>
+  <div class="chips"><span class="chip">confidence high</span><span class="chip med">keyword may miss quiet IHL mentions</span></div>
+</div>
+
+<div class="f">
+  <h3>NYT is n=4 in our table and the hidden wire of the entire US corpus</h3>
+  <p>23% of strong US records cite the New York Times; 64% of CNN's written pieces do. The day-0 Gold Apollo explosive-in-the-pager account reached USA Today and Yahoo <i>as a NYT citation</i> before Taiwan had spoken. NYT's own four captured records include the only named-victim feature in the US set (Fatima Abdullah's funeral). 13 of its 17 URLs are uncaptured due to its archive exclusion.</p>
+  <p class="next"><b>Next:</b> treat NYT as a source layer rather than an n=4 outlet; consider a targeted recovery attempt for the live blog (the reach-weighted analysis needs it).</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Yahoo's "terrorism" is Israel; Fox's "terrorists" are Hezbollah — and it's a syndication artifact</h3>
+  <p>Yahoo (25/30 with empty credit fields) is actually Reuters + AP + AFP + Telegraph + NBC + USA Today opinion. It's the only high-reach US surface repeatedly calling the attack itself terrorism — because that's what the syndicated opinion pipe says, not a Yahoo editorial line. The same wire copy also produces contradictory casualty tolls: the Independent's live blog on Yahoo says 20 killed in the second wave; AP's on ABC says 14, same slot.</p>
+  <p class="next"><b>Next:</b> rebuild Yahoo provenance from bylines and weight it as reach-for-wires; the terrorism-polarity split is a ready-made exhibit about what syndication does to framing.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>"Sabotage" belongs to WaPo/ABC, "spectacular" to Fox — and Fox skipped the whodunit</h3>
+  <p>"Sabotage" in strong records: ABC 80%, WaPo 45%, Fox 0%, CNN 0%. Fox's register is "spectacular" (only outlet to use it) and "sophisticated" (45%); after one BAC item it returned to the senior-official formula and political wrap (AOC/Sanders/Fetterman reaction pieces make up half its records). WaPo owns the analytic frame ("long-feared supply chain threat") and is the only US outlet dating the walkie-talkie sabotage back to 2015.</p>
+  <p class="next"><b>Next:</b> a competing-moral-register table (sabotage / operation / spectacular) instead of the single attack-vs-operation row.</p>
+  <div class="chips"><span class="chip">confidence high</span><span class="chip med">Fox n_strong=11 is small</span></div>
+</div>
+
+<h2>🌍 Across the four countries</h2>
+<p class="secnote">The comparison analyst's verdict: these are four different events that happened to share exploding hardware.</p>
+
+<div class="f">
+  <h3>Fatima Abdullah is a New York story — Beirut counted her, it didn't name her</h3>
+  <p>The 9-year-old who became the Western face of the attack: named in 3 US records including a dedicated NYT funeral feature filed from her village, named once in Lebanon (one line inside a 3,353-word Al-Manar press digest), never in Germany, never in Israel. Lebanon's named child is a different one — scout Mohammad Bilal Kanj, buried as a martyr alongside the MP's son. And no two outlets agree on her age (8, 9, 10) or the other child's (11, 12).</p>
+  <p class="next"><b>Next:</b> a named-victim coding task (Fatima / Kanj / Ammar's son) — probably the single most human exhibit available for the final page.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>The supply-chain whodunit is an export product</h3>
+  <p>Gold Apollo/BAC: 33.6% of US records, 14.2% DE, 13.4% IL, 7.7% LB. The "4,000/5,000 devices" figure: 35% of US records, 1.5% of Lebanese. Distant desks need a detective plot; the country picking shrapnel out of its supermarkets doesn't. The Lebanese exceptions are almost all LBCI's English desk — more evidence it's functionally a fifth media system. Spiegel branded the event "Operation »Gold Apollo AR-924«" on day 0, before Gold Apollo had even denied involvement.</p>
+  <p class="next"><b>Next:</b> split LB by language everywhere; check whether Spiegel's day-0 title is real day-0 framing (the body is paywall chrome, so we can't currently tell).</p>
+  <div class="chips"><span class="chip">confidence high</span><span class="chip med">Spiegel timing speculative</span></div>
+</div>
+
+<div class="f">
+  <h3>The death toll never agreed, and the health minister is a citation for export</h3>
+  <p>Lebanon ran a live ledger (8 → 12 → 25 → 12+27 split by device). Israel froze at 9 and never printed the combined toll. Germany and the US rarely put the pager toll in a headline at all — they outsourced the number to "Lebanon's health minister said": Firas Abyad is named in 29% of German and 24% of US records but only 3.6% of Lebanese ones, where he's a ticker line, not a formula. Same man, entirely different news function per country.</p>
+  <p class="next"><b>Next:</b> a day-by-day number-in-headline table; the 9 vs 12 vs 32 vs 37 spread is itself the finding.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Same funeral, two stories</h3>
+  <p>When a walkie-talkie exploded during a Beirut funeral on day 1, Al Jadeed filed 47 words about the explosion — the funeral was just the location. The same hours, NYT/ABC/Yahoo filed the funeral itself as the story (the mourning, the child). Al-Manar filed a third thing entirely: the blood-donation tents. Israel filed none of these — zero blood-donation mentions, zero port-blast comparisons (MTV's "worse than the port explosion" frame stops at the border).</p>
+  <p class="next"><b>Next:</b> code scene-function (second-wave location / human-interest funeral / civic response / medical overwhelm) — four story functions for one street.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>You are not comparing articles — you're comparing news cultures' units</h3>
+  <p>A US "record" is a 1,160-word Gaza-wrapped roundup (99% classified article; 76% of strong US records mention Gaza; ABC/Yahoo literally file the second wave under "Israel-Hamas war latest"). A Lebanese "record" averages 278 words and is a ticker 21% of the time — and Lebanon files only 4.7% of its coverage with any Gaza/Hamas mention. The victim country did not put this story inside the Gaza war; the distant countries could not tell it any other way.</p>
+  <p class="next"><b>Next:</b> the Gaza-wrapping share is a clean, headline-safe measure of narrative embedding — candidate for the final page. All cross-country body rates need document-type and length controls first.</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<div class="f">
+  <h3>Nasrallah is everywhere except Lebanon's commercial media</h3>
+  <p>The attacked party's leader appears in 48% of US and 43% of German records but only 4.7% of Lebanese ones — and the Lebanese headlines are almost all Al-Manar's speech distribution. Israel treated him as event TV ("Nasrallah will speak tomorrow at 17:00," "the speech has begun"). Distant media use him as the Hezbollah character in the roundup template; his own country's commercial TV mostly ignored him.</p>
+  <p class="next"><b>Next:</b> outlet-level, not country-level — drop Al-Manar and Lebanese Nasrallah coverage nearly vanishes. Interesting against reach-weighting: whose audiences actually heard his response?</p>
+  <div class="chips"><span class="chip">confidence high</span></div>
+</div>
+
+<p class="secnote" style="margin-top:80px">Method: five parallel analyst agents (one per country + one comparative), each computing directly over the corpus JSONL; findings marked verified were independently re-computed. Full raw reports preserved. Counts based on primary strong/related records. Body-based rates for Fox, CNN, Yahoo, Al Jadeed, Al-Manar, t-online, and Spiegel are provisional until the chrome/paywall repairs above land.</p>
+
+</main>
+</body>
+</html>

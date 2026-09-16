@@ -7,6 +7,14 @@ from pathlib import Path
 
 DATA = Path(__file__).resolve().parent.parent / "israel"
 EVENT_DAY = date(2024, 9, 17)
+
+# v1.1 review overrides: event-prompted but not event coverage (anecdote,
+# Raisi speculation, cartoon-reaction story) — downgrade strong→related
+RELEVANCE_OVERRIDES = {
+    "il_kikar_361888163b": "related",
+    "il_kikar_4e84dd272c": "related",
+    "il_makan_c9d393a825": "related",
+}
 AR = re.compile(r"[؀-ۿ]"); HE = re.compile(r"[א-ת]")
 
 
@@ -90,9 +98,15 @@ def main():
             "capture": {"collection_route": r["fetch_route"], "raw_path": r.get("raw_path", "")},
             "extraction": {"method": r.get("extract_method", ""), "relevance": r["relevance"], "warnings": [] if pub else ["date_missing"]},
             "deduplication": {"exact_duplicate_cluster_id": grp, "is_primary_record": primary}})
-    # Abu Ali tagged messages as telegram_post records
+    # Abu Ali tagged messages as telegram_post records (body-hash dedup:
+    # overlapping rolling-page captures can repeat a message)
+    ab_seen = {}
     for m in csv.DictReader(open(DATA / "enumeration" / "abuali-messages.csv", encoding="utf-8")):
         if not m["relevance"]: continue
+        abh = hashlib.sha256(m["text"].encode()).hexdigest()
+        ab_primary, ab_grp = True, ""
+        if abh in ab_seen: ab_primary, ab_grp = False, ab_seen[abh]
+        else: ab_grp = ab_seen.setdefault(abh, f"x{abh[:10]}")
         out.append({"schema_version": "1.1.0-phase1",
             "document_id": f"il_abuali_{m['post_id']}", "event_id": "lebanon_pager_attacks_2024",
             "source": {"page_publisher": "abuali", "country_or_media_system": "Israel", "language": lang(m["text"])},
@@ -104,7 +118,11 @@ def main():
             "provenance": {"credit": "", "content_origin": "local_or_unspecified"},
             "capture": {"collection_route": "wayback-capture-stream", "raw_path": ""},
             "extraction": {"method": "telegram-capture", "relevance": m["relevance"], "warnings": []},
-            "deduplication": {"exact_duplicate_cluster_id": "", "is_primary_record": True}})
+            "deduplication": {"exact_duplicate_cluster_id": ab_grp, "is_primary_record": ab_primary}})
+    # apply review relevance overrides
+    for r in out:
+        if r["document_id"] in RELEVANCE_OVERRIDES:
+            r["extraction"]["relevance"] = RELEVANCE_OVERRIDES[r["document_id"]]
     with open(DATA / "corpus-v1.jsonl", "w", encoding="utf-8") as f:
         for r in out: f.write(json.dumps(r, ensure_ascii=False) + "\n")
     prim = [r for r in out if r["deduplication"]["is_primary_record"]]

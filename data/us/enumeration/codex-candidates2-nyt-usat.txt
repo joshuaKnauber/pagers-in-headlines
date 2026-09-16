@@ -1,0 +1,22 @@
+nyt|https://www.nytimes.com/live/2024/09/17/world/israel-hamas-war-news|2024-09-17|Pagers Explode Across Lebanon in Apparent Attack on Hezbollah
+nyt|https://www.nytimes.com/2024/09/17/world/middleeast/israel-hezbollah-pagers-killed-iran-bomb.html|2024-09-17|Israel Planted Explosives in Pagers Sold to Hezbollah, Officials Say
+nyt|https://www.nytimes.com/2024/09/18/world/middleeast/israel-exploding-pagers-hezbollah.html|2024-09-18|How Israel Built a Modern-Day Trojan Horse: Exploding Pagers
+nyt|https://www.nytimes.com/2024/09/18/world/middleeast/lebanon-explosions-radios.html|2024-09-18|Second Wave of Blasts Hits Lebanon as Hand-Held Radios Explode
+nyt|https://www.nytimes.com/2024/09/18/world/middleeast/lebanon-funeral-pager-attack.html|2024-09-18|Funeral Is Held for 9-Year-Old Girl Killed in Lebanon Pager Explosions
+nyt|https://www.nytimes.com/2024/09/18/world/middleeast/walkie-talkies-lebanon-explosives.html|2024-09-18|Walkie-Talkies in Lebanon May Have Held More Explosives Than Pagers, a Times Analysis Finds
+nyt|https://www.nytimes.com/2024/09/18/world/middleeast/israel-hezbollah-pager-attack.html|2024-09-18|Israel’s Pager Attack Has No Clear Strategic Goal, Analysts Say
+nyt|https://www.nytimes.com/2024/09/19/world/middleeast/lebanon-hezbollah-explosions.html|2024-09-19|Anxiety Mounts as Lebanon Reels From Pager and Walkie-Talkie Attacks
+nyt|https://www.nytimes.com/2024/09/19/world/middleeast/pager-attack-israel-hezbollah.html|2024-09-19|Pager Attack Highlights Tension Between Israel’s Technical Might and Strategic Fog
+nyt|https://www.nytimes.com/2024/09/19/world/middleeast/lebanon-pager-attack.html|2024-09-19|At Funerals and in Hospitals, Talk of Revenge for Pager Attacks
+nyt|https://www.nytimes.com/2024/09/20/world/middleeast/lebanon-hezbollah-nasrallah-pager-attacks.html|2024-09-20|Lebanese Talk of Revenge for Pager Attacks
+nyt|https://www.nytimes.com/2024/09/20/world/middleeast/beirut-israel-hezbollah-airstrike.html|2024-09-20|Senior Hezbollah Leader Is Killed in Beirut in Israeli Airstrike
+nyt|https://www.nytimes.com/live/2024/09/20/world/israel-gaza-war-news|2024-09-20|Israel Strikes Hezbollah in Lebanon and Says It Thwarted Major Attack
+nyt|https://www.nytimes.com/live/2024/09/21/world/israel-gaza-war-news|2024-09-21|For Families of Those Missing After Israeli Strike in Beirut, an Agonizing Wait
+usatoday|https://www.usatoday.com/story/news/world/2024/09/17/hezbollah-pagers-lebanon-attack-israel/75261807007/|2024-09-17|Hundreds of Hezbollah pagers explode across Lebanon injuring thousands
+usatoday|https://www.usatoday.com/story/news/world/2024/09/18/hezbollah-radios-explode-lebanon/75267605007/|2024-09-18|Hezbollah radios explode, injuring hundreds in new blasts tied to Israel
+usatoday|https://www.usatoday.com/story/news/world/2024/09/19/airport-bans-pagers-walkie-talkies-lebanon/75272593007/|2024-09-19|Airport bans pagers, walkie-talkies after devices explode across Lebanon
+usatoday|https://www.usatoday.com/story/news/factcheck/2024/09/24/hezbollah-pagers-radios-iphone-fact-check/75347351007/|2024-09-24|Detonation of Hezbollah devices did not include iPhones
+usatoday|https://www.usatoday.com/story/news/politics/2024/09/24/john-fetterman-pager-walkie-talkie-attacks-hezbollah/75345551007/|2024-09-24|John Fetterman on pager and walkie-talkie attacks on Hezbollah: ‘I love it’
+usatoday|https://www.usatoday.com/story/opinion/2024/09/23/israel-pager-attack-lebanon-tax-dollars/75333218007/|2024-09-23|Did your tax dollars fund the deadly pager attack?
+usatoday|https://www.usatoday.com/story/news/world/2024/09/20/beirut-strike-hezbollah-commander-ibrahim-aqil/75302913007/|2024-09-20|Beirut strike kills suspect in 1983 bombings that killed 300 Americans
+

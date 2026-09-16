@@ -78,3 +78,38 @@ NNA 1/1). Collection is complete; next stage is normalization.
 - Normalization into corpus-schema-v1 (field groups, dedup, wire
   attribution) is the next stage — the old-approach extractor's schema
   applies; records here are its verified input.
+
+## v1.2 repair pass (2026-09-16, deep-dive review fixes)
+
+Scripts: `data/scripts/repair_v12.py lebanon` +
+`data/scripts/almanar_recover_v12.py` (raw reports in
+`data/analysis/deep-dive-raw/`).
+
+- **Al Jadeed de-chromed** (27/59 bodies carried the live site's 2026
+  "now watching" strip): container re-extraction + tail-cut at
+  recirculation markers. The old body-based "names Israel 67.8%"
+  figure was chrome; headline rate is 15.3%, in line with MTV/LBCI.
+- **Al-Manar recovery**: the title sweep had left the day-0 Hezbollah
+  statement series untagged. 21 items fetched via
+  archive.almanar.com.lb (statement series, health-minister toll,
+  martyr notices — the notices carry
+  `martyr_notice_death_cause_unverified`). All 63 Al-Manar records
+  re-dated from the article-meta page dates (real dates were in the
+  raws all along; replaces id-interpolated ±1d). **Al-Manar day_0:
+  0 → 24 records — the "slowest institutional response" claim was a
+  collection artifact and is retracted.**
+- 4 press-review digests (الصحافة اليوم / عناوين واسرار الصحف, 82.8%
+  of Al-Manar words) retyped `press_review`; build_viz now counts
+  their headlines only.
+- Al-Manar headline chrome suffix stripped (32). 24/26 undated MTV
+  records dated by id-interpolation (unambiguous same-date brackets);
+  2 english.almanar records content-dated to Sep 19 (Nasrallah-speech
+  references; archive host renders relative dates).
+- Effect: **359 primary** (was 338).
+
+### v1.2.1 (post-review corrections, same day)
+
+Codex review verdict: fail → fixed same session; see
+`data/analysis/reviews/v12-repair-review-codex.md`. All 27 de-chromed Al Jadeed records were headline-only
+shells (empty LongDesc nodes) — bodies emptied, retyped brief. Al Jadeed
+body-based shares are dead; its exhibit rates must be headline-based.

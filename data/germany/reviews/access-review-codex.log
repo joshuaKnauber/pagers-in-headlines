@@ -1,0 +1,577 @@
+Reading additional input from stdin...
+OpenAI Codex v0.152.0
+--------
+workdir: /Users/jknauber/Documents/Projects/news
+model: gpt-5.6-luna
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a07ac8-a93f-7000-9bcc-eae82af5776b
+--------
+user
+Adversarial review of two access-verification registers for a news-collection project (event window Sep 15 - Oct 17 2024). Files: data/germany/access-register-v1.csv + data/germany/access-notes.md, and data/us/access-register-v1.csv + data/us/access-notes.md, in /Users/jknauber/Documents/Projects/news/. Read-only; python3 and curl available for verification fetches; use web search where needed.
+
+Your job: find defects, not approve. Checks:
+1. Reproduce 4 test fetches per country (pick the riskiest rows: Germany - RND, ZDF heute, WELT, Bild archive page; US - NYT live-blog capture, Reuters capture, Yahoo with browser UA, ABC capture). Confirm the claimed test_result (body text present, event content, date). Use curl with a browser User-Agent.
+2. Verify 3 factual claims per country against live robots.txt fetches (e.g. reuters allowlist model, welt ia_archiver block, t-online §44b reservation).
+3. Challenge the NYT partial plan: is the claim "standard articles have no event-window Wayback captures" true for 2-3 more NYT standard article URLs from Sep 17-20 2024 (use the availability API http://archive.org/wayback/available?url=...&timestamp=20240918)? Is the live-blog route genuinely rich enough (multiple live-blog URLs captured in-window)?
+4. Check the ZDFheute host finding: confirm zdf.de/nachrichten day-of captures exist for a second Sep 2024 article and that zdfheute.de has none in-window.
+5. Look for rows where the register overstates coverage or omits a risk (e.g. bild.de wayback only 16/33 days but fallback_route says wayback; yahoo fallback realism).
+
+Output: markdown - verdict (pass/conditional pass/fail) per country, then numbered findings table (finding, evidence incl. commands/URLs used, severity, suggested fix).
+deprecated: `[features].web_search` is deprecated because web search is enabled by default.
+Set `web_search` to `"live"`, `"indexed"`, `"cached"`, or `"disabled"` at the top level (or under a profile) in config.toml if you want to override it.
+2026-09-07T07:32:46.601833Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when AuthRequired(AuthRequiredError { www_authenticate_header: "Bearer resource_metadata=\"https://executor.sh/.well-known/oauth-protected-resource/joshua-knauber-s-organization/mcp\"" })
+hook: SessionStart
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+codex
+I’ll audit the registers and notes first, then reproduce the specified fetches and live robots/Wayback checks. I’ll treat any mismatch, unsupported claim, or unrealistic fallback as a defect and report exact evidence and commands.
+exec
+/bin/zsh -lc "sed -n '1,240p' data/germany/access-register-v1.csv && printf '\\n--- Germany notes ---\\n' && sed -n '1,260p' data/germany/access-notes.md && printf '\\n--- US register ---\\n' && sed -n '1,260p' data/us/access-register-v1.csv && printf '\\n--- US notes ---\\n' && sed -n '1,300p' data/us/access-notes.md && printf '\\n--- unslop skill ---\\n' && sed -n '1,220p' /Users/jknauber/.agents/skills/unslop/SKILL.md" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+outlet,tier,primary_route,fallback_route,test_url,test_result,event_window_coverage,robots_tdm_status,paywall,blocker,notes
+Tagesschau (ARD),mass,direct,wayback,https://www.tagesschau.de/ausland/asien/libanon-hisbollah-pager-102.html,"ok 2026-09-06 (1254 p-words, JSON-LD date)",wayback 5000+ URLs / 33 of 33 days,crawl allowed; AI bots blocked; explicit §44b UrhG TDM reservation,none,no,Sep 2024 text still live (Depublizierung milder for text than video)
+ZDF heute,mass,direct,wayback via zdf.de/nachrichten host,https://www.zdfheute.de/politik/ausland/libanon-pager-explosionen-israel-100.html,"ok 2026-09-06 (734 p-words, JSON-LD date)",zdf.de 5000+ / 33 days; 2024 canonical archived host = zdf.de/nachrichten (zdfheute.de captures only from Oct 2025),crawl allowed; AI bots blocked,none,no,identity trap: homepage redirects today; enumerate zdf.de/nachrichten prefix; day-of capture verified 2024-09-20
+RTL Aktuell,mass,direct,wayback,https://www.rtl.de/news/explosionen-von-pagern-im-libanon-hisbollah-miliz-wirft-israel-anschlaege-vor-id1833651.html,"ok 2026-09-06 (766 p-words, JSON-LD date)",rtl.de/news 1328 URLs / 28 days,robots fetch inconclusive; open RSS feeds,none,no,text on rtl.de (numeric idNNNNNNN); TV bulletins separate (RTL+); agency-heavy copy
+ntv,mass,direct,wayback,https://www.n-tv.de/politik/Hisbollah-schwoert-Israel-Rache-article25235207.html,ok 2026-09-06 (1125 p-words),wayback 5000+ / 30 days,crawl allowed; GPTBot/CCBot blocked; sitemaps exposed,none,no,sequential articleNNNNNNNN IDs; /archiv/ robots-disallowed
+Bild,mass,direct,wayback,https://www.bild.de/politik/ausland-und-internationales/dutzende-terroristen-verletzt-etliche-hisbollah-piepser-explodiert-66e983275eec914fde514474,ok 2026-09-06 (925 p-words),wayback 5000+ but only 16 of 33 days - spotty; direct primary,broad AI/scraper blocks; rsl.xml licensing file,mixed: BILDplus hard for marked items; breaking free,no,dated archive page ?archiveDate=YYYY-MM-DD fetch-verified - use for enumeration
+Der Spiegel,mass,direct,wayback,https://www.spiegel.de/ausland/israel-gaza-krieg-hisbollah-mitglieder-durch-explodierende-pager-in-beirut-und-im-sueden-libanons-verwundet-a-8d9a237f-fdeb-4377-9394-9f0be7783816,ok 2026-09-06 (1173 p-words),wayback 5000+ / 33 days,crawl allowed (local check); 9 AI bots blocked incl ClaudeBot/anthropic-ai,mixed: SPIEGEL+ hard for marked items; breaking free,no,a-UUID article IDs; no dated sitemap - CDX enumeration
+WELT,mass,direct,wayback (thin),https://www.welt.de/politik/ausland/video253563392/Pager-im-Libanon-explodiert-Begrenzter-Krieg-seit-neun-Monaten-Seit-dem-7-Oktober-beschiesst-die-Hisbollah-Israel.html,"ok 2026-09-06 (843 p-words, JSON-LD date; video-page)",wayback 1685 URLs / 33 days - thin (ia_archiver blocked in robots),broad AI blocks + ia_archiver,mixed: WELTplus hard for marked items; breaking free,no,numeric (video|article)NNNNNNNNN IDs + news sitemaps; pick article-type test at enumeration
+t-online,mass,direct,wayback,https://www.t-online.de/nachrichten/ausland/internationale-politik/id_100492044/hisbollah-pager-im-libanon-explodiert-darum-soll-israel-jetzt-angegriffen-haben.html,ok 2026-09-06 (1137 p-words),wayback 5000+ / 33 days,crawl allowed; AI bots blocked; §44b TDM reservation,none (PUR = ad-free only),no,sequential id_NNNNNNNNN; test article is dpa-credited (doubles as wire baseline)
+RND (RedaktionsNetzwerk Deutschland),substantial (required-representative),wayback,headless-browser direct,https://www.rnd.de/politik/pager-explosionen-im-libanon-funkgeraete-wohl-mit-sprengstoff-bestueckt-7GX5G5II65JA5OFN6DWYOR24LI.html,ok via capture; direct 403 (Akamai blocks python+curl) 2026-09-06,wayback 5000+ / 31 days,crawl allowed for browsers; AI bots blocked; §44b reservation,mixed: RND+ premium; breaking free,no,per-day archive pages rnd.de/archiv/artikel-DD-MM-YYYY/ via captures = enumeration index
+dpa,context (required-baseline),via-client (t-online dpa-credited stream),other credited clients (hz.de; stuttgarter-zeitung.de - verified examples),https://www.t-online.de/nachrichten/ausland/internationale-politik/id_100492044/hisbollah-pager-im-libanon-explodiert-darum-soll-israel-jetzt-angegriffen-haben.html,ok 2026-09-06 (Von dpa credit in page),n/a - client-side collection,n/a (B2B wire; no public archive),B2B licensed,no,same approach as Lebanon NNA baseline: wire text enters corpus via credited client copies
+
+--- Germany notes ---
+# Germany access verification — notes (step 3, v1, 2026-09-06)
+
+Register: [access-register-v1.csv](access-register-v1.csv). Research:
+codex CLI web-search pass (access-research/codex-raw.md) + local fetch
+tests and Wayback CDX density (this session; final numbers 2026-09-07).
+All 8 mass rows + dpa baseline + RND representative verified. **Zero
+blockers.** CDX density: tagesschau/zdf/ntv/spiegel/t-online/rnd 5,000+
+URLs over 30–33 of 33 window days; rtl.de/news 1,328/28; welt.de
+1,685/33 (thin — ia_archiver block); bild.de 5,000+ but only 16 days
+(spotty — direct primary).
+
+## Route summary
+
+Germany is the easiest country so far: every mass outlet serves 2024
+event articles live, free, with real body text (fetch-tested day-of;
+p-word counts 700–1,300 per test article). Breaking pager coverage was
+outside the plus-paywalls everywhere (BILDplus/SPIEGEL+/WELTplus gate
+marked premium pieces; the event-window breaking stream was free).
+
+## Hard cases and findings
+
+1. **RND (rnd.de) blocks non-browser clients** (Akamai; python urllib
+   and curl both 403). Primary route = Wayback (CDX density 5,000+ URLs,
+   31/33 days). Bonus: RND exposes per-day archive pages
+   (`rnd.de/archiv/artikel-DD-MM-YYYY/`) — usable through Wayback
+   captures as an enumeration index. Fallback: headless browser.
+2. **ZDFheute identity trap (resolved)**: `zdfheute.de` has **zero
+   Wayback captures before Oct 2025** — in Sep 2024 the canonical
+   archived host was **`zdf.de/nachrichten/...`** (day-of capture of the
+   pager article verified at 2024-09-20 under that path; zdf.de density
+   5,000+/33 days). Live, both hosts serve the same article today
+   (zdf.de redirects to zdfheute.de — the mirror image of the archive
+   situation). Direct route primary; enumeration/fallback must use the
+   `zdf.de/nachrichten` prefix, never zdfheute.de.
+3. **welt.de blocks ia_archiver** → thinnest Wayback density of the
+   mass set (1,685 URLs, but all 33 days covered). Direct route works
+   and WELT has news/video sitemaps — direct primary, Wayback fallback
+   acceptable for headline-evolution checks only.
+4. **Depublizierung (public broadcasters)**: less severe than feared —
+   both test articles (tagesschau.de Sep 17, zdfheute.de Sep 17) are
+   still live in 2026. ARD retention rules vary by format (video
+   stricter than text). Both domains have dense Wayback coverage
+   (5,000+/33 days) as the day-of source regardless.
+5. **dpa** has no public archive (B2B wire). Baseline route = credited
+   client copies: t-online ("Von dpa" — itself a gate row), plus
+   hz.de and stuttgarter-zeitung.de examples verified by codex. The
+   t-online dpa stream doubles as the wire baseline, mirroring
+   Lebanon's NNA approach.
+
+## Enumeration hooks (for step 4)
+
+| outlet | hook |
+| --- | --- |
+| Bild | dated archive page `?archiveDate=2024-09-17` (fetch-tested, 4.7K words of links) + news sitemaps |
+| RND | per-day archive pages via Wayback |
+| ntv | sequential `articleNNNNNNNN` IDs + sitemaps |
+| WELT | numeric `(video\|article)NNNNNNNNN` IDs + sitemaps |
+| t-online | sequential `id_NNNNNNNNN` IDs |
+| Spiegel | slug + `a-UUID`; no dated sitemap — CDX enumeration |
+| Tagesschau | topic slugs `libanon-hisbollah-pager-NNN.html`; CDX enumeration |
+| ZDFheute | `-100.html` suffixed slugs; topic pages; CDX enumeration |
+| RTL | numeric `idNNNNNNN` slugs; RSS; CDX enumeration |
+
+## Robots/TDM stance (recorded, not a route decision)
+
+All German outlets allow general crawling of articles; all block
+AI-training bots by name (GPTBot/CCBot/ClaudeBot etc.);
+tagesschau.de, t-online.de and rnd.de carry explicit §44b UrhG TDM
+reservations. Research-collection route decisions documented per row;
+archival (Wayback) routes carry the Internet Archive's own terms.
+
+--- US register ---
+outlet,tier,primary_route,fallback_route,test_url,test_result,event_window_coverage,robots_tdm_status,paywall,blocker,notes
+Fox News,mass,direct,wayback,https://www.foxnews.com/world/lebanon-explosions-dozens-wounded-after-pagers-detonate-state-media-report,"ok 2026-09-06 (1549 p-words, JSON-LD date)",wayback 1048 URLs / 33 days,no AI-bot blocks at all; generic path disallows only,none,no,slug-only URLs - CDX + slug keyword tagging; no transcript archive
+CNN,mass,direct,wayback,https://www.cnn.com/2024/09/17/middleeast/lebanon-hezbollah-pagers-explosions-intl/index.html,"ok 2026-09-06 (full body, JSON-LD date)",cnn.com/2024/09 prefix 3000+ / 30 days,broad AI blocks incl Archive.org_bot (unenforced - captures exist),none,no,date-path URLs + monthly section sitemaps; transcripts.cnn.com/date/2024-09-17 verified (8515-word segments) - collect as broadcast surface
+ABC News,mass,wayback,none needed for window,https://web.archive.org/web/20240918012821/https://abcnews.go.com/International/wireStory/dozens-injured-lebanon-after-handheld-pagers-reportedly-explode-113754462,ok 2026-09-06 via capture (222 p-words); live URL 404s,wayback 5000+ / 32 days,AI bots blocked; Googlebot-News opt-out,none,no,2024 abcnews.go.com wireStory URLs dead after abcnews.com migration - wayback only; heavy AP-reprint share (flag for wire split)
+CBS News,mass,direct,wayback,https://www.cbsnews.com/news/hezbollah-lebanon-explosions-pagers-israel-hamas-war/,"ok 2026-09-06 (1475 p-words, JSON-LD date)",wayback 1172 URLs / 29 days,minimal blocks (GPTBot only among majors),none,no,dated monthly sitemaps xml-sitemap/article-2024-09[-2].xml verified - enumeration gold
+NBC News,mass,direct,wayback,https://www.nbcnews.com/news/world/hezbollah-pagers-expolsion-lebanon-handheld-devices-rcna171457,"ok 2026-09-06 (1320 p-words, JSON-LD date)",wayback 5000+ / 32 days,20+ bots blocked incl Archive.org_bot (unenforced),none,no,monthly sitemaps sitemap/nbcnews/sitemap-2024-09-article.xml verified; rcna IDs
+New York Times,mass,wayback (live-blogs) + Article Search API (metadata),licensed (API full access / ProQuest TDM) - named plan if bodies needed,https://web.archive.org/web/20240917/https://www.nytimes.com/live/2024/09/17/world/israel-hamas-war-news,partial 2026-09-06: live-blog capture ok (6018 p-words); standard-article bodies unreachable (live 403; archive excluded),captures exist per-URL; CDX enumeration itself 403-blocked - enumerate via API not CDX,most extensive AI blocks; EU TDM Art.4 cited; archive exclusion ENFORCED for standard articles,metered; live-blogs isAccessibleForFree:true,no - partial documented with plan,hardest access case; live-blog format = hour-by-hour attribution record (project-preferred material); API key free
+Washington Post,mass,wayback,headless-browser direct,https://web.archive.org/web/20240917153000/https://www.washingtonpost.com/national-security/2024/09/17/lebanon-pagers-exploding-hezbollah/,"ok 2026-09-06 via capture (902 p-words = full metered text, 47 min post-publish); live fetch times out",wayback 905 URLs / 29 days; CDX prefix queries work,broad AI + IA-bot blocks (unenforced - captures exist),metered; day-of captures carry full text,no,date-path URLs /section/2024/09/17/slug/ via CDX prefix
+Yahoo News,mass,direct (browser-UA required),syndication-source mirrors (USA Today/AP/Reuters/AFP),https://news.yahoo.com/hundreds-hezbollah-pagers-explode-apparent-151059022.html,ok 2026-09-06 with curl browser-UA (1054 p-words); python-UA gets consent/JS shell (EU IP),~zero wayback captures of article pages,AI bots blocked; article paths open to generic crawl,none,no,"now redirects to yahoo.com/news; syndication mirror - enumerate via syndication tracking not sitemaps; reach is the point, not original text"
+USA Today,mass,direct,Gannett/Yahoo syndication mirrors,https://www.usatoday.com/story/news/world/2024/09/17/hezbollah-pagers-lebanon-attack-israel/75261807007/,"ok 2026-09-06 (1730 p-words, JSON-LD date)",~zero contemporaneous captures (archive crawlers blocked),~60 bots blocked incl archive crawlers,metered/soft; breaking free,no,date-in-path URLs - live enumeration; no archive backup (collect early)
+Associated Press,context (required-baseline),direct (browser-UA required),wayback,https://apnews.com/article/lebanon-hezbollah-israel-exploding-pagers-8893a09816410959b6fe94aec124461b,ok 2026-09-06 with curl browser-UA (8658 p-words); python-UA 403 (CDN),wayback 3000+ / 32 days,article crawl allowed for *; AI bots blocked; open sitemaps,none - free then and now,no,monthly sitemaps back to 2006: ap-sitemap-202409.xml verified; topic hubs
+Reuters,context (required-baseline),wayback,licensed (Reuters Connect) if needed,https://web.archive.org/web/20240918155339/https://www.reuters.com/world/middle-east/dozens-hezbollah-members-wounded-lebanon-when-pagers-exploded-sources-witnesses-2024-09-17/,"ok 2026-09-06 via capture (1847 p-words, ungated); live 401 (allowlist robots)",reuters.com/world prefix 3000+ / 33 days,allowlist model: unlisted agents blocked site-wide (Disallow: /),2024: free registration wall; captures ungated,no,date-suffixed slugs ...-2024-09-17/ - CDX enumeration natural
+
+--- US notes ---
+# US access verification — notes (step 3, v1, 2026-09-06)
+
+Register: [access-register-v1.csv](access-register-v1.csv). Research:
+copilot CLI 5-agent pass (access-research/copilot-raw.md) + local fetch
+tests and Wayback CDX density (this session). 9 mass rows + AP/Reuters
+baselines. **One partial (NYT bodies), zero unresolved blockers — every
+row has a working text route.** CDX density (final, 2026-09-07):
+abcnews/nbcnews 5,000+/32 days; cnn.com/2024/09 3,000+/30;
+reuters.com/world 3,000+/33; apnews.com/article 3,000+/32; foxnews
+1,048/33; cbsnews 1,172/29; wapo 905/29; yahoo/usatoday ~zero
+(live-primary); nytimes CDX-blocked (see hard case 1).
+
+## Route summary
+
+Free-and-live: Fox, CNN, CBS, NBC, USA Today, Yahoo News, AP — all
+fetch-tested with full bodies (1,000–8,600 p-words). Wayback-primary:
+ABC (domain migration), Reuters (allowlist 401), WaPo (edge-blocked
+live; day-of captures carry full metered text — tested 902 words 47 min
+post-publish). NYT is the one partial row (below).
+
+## Hard cases
+
+1. **NYT — the hardest access case in the project.** Live fetch 403s;
+   robots blocks archive.org and it is *enforced* for standard articles
+   (the flagship Frenkel/Bergman pager investigation has **zero Wayback
+   captures until Dec 2025** — 14 months post-event). But the `/live/`
+   blog format is (a) free (`isAccessibleForFree: true`) and (b)
+   Wayback-captured same-day (tested: 6,018 p-words from the Sep 17
+   live blog). Plan of record: collect NYT via live-blog captures
+   (rich, hour-by-hour, exactly the attribution-evolution material) +
+   Article Search API (free key, headline/abstract/lead metadata) for
+   the standard-article record; body text of metered standard articles
+   marked `partial` — licensed route (API/ProQuest) documented if
+   analysis later needs full bodies. Not a cop-out: the route reaches
+   real NYT event text day-of; the limitation is scoped to
+   standard-article *bodies* and stated on the row. **Additional
+   finding (2026-09-07): the CDX API itself 403s all nytimes.com
+   queries** — captures are fetchable by exact URL but not enumerable
+   via CDX; NYT enumeration must run through the Article Search API.
+2. **ABC News**: 2024 `abcnews.go.com` wireStory URLs now redirect to
+   abcnews.com and 404 — total link rot. Wayback-only for event-window
+   content (day-of capture tested ok). Coverage was heavily AP
+   wireStory reprints — flag for the wire/original split.
+3. **Reuters**: robots is an allowlist; everything else 401s (blanket
+   `Disallow: /` for unlisted agents). Day-of Wayback captures carry
+   full ungated text (tested 1,847 words; 2024 had at most a free
+   registration wall). Wayback primary, no fallback needed for the
+   window.
+4. **Yahoo News**: near-zero Wayback captures of article pages + 2026
+   domain migration (news.yahoo.com → yahoo.com/news). Live route works
+   with browser-UA curl (tested 1,054 words; python-urllib gets a thin
+   consent/JS shell — EU GDPR consent wall risk from German IP, curl
+   follows through). Enumeration is the weak point: rolling sitemap
+   only — plan: cross-syndication tracking (USA Today/Gannett, AP,
+   Reuters, AFP, Yahoo News UK bylines) rather than exhaustive
+   enumeration; Yahoo is primarily a syndication mirror (its reach is
+   the point, not original text).
+5. **USA Today**: live route clean, date-in-path URLs, but ~no
+   contemporaneous Wayback captures (aggressive bot blocking incl.
+   archive crawlers) — live-only row; if pages vanish, Gannett/Yahoo
+   syndication mirrors are the fallback.
+6. **WaPo**: live fetches time out (edge block) but CDX prefix queries
+   work and day-of captures contain full metered text — Wayback
+   primary.
+7. **CNN transcripts**: `transcripts.cnn.com/date/2024-09-17` is a
+   working dated index; per-segment pages carry full transcripts
+   (tested 8,515 words, AC360 Sep 17). Best broadcast-text source of
+   any TV outlet — collect alongside cnn.com articles. Other TV mass
+   outlets (Fox/ABC/CBS/NBC) have no usable daily transcript archive —
+   web article stream documented as the collection surface per the
+   census's web-text scope, with the broadcast-proxy limitation noted.
+
+## Enumeration hooks (for step 4)
+
+| outlet | hook |
+| --- | --- |
+| CNN | `cnn.com/2024/09/17/...` date paths + monthly section sitemaps + transcripts date index |
+| NYT | `/2024/09/17/` and `/live/2024/09/17/` date paths (via CDX/API) |
+| WaPo | `/section/2024/09/17/slug/` date paths via CDX prefix |
+| USA Today | `/story/news/world/2024/09/17/.../NNNNNNNNNNN/` date paths, live |
+| CBS | dated monthly sitemaps `xml-sitemap/article-2024-09[-2].xml` (verified) |
+| NBC | monthly sitemaps `sitemap/nbcnews/sitemap-2024-09-article.xml` (verified) |
+| AP | monthly sitemaps back to 2006: `ap-sitemap-202409.xml` (verified) + topic hubs |
+| Reuters | date-suffixed slugs `...-2024-09-17/` via CDX |
+| Fox | news sitemap types; slug-only URLs — CDX + slug keyword tagging |
+| ABC | Wayback CDX only (`wireStory/slug-NNNNNNNNN`) |
+| Yahoo | syndication tracking, not enumeration |
+
+## Robots/TDM stance
+
+All outlets allow (or don't effectively prevent) archival-route
+collection for the window except as noted; AI-training bots blocked by
+name nearly everywhere; NYT cites EU TDM Art. 4 explicitly (active
+OpenAI litigation context). Reuters = allowlist model. Route decisions
+documented per row; archival routes carry IA's terms.
+
+--- unslop skill ---
+---
+name: unslop
+description: Cut AI tells from any writing. Must always apply.
+---
+
+# Unslop
+
+Edit text to remove AI patterns and add human voice.
+
+## Process
+
+1. Scan for the patterns below.
+2. Rewrite. Preserve meaning, match intended tone.
+3. Add soul (see next section).
+4. Self-audit: "What makes this obviously AI generated?" Fix remaining tells.
+
+## Adding soul
+
+Removing patterns is half the job. Sterile, voiceless writing is just as obvious.
+
+- **Have opinions.** React to facts instead of neutrally listing pros and cons.
+- **Vary rhythm.** Short sentences. Then longer ones that take their time. Mix it up.
+- **Acknowledge complexity.** "Impressive but also kind of unsettling" beats "impressive."
+- **Use "I" when it fits.** First person isn't unprofessional.
+- **Let some mess in.** Perfect structure looks machine-made.
+- **Be specific.** Not "this is concerning" but "there's something unsettling about agents churning away at 3am."
+
+## Patterns to detect and fix
+
+### Content
+
+1. **Puffery.** "pivotal moment", "testament to", "evolving landscape", "setting the stage for", "indelible mark", "deeply rooted". Cut puffery, state what happened.
+2. **Name-dropping.** Listing media outlets without context. Pick one, say what was said.
+3. **Superficial -ing phrases.** "highlighting...", "ensuring...", "reflecting...", "showcasing...", "fostering...". Delete or expand with real sources.
+4. **Promotional language.** "nestled", "vibrant", "breathtaking", "groundbreaking", "renowned", "stunning", "must-visit". Use neutral descriptions.
+5. **Vague attributions.** "Experts believe", "Industry reports suggest", "Some critics argue". Name the source or delete.
+6. **Formulaic challenges.** "Despite challenges... continues to thrive." Replace with specific facts.
+
+### Language
+
+7. **AI vocabulary.** Additionally, crucial, delve, enduring, enhance, fostering, garner, interplay, intricate, landscape (abstract), pivotal, showcase, tapestry (abstract), testament, underscore, vibrant. Replace with plain words.
+8. **Fancy ways to say "is".** "serves as", "stands as", "boasts", "features". Just say "is" or "has".
+9. **"Not just X, but Y."** State the point directly instead.
+10. **Rule of three.** Forcing ideas into groups of three. Use the natural number.
+11. **Synonym cycling.** Protagonist, main character, central figure, hero all in one paragraph. Pick one, repeat it.
+12. **False ranges.** "from X to Y" where X and Y aren't on a meaningful scale. List topics directly.
+
+### Style
+
+13. **Em dash overuse.** Avoid em dashes entirely. Use periods or commas only (no parentheses, no en dashes, no hyphen-as-dash substitutes). Em dashes are an AI tell, and reaching for parentheses instead just trades one tell for another. If a thought needs separation, end the sentence or use a comma.
+14. **Colon overuse.** Colons are fine before a list or example. Not as mid-sentence connectors. "If you're coming from traditional automation: instead of registering event handlers, you describe conditions" adds nothing with the colon. Rewrite to let the point stand on its own without comparison framing. "Describing when the scheduler should fire works best as plain English." Same meaning, no crutch punctuation.
+15. **Boldface overuse.** Don't bold every proper noun or acronym.
+16. **Inline-header lists.** The tell is a bold label and colon that restates the line: "**Performance:** Performance improved...". Convert those to prose. A bold lead-in that ends in a period, names the item, and is followed by genuinely new detail ("**Schema in TypeScript.** Tables live in one file.") is fine, not a tell.
+17. **Title case headings.** Use sentence case.
+18. **Decorative emojis.** Remove from headings and bullets.
+19. **Curly quotes.** Replace with straight quotes.
+
+### Communication artifacts
+
+20. **Chatbot phrases.** "I hope this helps!", "Let me know if...", "Of course!", "Certainly!", "Found the smoking gun!" Remove.
+21. **Cutoff disclaimers.** "While specific details are limited..." Find sources or remove.
+22. **Sycophantic tone.** "Great question! You're absolutely right!" Respond directly.
+
+### Filler
+
+23. **Filler phrases.** "In order to" becomes "To". "Due to the fact that" becomes "Because". "It is important to note that" gets deleted.
+24. **Excessive hedging.** "could potentially possibly be argued that it might" becomes "may".
+25. **Generic conclusions.** "The future looks bright." State specific plans or facts.
+
+### Jargon
+
+26. **Abstract metaphor nouns.** Substrate, wedge, vector, locus, vantage, nexus, primitive (as noun), harness (as metaphor), surface (as in "API surface"), bedrock, scaffolding (as metaphor), modality, paradigm, gold-plating, ratchet (as metaphor), evacuate (for moving code), endgame, north star, flywheel. These read as technical but usually have a plainer concrete word. "Substrate" becomes "base". "Wedge in" becomes "add". "Vector" becomes "way" or "method". "Gold-plating" becomes "more than the job needs". "Ratchet" becomes the mechanism's real name or "a limit that only tightens". "Evacuate" becomes "move out". "Endgame" becomes "the last phase". Pick the concrete word.
+
+### Plain speech
+
+27. **Say what it does, not how it feels.** "the database stays close at hand", "SQL you can read", "types that follow your schema" name a feeling. The fix names the mechanism or a number: "`.toSQL()` returns the exact string sent to the database", "a column rename fails the build". Ask what the sentence tells the reader to do or know, then write that. If you can't restate it as a concrete instruction, fact, or number, cut it. One more check: if the sentence could appear unchanged in another project's docs, it says nothing about this one. Cut it.
+28. **Shorten or split dense sentences.** If the reader has to backtrack to parse a sentence, break it in two or drop clauses. One idea per sentence.
+29. **Active voice.** Prefer it. Catch "is/are/was/were + past participle" and name the actor: "queries are validated" becomes "the compiler validates queries", "the file is parsed by the loader" becomes "the loader parses the file". Passive is fine only when the actor is unknown or genuinely doesn't matter.
+30. **Cut adverbs, or use a stronger verb.** "runs quickly" becomes "is fast" or the number. "significantly improves" becomes the measured delta. An adverb propping up a weak verb means the verb is wrong.
+31. **Prefer the plain word.** "utilize" becomes "use", "leverage" becomes "use", "facilitate" becomes "help", "numerous" becomes "many", "in the event that" becomes "if". The fancier synonym is rarely clearer.
+
+codex
+The registers already contain several claims that need pressure testing: notably “zero blockers,” the WELT and Bild coverage summaries, the NYT standard-article generalization, and Yahoo’s live-route claim. I’m now checking the exact URLs and the archive/robots assertions independently.
+exec
+/bin/zsh -lc "ua='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/131.0 Safari/537.36'
+for u in \\
+'https://www.rnd.de/politik/pager-explosionen-im-libanon-funkgeraete-wohl-mit-sprengstoff-bestueckt-7GX5G5II65JA5OFN6DWYOR24LI.html' \\
+'https://www.zdfheute.de/politik/ausland/libanon-pager-explosionen-israel-100.html' \\
+'https://www.welt.de/politik/ausland/video253563392/Pager-im-Libanon-explodiert-Begrenzter-Krieg-seit-neun-Monaten-Seit-dem-7-Oktober-beschiesst-die-Hisbollah-Israel.html' \\
+'https://www.bild.de/politik/ausland-und-internationales/dutzende-terroristen-verletzt-etliche-hisbollah-piepser-explodiert-66e983275eec914fde514474?archiveDate=2024-09-17' \\
+'https://web.archive.org/web/20240917000000/https://www.nytimes.com/live/2024/09/17/world/israel-hamas-war-news' \\
+'https://web.archive.org/web/20240918155339/https://www.reuters.com/world/middle-east/dozens-hezbollah-members-wounded-lebanon-when-pagers-exploded-sources-witnesses-2024-09-17/' \\
+'https://news.yahoo.com/hundreds-hezbollah-pagers-explode-apparent-151059022.html' \\
+'https://web.archive.org/web/20240918012821/https://abcnews.go.com/International/wireStory/dozens-injured-lebanon-after-handheld-pagers-reportedly-explode-113754462'; do
+  echo \"URL "'$u"
+  curl -L --compressed --max-time 35 -A "$ua" -sS -o /dev/null -w '"'META %{http_code} %{url_effective} %{size_download}\\n' \""'$u" || true
+  curl -L --compressed --max-time 35 -A "$ua" -sS "$u" 2>/dev/null | tr '"'<>' '\\n' | sed 's/<["'^>]*>/ /g'"' | tee /dev/stdout | wc -w | awk '{print \"BODY_WORDS \" "'$1}'"' || true
+  curl -L --compressed --max-time 35 -A \""'$ua" -sS "$u" 2>/dev/null | grep -Eio '"'2024-[0-9]{2}-[0-9]{2}|2026-[0-9]{2}-[0-9]{2}|pager|hezbollah|lebanon|libanon|PAGER|Reuters|New York Times|Yahoo|ABC News' | head -15 | tr '\\n' ' '; echo
+done" in /Users/jknauber/Documents/Projects/news
+ succeeded in 13ms:
+curl: (6) Could not resolve host: web.archive.org
+META 000 https://web.archive.org/web/20240918012821/https://abcnews.go.com/International/wireStory/dozens-injured-lebanon-after-handheld-pagers-reportedly-explode-113754462 0
+tee: /dev/stdout: Operation not permitted
+BODY_WORDS 0
+
+
+codex
+The local `curl` environment cannot resolve external hosts, so those fetches cannot serve as evidence here. I’m switching to the available web fetcher for the same URLs and Wayback APIs, and I’ll record the local DNS failure separately as an environment limitation rather than treating it as a site defect.
+web search: 
+web search: https://www.rnd.de/politik/pager-explosionen-im-libanon-funkgeraete-wohl-mit-sprengstoff-bestueckt-7GX5G5II65JA5OFN6DWYOR24LI.html
+web search: 
+web search: https://www.rnd.de/robots.txt
+web search: 
+web search: site:nytimes.com/2024/09/17 world pager Hezbollah New York Times September 17 2024 ...
+web search: 
+web search: https://archive.org
+web search: 
+web search: https://archive.org/wayback/available?url=www.nytimes.com%2F2024%2F09%2F17%2Fworld%2Fmiddleeast%2Fpager-explosions-hezbollah.html%26timestamp%3D20240918
+web search: 
+web search: https://web.archive.org
+web search: 
+web search: https://web.archive.org/web/20240917000000id_/https://www.nytimes.com/live/2024/09/17/world/israel-hamas-war-news
+web search: 
+web search: site:zdf.de/nachrichten 20.09.2024 ZDF Pager Explosionen ...
+web search: 
+web search: site:reuters.com/robots.txt User-agent Reuters robots Disallow ...
+codex
+The independent checks confirm several important points. RND’s live page has dated event text; ZDFheute’s live page has dated event text; and the live robots files confirm the RND §44b reservation, WELT’s `ia_archiver` default deny, and t-online’s §44b reservation. The main defects are now about overclaiming and route design, not the existence of every article.
+exec
+/bin/zsh -lc "nl -ba data/germany/access-register-v1.csv | sed -n '1,20p'; nl -ba data/germany/access-notes.md | sed -n '1,120p'; nl -ba data/us/access-register-v1.csv | sed -n '1,24p'; nl -ba data/us/access-notes.md | sed -n '1,130p'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+     1	outlet,tier,primary_route,fallback_route,test_url,test_result,event_window_coverage,robots_tdm_status,paywall,blocker,notes
+     2	Tagesschau (ARD),mass,direct,wayback,https://www.tagesschau.de/ausland/asien/libanon-hisbollah-pager-102.html,"ok 2026-09-06 (1254 p-words, JSON-LD date)",wayback 5000+ URLs / 33 of 33 days,crawl allowed; AI bots blocked; explicit §44b UrhG TDM reservation,none,no,Sep 2024 text still live (Depublizierung milder for text than video)
+     3	ZDF heute,mass,direct,wayback via zdf.de/nachrichten host,https://www.zdfheute.de/politik/ausland/libanon-pager-explosionen-israel-100.html,"ok 2026-09-06 (734 p-words, JSON-LD date)",zdf.de 5000+ / 33 days; 2024 canonical archived host = zdf.de/nachrichten (zdfheute.de captures only from Oct 2025),crawl allowed; AI bots blocked,none,no,identity trap: homepage redirects today; enumerate zdf.de/nachrichten prefix; day-of capture verified 2024-09-20
+     4	RTL Aktuell,mass,direct,wayback,https://www.rtl.de/news/explosionen-von-pagern-im-libanon-hisbollah-miliz-wirft-israel-anschlaege-vor-id1833651.html,"ok 2026-09-06 (766 p-words, JSON-LD date)",rtl.de/news 1328 URLs / 28 days,robots fetch inconclusive; open RSS feeds,none,no,text on rtl.de (numeric idNNNNNNN); TV bulletins separate (RTL+); agency-heavy copy
+     5	ntv,mass,direct,wayback,https://www.n-tv.de/politik/Hisbollah-schwoert-Israel-Rache-article25235207.html,ok 2026-09-06 (1125 p-words),wayback 5000+ / 30 days,crawl allowed; GPTBot/CCBot blocked; sitemaps exposed,none,no,sequential articleNNNNNNNN IDs; /archiv/ robots-disallowed
+     6	Bild,mass,direct,wayback,https://www.bild.de/politik/ausland-und-internationales/dutzende-terroristen-verletzt-etliche-hisbollah-piepser-explodiert-66e983275eec914fde514474,ok 2026-09-06 (925 p-words),wayback 5000+ but only 16 of 33 days - spotty; direct primary,broad AI/scraper blocks; rsl.xml licensing file,mixed: BILDplus hard for marked items; breaking free,no,dated archive page ?archiveDate=YYYY-MM-DD fetch-verified - use for enumeration
+     7	Der Spiegel,mass,direct,wayback,https://www.spiegel.de/ausland/israel-gaza-krieg-hisbollah-mitglieder-durch-explodierende-pager-in-beirut-und-im-sueden-libanons-verwundet-a-8d9a237f-fdeb-4377-9394-9f0be7783816,ok 2026-09-06 (1173 p-words),wayback 5000+ / 33 days,crawl allowed (local check); 9 AI bots blocked incl ClaudeBot/anthropic-ai,mixed: SPIEGEL+ hard for marked items; breaking free,no,a-UUID article IDs; no dated sitemap - CDX enumeration
+     8	WELT,mass,direct,wayback (thin),https://www.welt.de/politik/ausland/video253563392/Pager-im-Libanon-explodiert-Begrenzter-Krieg-seit-neun-Monaten-Seit-dem-7-Oktober-beschiesst-die-Hisbollah-Israel.html,"ok 2026-09-06 (843 p-words, JSON-LD date; video-page)",wayback 1685 URLs / 33 days - thin (ia_archiver blocked in robots),broad AI blocks + ia_archiver,mixed: WELTplus hard for marked items; breaking free,no,numeric (video|article)NNNNNNNNN IDs + news sitemaps; pick article-type test at enumeration
+     9	t-online,mass,direct,wayback,https://www.t-online.de/nachrichten/ausland/internationale-politik/id_100492044/hisbollah-pager-im-libanon-explodiert-darum-soll-israel-jetzt-angegriffen-haben.html,ok 2026-09-06 (1137 p-words),wayback 5000+ / 33 days,crawl allowed; AI bots blocked; §44b TDM reservation,none (PUR = ad-free only),no,sequential id_NNNNNNNNN; test article is dpa-credited (doubles as wire baseline)
+    10	RND (RedaktionsNetzwerk Deutschland),substantial (required-representative),wayback,headless-browser direct,https://www.rnd.de/politik/pager-explosionen-im-libanon-funkgeraete-wohl-mit-sprengstoff-bestueckt-7GX5G5II65JA5OFN6DWYOR24LI.html,ok via capture; direct 403 (Akamai blocks python+curl) 2026-09-06,wayback 5000+ / 31 days,crawl allowed for browsers; AI bots blocked; §44b reservation,mixed: RND+ premium; breaking free,no,per-day archive pages rnd.de/archiv/artikel-DD-MM-YYYY/ via captures = enumeration index
+    11	dpa,context (required-baseline),via-client (t-online dpa-credited stream),other credited clients (hz.de; stuttgarter-zeitung.de - verified examples),https://www.t-online.de/nachrichten/ausland/internationale-politik/id_100492044/hisbollah-pager-im-libanon-explodiert-darum-soll-israel-jetzt-angegriffen-haben.html,ok 2026-09-06 (Von dpa credit in page),n/a - client-side collection,n/a (B2B wire; no public archive),B2B licensed,no,same approach as Lebanon NNA baseline: wire text enters corpus via credited client copies
+     1	# Germany access verification — notes (step 3, v1, 2026-09-06)
+     2	
+     3	Register: [access-register-v1.csv](access-register-v1.csv). Research:
+     4	codex CLI web-search pass (access-research/codex-raw.md) + local fetch
+     5	tests and Wayback CDX density (this session; final numbers 2026-09-07).
+     6	All 8 mass rows + dpa baseline + RND representative verified. **Zero
+     7	blockers.** CDX density: tagesschau/zdf/ntv/spiegel/t-online/rnd 5,000+
+     8	URLs over 30–33 of 33 window days; rtl.de/news 1,328/28; welt.de
+     9	1,685/33 (thin — ia_archiver block); bild.de 5,000+ but only 16 days
+    10	(spotty — direct primary).
+    11	
+    12	## Route summary
+    13	
+    14	Germany is the easiest country so far: every mass outlet serves 2024
+    15	event articles live, free, with real body text (fetch-tested day-of;
+    16	p-word counts 700–1,300 per test article). Breaking pager coverage was
+    17	outside the plus-paywalls everywhere (BILDplus/SPIEGEL+/WELTplus gate
+    18	marked premium pieces; the event-window breaking stream was free).
+    19	
+    20	## Hard cases and findings
+    21	
+    22	1. **RND (rnd.de) blocks non-browser clients** (Akamai; python urllib
+    23	   and curl both 403). Primary route = Wayback (CDX density 5,000+ URLs,
+    24	   31/33 days). Bonus: RND exposes per-day archive pages
+    25	   (`rnd.de/archiv/artikel-DD-MM-YYYY/`) — usable through Wayback
+    26	   captures as an enumeration index. Fallback: headless browser.
+    27	2. **ZDFheute identity trap (resolved)**: `zdfheute.de` has **zero
+    28	   Wayback captures before Oct 2025** — in Sep 2024 the canonical
+    29	   archived host was **`zdf.de/nachrichten/...`** (day-of capture of the
+    30	   pager article verified at 2024-09-20 under that path; zdf.de density
+    31	   5,000+/33 days). Live, both hosts serve the same article today
+    32	   (zdf.de redirects to zdfheute.de — the mirror image of the archive
+    33	   situation). Direct route primary; enumeration/fallback must use the
+    34	   `zdf.de/nachrichten` prefix, never zdfheute.de.
+    35	3. **welt.de blocks ia_archiver** → thinnest Wayback density of the
+    36	   mass set (1,685 URLs, but all 33 days covered). Direct route works
+    37	   and WELT has news/video sitemaps — direct primary, Wayback fallback
+    38	   acceptable for headline-evolution checks only.
+    39	4. **Depublizierung (public broadcasters)**: less severe than feared —
+    40	   both test articles (tagesschau.de Sep 17, zdfheute.de Sep 17) are
+    41	   still live in 2026. ARD retention rules vary by format (video
+    42	   stricter than text). Both domains have dense Wayback coverage
+    43	   (5,000+/33 days) as the day-of source regardless.
+    44	5. **dpa** has no public archive (B2B wire). Baseline route = credited
+    45	   client copies: t-online ("Von dpa" — itself a gate row), plus
+    46	   hz.de and stuttgarter-zeitung.de examples verified by codex. The
+    47	   t-online dpa stream doubles as the wire baseline, mirroring
+    48	   Lebanon's NNA approach.
+    49	
+    50	## Enumeration hooks (for step 4)
+    51	
+    52	| outlet | hook |
+    53	| --- | --- |
+    54	| Bild | dated archive page `?archiveDate=2024-09-17` (fetch-tested, 4.7K words of links) + news sitemaps |
+    55	| RND | per-day archive pages via Wayback |
+    56	| ntv | sequential `articleNNNNNNNN` IDs + sitemaps |
+    57	| WELT | numeric `(video\|article)NNNNNNNNN` IDs + sitemaps |
+    58	| t-online | sequential `id_NNNNNNNNN` IDs |
+    59	| Spiegel | slug + `a-UUID`; no dated sitemap — CDX enumeration |
+    60	| Tagesschau | topic slugs `libanon-hisbollah-pager-NNN.html`; CDX enumeration |
+    61	| ZDFheute | `-100.html` suffixed slugs; topic pages; CDX enumeration |
+    62	| RTL | numeric `idNNNNNNN` slugs; RSS; CDX enumeration |
+    63	
+    64	## Robots/TDM stance (recorded, not a route decision)
+    65	
+    66	All German outlets allow general crawling of articles; all block
+    67	AI-training bots by name (GPTBot/CCBot/ClaudeBot etc.);
+    68	tagesschau.de, t-online.de and rnd.de carry explicit §44b UrhG TDM
+    69	reservations. Research-collection route decisions documented per row;
+    70	archival (Wayback) routes carry the Internet Archive's own terms.
+     1	outlet,tier,primary_route,fallback_route,test_url,test_result,event_window_coverage,robots_tdm_status,paywall,blocker,notes
+     2	Fox News,mass,direct,wayback,https://www.foxnews.com/world/lebanon-explosions-dozens-wounded-after-pagers-detonate-state-media-report,"ok 2026-09-06 (1549 p-words, JSON-LD date)",wayback 1048 URLs / 33 days,no AI-bot blocks at all; generic path disallows only,none,no,slug-only URLs - CDX + slug keyword tagging; no transcript archive
+     3	CNN,mass,direct,wayback,https://www.cnn.com/2024/09/17/middleeast/lebanon-hezbollah-pagers-explosions-intl/index.html,"ok 2026-09-06 (full body, JSON-LD date)",cnn.com/2024/09 prefix 3000+ / 30 days,broad AI blocks incl Archive.org_bot (unenforced - captures exist),none,no,date-path URLs + monthly section sitemaps; transcripts.cnn.com/date/2024-09-17 verified (8515-word segments) - collect as broadcast surface
+     4	ABC News,mass,wayback,none needed for window,https://web.archive.org/web/20240918012821/https://abcnews.go.com/International/wireStory/dozens-injured-lebanon-after-handheld-pagers-reportedly-explode-113754462,ok 2026-09-06 via capture (222 p-words); live URL 404s,wayback 5000+ / 32 days,AI bots blocked; Googlebot-News opt-out,none,no,2024 abcnews.go.com wireStory URLs dead after abcnews.com migration - wayback only; heavy AP-reprint share (flag for wire split)
+     5	CBS News,mass,direct,wayback,https://www.cbsnews.com/news/hezbollah-lebanon-explosions-pagers-israel-hamas-war/,"ok 2026-09-06 (1475 p-words, JSON-LD date)",wayback 1172 URLs / 29 days,minimal blocks (GPTBot only among majors),none,no,dated monthly sitemaps xml-sitemap/article-2024-09[-2].xml verified - enumeration gold
+     6	NBC News,mass,direct,wayback,https://www.nbcnews.com/news/world/hezbollah-pagers-expolsion-lebanon-handheld-devices-rcna171457,"ok 2026-09-06 (1320 p-words, JSON-LD date)",wayback 5000+ / 32 days,20+ bots blocked incl Archive.org_bot (unenforced),none,no,monthly sitemaps sitemap/nbcnews/sitemap-2024-09-article.xml verified; rcna IDs
+     7	New York Times,mass,wayback (live-blogs) + Article Search API (metadata),licensed (API full access / ProQuest TDM) - named plan if bodies needed,https://web.archive.org/web/20240917/https://www.nytimes.com/live/2024/09/17/world/israel-hamas-war-news,partial 2026-09-06: live-blog capture ok (6018 p-words); standard-article bodies unreachable (live 403; archive excluded),captures exist per-URL; CDX enumeration itself 403-blocked - enumerate via API not CDX,most extensive AI blocks; EU TDM Art.4 cited; archive exclusion ENFORCED for standard articles,metered; live-blogs isAccessibleForFree:true,no - partial documented with plan,hardest access case; live-blog format = hour-by-hour attribution record (project-preferred material); API key free
+     8	Washington Post,mass,wayback,headless-browser direct,https://web.archive.org/web/20240917153000/https://www.washingtonpost.com/national-security/2024/09/17/lebanon-pagers-exploding-hezbollah/,"ok 2026-09-06 via capture (902 p-words = full metered text, 47 min post-publish); live fetch times out",wayback 905 URLs / 29 days; CDX prefix queries work,broad AI + IA-bot blocks (unenforced - captures exist),metered; day-of captures carry full text,no,date-path URLs /section/2024/09/17/slug/ via CDX prefix
+     9	Yahoo News,mass,direct (browser-UA required),syndication-source mirrors (USA Today/AP/Reuters/AFP),https://news.yahoo.com/hundreds-hezbollah-pagers-explode-apparent-151059022.html,ok 2026-09-06 with curl browser-UA (1054 p-words); python-UA gets consent/JS shell (EU IP),~zero wayback captures of article pages,AI bots blocked; article paths open to generic crawl,none,no,"now redirects to yahoo.com/news; syndication mirror - enumerate via syndication tracking not sitemaps; reach is the point, not original text"
+    10	USA Today,mass,direct,Gannett/Yahoo syndication mirrors,https://www.usatoday.com/story/news/world/2024/09/17/hezbollah-pagers-lebanon-attack-israel/75261807007/,"ok 2026-09-06 (1730 p-words, JSON-LD date)",~zero contemporaneous captures (archive crawlers blocked),~60 bots blocked incl archive crawlers,metered/soft; breaking free,no,date-in-path URLs - live enumeration; no archive backup (collect early)
+    11	Associated Press,context (required-baseline),direct (browser-UA required),wayback,https://apnews.com/article/lebanon-hezbollah-israel-exploding-pagers-8893a09816410959b6fe94aec124461b,ok 2026-09-06 with curl browser-UA (8658 p-words); python-UA 403 (CDN),wayback 3000+ / 32 days,article crawl allowed for *; AI bots blocked; open sitemaps,none - free then and now,no,monthly sitemaps back to 2006: ap-sitemap-202409.xml verified; topic hubs
+    12	Reuters,context (required-baseline),wayback,licensed (Reuters Connect) if needed,https://web.archive.org/web/20240918155339/https://www.reuters.com/world/middle-east/dozens-hezbollah-members-wounded-lebanon-when-pagers-exploded-sources-witnesses-2024-09-17/,"ok 2026-09-06 via capture (1847 p-words, ungated); live 401 (allowlist robots)",reuters.com/world prefix 3000+ / 33 days,allowlist model: unlisted agents blocked site-wide (Disallow: /),2024: free registration wall; captures ungated,no,date-suffixed slugs ...-2024-09-17/ - CDX enumeration natural
+     1	# US access verification — notes (step 3, v1, 2026-09-06)
+     2	
+     3	Register: [access-register-v1.csv](access-register-v1.csv). Research:
+     4	copilot CLI 5-agent pass (access-research/copilot-raw.md) + local fetch
+     5	tests and Wayback CDX density (this session). 9 mass rows + AP/Reuters
+     6	baselines. **One partial (NYT bodies), zero unresolved blockers — every
+     7	row has a working text route.** CDX density (final, 2026-09-07):
+     8	abcnews/nbcnews 5,000+/32 days; cnn.com/2024/09 3,000+/30;
+     9	reuters.com/world 3,000+/33; apnews.com/article 3,000+/32; foxnews
+    10	1,048/33; cbsnews 1,172/29; wapo 905/29; yahoo/usatoday ~zero
+    11	(live-primary); nytimes CDX-blocked (see hard case 1).
+    12	
+    13	## Route summary
+    14	
+    15	Free-and-live: Fox, CNN, CBS, NBC, USA Today, Yahoo News, AP — all
+    16	fetch-tested with full bodies (1,000–8,600 p-words). Wayback-primary:
+    17	ABC (domain migration), Reuters (allowlist 401), WaPo (edge-blocked
+    18	live; day-of captures carry full metered text — tested 902 words 47 min
+    19	post-publish). NYT is the one partial row (below).
+    20	
+    21	## Hard cases
+    22	
+    23	1. **NYT — the hardest access case in the project.** Live fetch 403s;
+    24	   robots blocks archive.org and it is *enforced* for standard articles
+    25	   (the flagship Frenkel/Bergman pager investigation has **zero Wayback
+    26	   captures until Dec 2025** — 14 months post-event). But the `/live/`
+    27	   blog format is (a) free (`isAccessibleForFree: true`) and (b)
+    28	   Wayback-captured same-day (tested: 6,018 p-words from the Sep 17
+    29	   live blog). Plan of record: collect NYT via live-blog captures
+    30	   (rich, hour-by-hour, exactly the attribution-evolution material) +
+    31	   Article Search API (free key, headline/abstract/lead metadata) for
+    32	   the standard-article record; body text of metered standard articles
+    33	   marked `partial` — licensed route (API/ProQuest) documented if
+    34	   analysis later needs full bodies. Not a cop-out: the route reaches
+    35	   real NYT event text day-of; the limitation is scoped to
+    36	   standard-article *bodies* and stated on the row. **Additional
+    37	   finding (2026-09-07): the CDX API itself 403s all nytimes.com
+    38	   queries** — captures are fetchable by exact URL but not enumerable
+    39	   via CDX; NYT enumeration must run through the Article Search API.
+    40	2. **ABC News**: 2024 `abcnews.go.com` wireStory URLs now redirect to
+    41	   abcnews.com and 404 — total link rot. Wayback-only for event-window
+    42	   content (day-of capture tested ok). Coverage was heavily AP
+    43	   wireStory reprints — flag for the wire/original split.
+    44	3. **Reuters**: robots is an allowlist; everything else 401s (blanket
+    45	   `Disallow: /` for unlisted agents). Day-of Wayback captures carry
+    46	   full ungated text (tested 1,847 words; 2024 had at most a free
+    47	   registration wall). Wayback primary, no fallback needed for the
+    48	   window.
+    49	4. **Yahoo News**: near-zero Wayback captures of article pages + 2026
+    50	   domain migration (news.yahoo.com → yahoo.com/news). Live route works
+    51	   with browser-UA curl (tested 1,054 words; python-urllib gets a thin
+    52	   consent/JS shell — EU GDPR consent wall risk from German IP, curl
+    53	   follows through). Enumeration is the weak point: rolling sitemap
+    54	   only — plan: cross-syndication tracking (USA Today/Gannett, AP,
+    55	   Reuters, AFP, Yahoo News UK bylines) rather than exhaustive
+    56	   enumeration; Yahoo is primarily a syndication mirror (its reach is
+    57	   the point, not original text).
+    58	5. **USA Today**: live route clean, date-in-path URLs, but ~no
+    59	   contemporaneous Wayback captures (aggressive bot blocking incl.
+    60	   archive crawlers) — live-only row; if pages vanish, Gannett/Yahoo
+    61	   syndication mirrors are the fallback.
+    62	6. **WaPo**: live fetches time out (edge block) but CDX prefix queries
+    63	   work and day-of captures contain full metered text — Wayback
+    64	   primary.
+    65	7. **CNN transcripts**: `transcripts.cnn.com/date/2024-09-17` is a
+    66	   working dated index; per-segment pages carry full transcripts
+    67	   (tested 8,515 words, AC360 Sep 17). Best broadcast-text source of
+    68	   any TV outlet — collect alongside cnn.com articles. Other TV mass
+    69	   outlets (Fox/ABC/CBS/NBC) have no usable daily transcript archive —
+    70	   web article stream documented as the collection surface per the
+    71	   census's web-text scope, with the broadcast-proxy limitation noted.
+    72	
+    73	## Enumeration hooks (for step 4)
+    74	
+    75	| outlet | hook |
+    76	| --- | --- |
+    77	| CNN | `cnn.com/2024/09/17/...` date paths + monthly section sitemaps + transcripts date index |
+    78	| NYT | `/2024/09/17/` and `/live/2024/09/17/` date paths (via CDX/API) |
+    79	| WaPo | `/section/2024/09/17/slug/` date paths via CDX prefix |
+    80	| USA Today | `/story/news/world/2024/09/17/.../NNNNNNNNNNN/` date paths, live |
+    81	| CBS | dated monthly sitemaps `xml-sitemap/article-2024-09[-2].xml` (verified) |
+    82	| NBC | monthly sitemaps `sitemap/nbcnews/sitemap-2024-09-article.xml` (verified) |
+    83	| AP | monthly sitemaps back to 2006: `ap-sitemap-202409.xml` (verified) + topic hubs |
+    84	| Reuters | date-suffixed slugs `...-2024-09-17/` via CDX |
+    85	| Fox | news sitemap types; slug-only URLs — CDX + slug keyword tagging |
+    86	| ABC | Wayback CDX only (`wireStory/slug-NNNNNNNNN`) |
+    87	| Yahoo | syndication tracking, not enumeration |
+    88	
+    89	## Robots/TDM stance
+    90	
+    91	All outlets allow (or don't effectively prevent) archival-route
+    92	collection for the window except as noted; AI-training bots blocked by
+    93	name nearly everywhere; NYT cites EU TDM Art. 4 explicitly (active
+    94	OpenAI litigation context). Reuters = allowlist model. Route decisions
+    95	documented per row; archival routes carry IA's terms.
+
+web search: 
+web search: https://web.archive.org/cdx/search/cdx?url=zdf.de%2Fnachrichten%2F*&from=20240915&to=20241017&output=json&filter=statuscode:200&collapse=urlkey
+codex
+## Verdict
+
+- Germany: Conditional pass. The main routes work, but the register overstates archive reliability and has unresolved evidence gaps around ZDF and WELT.
+- US: Fail pending correction. The NYT plan makes an unsupported general claim, and the live-blog fallback has not been shown to be sufficiently rich or enumerable.
+
+## Findings
+
+| # | Finding | Evidence, commands, and URLs | Severity | Suggested fix |
+|---|---|---|---|---|
+| 1 | Required local curl reproduction was not reproducible in this environment. | Command used: `curl -L --compressed -A 'Mozilla/5.0 ... Chrome/131...' URL`. All external hosts failed with DNS error `Could not resolve host`. Web fetching confirmed RND and ZDF content, but WELT was blocked by robots and the archive/Yahoo URLs could not be independently replayed. | High | Record fetch date, UA, HTTP status, body-word count, event terms, and date for every test. Do not mark a test “ok” unless another operator can reproduce it. |
+| 2 | RND’s route description understates the direct-access defect. | The register says direct access is 403 and puts Wayback first, while the notes say “zero blockers.” The live RND page does contain the event article and date, including “18.09.2024” and pager-explosion text: [RND article](https://www.rnd.de/politik/pager-explosionen-im-libanon-funkgeraete-wohl-mit-sprengstoff-bestueckt-7GX5G5II65JA5OFN6DWYOR24LI.html). | Medium | Change the country summary to “one material direct-access blocker” and label browser automation as a contingency, not a tested route. |
+| 3 | Bild’s fallback is too optimistic. | The register explicitly reports “only 16 of 33 days” but still lists `wayback` as fallback. Its notes call the archive page “fetch-verified,” but that does not establish article-page recoverability for the missing 17 days. Current [Bild robots.txt](https://www.bild.de/robots.txt) also blocks `ia_archiver` with `Disallow: /`. | High | Make the dated archive page plus live sitemap the fallback/enumeration route. Mark Wayback as partial and quantify expected loss. |
+| 4 | WELT’s test does not validate the claimed article route. | The test URL is a video page, while the note says to “pick article-type test at enumeration.” The current [WELT robots.txt](https://www.welt.de/robots.txt) puts `ia_archiver` under a `Disallow: /` group. The web fetcher was denied by robots for the test URL. | Medium | Add a separate article URL test with body text and event-date checks. Keep video and article coverage separate. |
+| 5 | The ZDF host finding is not sufficiently demonstrated. | The current ZDFheute page is live and has event text dated `19.09.2024`: [ZDFheute article](https://www.zdfheute.de/politik/ausland/libanon-pager-explosionen-israel-100.html). Search also finds another event article dated `18.09.2024`: [Pager-Explosionen verletzen Tausende](https://www.zdfheute.de/politik/ausland/hisbollah-pager-explosionen-100.html). However, the register provides only one claimed `zdf.de/nachrichten` day-of capture, not the required second replay URL, and the “zero zdfheute captures before October 2025” assertion was not independently demonstrated here. | Medium | Add two exact Wayback replay URLs for separate `zdf.de/nachrichten` articles and an explicit zero-result query for `zdfheute.de` during Sep 15–Oct 17. |
+| 6 | “All German outlets allow general crawling of articles” is too broad. | [RND robots.txt](https://www.rnd.de/robots.txt) contains an explicit automated-access prohibition and §44b reservation. [t-online robots.txt](https://www.t-online.de/robots.txt) does the same. [WELT robots.txt](https://www.welt.de/robots.txt) blocks `ia_archiver` site-wide. These are not ordinary “crawl allowed” conditions for the planned automated collection. | Medium | Separate “browser-readable,” “generic bot permitted,” “archive bot permitted,” and “TDM reservation” into different fields. |
+| 7 | The NYT claim about standard articles is generalized from too little evidence. | The notes claim the flagship article has no captures until Dec 2025 and then generalize to standard articles. The requested availability checks for 2–3 additional Sep 17–20 standard URLs are absent. The notes also say CDX is blocked, so the plan needs explicit per-URL API evidence. | High | Test at least three named standard article URLs with `http://archive.org/wayback/available?url=...&timestamp=20240918`. Report each result separately. Phrase the conclusion as “these tested URLs,” not “standard articles” generally. |
+| 8 | NYT live-blog coverage is not shown to be rich enough or broad enough. | The evidence cites one live-blog URL and one 6,018-word capture. That proves one rich capture, not “multiple live-blog URLs captured in-window.” | High | Enumerate several distinct NYT `/live/` URLs, record capture timestamps within Sep 15–Oct 17, and provide word counts plus event-content checks for each. |
+| 9 | Reuters’ robots claim conflates robots policy with HTTP access. | The direct Reuters robots fetch was unavailable through the web fetcher. A current parsed copy shows AI crawler groups with `Disallow: /`, but the `User-agent: *` group has path-specific rules rather than blanket `Disallow: /`: [Reuters robots snapshot](https://well-known.dev/resources/robots_txt/sites/reuters.com). The register’s “unlisted agents blocked site-wide” may instead describe the server’s 401 behavior, not robots.txt. | Medium | Split the claim into “robots policy” and “observed HTTP response.” Include the exact live robots text and a browser-UA versus generic-UA status comparison. |
+| 10 | Yahoo’s fallback is not operationally specified. | The register names USA Today, AP, Reuters, AFP, and other syndication mirrors, but gives no tested mirror URLs, deduplication rule, or completeness estimate. [Yahoo robots.txt](https://news.yahoo.com/robots.txt) redirects to Yahoo’s robots file, which blocks many named AI agents with `Disallow: /` while leaving the generic group less restricted. | Medium | Add concrete mirror URLs and a collection rule. Label Yahoo as a syndication-discovery source, not an exhaustive outlet archive. |
+hook: Stop
+hook: Stop Completed
+tokens used
+79,981

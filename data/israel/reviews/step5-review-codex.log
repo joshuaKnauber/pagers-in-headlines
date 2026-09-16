@@ -1,0 +1,1842 @@
+Reading additional input from stdin...
+OpenAI Codex v0.152.0
+--------
+workdir: /Users/jknauber/Documents/Projects/news
+model: gpt-5.6-luna
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: medium
+reasoning summaries: none
+session id: 01a07893-481d-7891-99c0-2d33fbf1911a
+--------
+user
+Adversarial review, scoped to the Israel step-5 delta (triage/extraction/normalization) of a news-coverage research corpus. Work read-only from /Users/jknauber/Documents/Projects/news/data/. Be skeptical; your job is to find defects, not to approve.
+
+Scope (only these artifacts):
+1. data/israel/triage-notes.md and data/israel/normalization-notes.md — verify EVERY number against the underlying files: enumeration/*-titles-*.csv, enumeration/abuali-messages.csv, corpus-candidates-v1.jsonl, corpus-v1.jsonl. Recompute counts yourself (python3 available).
+2. Extraction correctness: pick 5 records across outlets from corpus-v1.jsonl, open the matching raw/<outlet>/<hash>.html, and check the stored body is the article (not sidebar/ticker/boilerplate) and the date matches the page.
+3. Tagging quality: sample 30 untagged titles from ynet-titles-*.csv containing likely event words (חיזבאללה, לבנון, מטען) and judge whether the strong/related term families missed real pager-event items (recall check). Also check 5 tagged rows for false positives.
+4. data/analysis/lebanon-israel-comparison-v1.md — recompute the headline table from the two corpus-v1.jsonl files using the term families described there; flag any figure that does not reproduce.
+
+Known/accepted (do not re-litigate): Ynet lead-only bodies are paywall policy; N12 n=10 recall limit is documented; Abu Ali 20/33-day coverage is documented.
+
+Output: a markdown report — verdict (pass / conditional pass / fail), then a numbered findings table (finding, evidence, severity, suggested fix). Cite file paths and record ids for every claim.
+2026-09-06T21:15:14.427152Z ERROR rmcp::transport::worker: worker quit with fatal: Transport channel closed, when AuthRequired(AuthRequiredError { www_authenticate_header: "Bearer resource_metadata=\"https://executor.sh/.well-known/oauth-protected-resource/joshua-knauber-s-organization/mcp\"" })
+hook: SessionStart
+hook: SessionStart Completed
+hook: UserPromptSubmit
+hook: UserPromptSubmit Completed
+codex
+I’m using the `unslop` skill because the deliverable is a skeptical written audit; I’ll keep the report evidence-led and free of inflated or vague language. I’ll inspect the scoped files, recompute the figures with Python, then sample raw pages and tagged/untagged records before writing the markdown report.
+exec
+/bin/zsh -lc "sed -n '1,240p' /Users/jknauber/.agents/skills/unslop/SKILL.md && printf '\\n---FILES---\\n' && rg --files data/israel data/analysis | sort | sed -n '1,200p'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+---
+name: unslop
+description: Cut AI tells from any writing. Must always apply.
+---
+
+# Unslop
+
+Edit text to remove AI patterns and add human voice.
+
+## Process
+
+1. Scan for the patterns below.
+2. Rewrite. Preserve meaning, match intended tone.
+3. Add soul (see next section).
+4. Self-audit: "What makes this obviously AI generated?" Fix remaining tells.
+
+## Adding soul
+
+Removing patterns is half the job. Sterile, voiceless writing is just as obvious.
+
+- **Have opinions.** React to facts instead of neutrally listing pros and cons.
+- **Vary rhythm.** Short sentences. Then longer ones that take their time. Mix it up.
+- **Acknowledge complexity.** "Impressive but also kind of unsettling" beats "impressive."
+- **Use "I" when it fits.** First person isn't unprofessional.
+- **Let some mess in.** Perfect structure looks machine-made.
+- **Be specific.** Not "this is concerning" but "there's something unsettling about agents churning away at 3am."
+
+## Patterns to detect and fix
+
+### Content
+
+1. **Puffery.** "pivotal moment", "testament to", "evolving landscape", "setting the stage for", "indelible mark", "deeply rooted". Cut puffery, state what happened.
+2. **Name-dropping.** Listing media outlets without context. Pick one, say what was said.
+3. **Superficial -ing phrases.** "highlighting...", "ensuring...", "reflecting...", "showcasing...", "fostering...". Delete or expand with real sources.
+4. **Promotional language.** "nestled", "vibrant", "breathtaking", "groundbreaking", "renowned", "stunning", "must-visit". Use neutral descriptions.
+5. **Vague attributions.** "Experts believe", "Industry reports suggest", "Some critics argue". Name the source or delete.
+6. **Formulaic challenges.** "Despite challenges... continues to thrive." Replace with specific facts.
+
+### Language
+
+7. **AI vocabulary.** Additionally, crucial, delve, enduring, enhance, fostering, garner, interplay, intricate, landscape (abstract), pivotal, showcase, tapestry (abstract), testament, underscore, vibrant. Replace with plain words.
+8. **Fancy ways to say "is".** "serves as", "stands as", "boasts", "features". Just say "is" or "has".
+9. **"Not just X, but Y."** State the point directly instead.
+10. **Rule of three.** Forcing ideas into groups of three. Use the natural number.
+11. **Synonym cycling.** Protagonist, main character, central figure, hero all in one paragraph. Pick one, repeat it.
+12. **False ranges.** "from X to Y" where X and Y aren't on a meaningful scale. List topics directly.
+
+### Style
+
+13. **Em dash overuse.** Avoid em dashes entirely. Use periods or commas only (no parentheses, no en dashes, no hyphen-as-dash substitutes). Em dashes are an AI tell, and reaching for parentheses instead just trades one tell for another. If a thought needs separation, end the sentence or use a comma.
+14. **Colon overuse.** Colons are fine before a list or example. Not as mid-sentence connectors. "If you're coming from traditional automation: instead of registering event handlers, you describe conditions" adds nothing with the colon. Rewrite to let the point stand on its own without comparison framing. "Describing when the scheduler should fire works best as plain English." Same meaning, no crutch punctuation.
+15. **Boldface overuse.** Don't bold every proper noun or acronym.
+16. **Inline-header lists.** The tell is a bold label and colon that restates the line: "**Performance:** Performance improved...". Convert those to prose. A bold lead-in that ends in a period, names the item, and is followed by genuinely new detail ("**Schema in TypeScript.** Tables live in one file.") is fine, not a tell.
+17. **Title case headings.** Use sentence case.
+18. **Decorative emojis.** Remove from headings and bullets.
+19. **Curly quotes.** Replace with straight quotes.
+
+### Communication artifacts
+
+20. **Chatbot phrases.** "I hope this helps!", "Let me know if...", "Of course!", "Certainly!", "Found the smoking gun!" Remove.
+21. **Cutoff disclaimers.** "While specific details are limited..." Find sources or remove.
+22. **Sycophantic tone.** "Great question! You're absolutely right!" Respond directly.
+
+### Filler
+
+23. **Filler phrases.** "In order to" becomes "To". "Due to the fact that" becomes "Because". "It is important to note that" gets deleted.
+24. **Excessive hedging.** "could potentially possibly be argued that it might" becomes "may".
+25. **Generic conclusions.** "The future looks bright." State specific plans or facts.
+
+### Jargon
+
+26. **Abstract metaphor nouns.** Substrate, wedge, vector, locus, vantage, nexus, primitive (as noun), harness (as metaphor), surface (as in "API surface"), bedrock, scaffolding (as metaphor), modality, paradigm, gold-plating, ratchet (as metaphor), evacuate (for moving code), endgame, north star, flywheel. These read as technical but usually have a plainer concrete word. "Substrate" becomes "base". "Wedge in" becomes "add". "Vector" becomes "way" or "method". "Gold-plating" becomes "more than the job needs". "Ratchet" becomes the mechanism's real name or "a limit that only tightens". "Evacuate" becomes "move out". "Endgame" becomes "the last phase". Pick the concrete word.
+
+### Plain speech
+
+27. **Say what it does, not how it feels.** "the database stays close at hand", "SQL you can read", "types that follow your schema" name a feeling. The fix names the mechanism or a number: "`.toSQL()` returns the exact string sent to the database", "a column rename fails the build". Ask what the sentence tells the reader to do or know, then write that. If you can't restate it as a concrete instruction, fact, or number, cut it. One more check: if the sentence could appear unchanged in another project's docs, it says nothing about this one. Cut it.
+28. **Shorten or split dense sentences.** If the reader has to backtrack to parse a sentence, break it in two or drop clauses. One idea per sentence.
+29. **Active voice.** Prefer it. Catch "is/are/was/were + past participle" and name the actor: "queries are validated" becomes "the compiler validates queries", "the file is parsed by the loader" becomes "the loader parses the file". Passive is fine only when the actor is unknown or genuinely doesn't matter.
+30. **Cut adverbs, or use a stronger verb.** "runs quickly" becomes "is fast" or the number. "significantly improves" becomes the measured delta. An adverb propping up a weak verb means the verb is wrong.
+31. **Prefer the plain word.** "utilize" becomes "use", "leverage" becomes "use", "facilitate" becomes "help", "numerous" becomes "many", "in the event that" becomes "if". The fancier synonym is rarely clearer.
+
+---FILES---
+data/analysis/lebanon-israel-comparison-v1.md
+data/analysis/lebanon-israel-viz-v1.html
+data/analysis/viz-template.html
+data/israel/access-notes.md
+data/israel/access-register-v1.csv
+data/israel/census-notes.md
+data/israel/collection-gate-v1.csv
+data/israel/corpus-candidates-v1.jsonl
+data/israel/corpus-v1.jsonl
+data/israel/enumeration/abuali-captures.csv
+data/israel/enumeration/abuali-messages.csv
+data/israel/enumeration/kikar-titles-0.csv
+data/israel/enumeration/kikar-urls.csv
+data/israel/enumeration/makan-titles-0.csv
+data/israel/enumeration/makan-urls.csv
+data/israel/enumeration/n12-titles-0.csv
+data/israel/enumeration/n12-titles-live.csv
+data/israel/enumeration/n12-urls.csv
+data/israel/enumeration/notes.md
+data/israel/enumeration/summary.csv
+data/israel/enumeration/ynet-titles-0.csv
+data/israel/enumeration/ynet-titles-1.csv
+data/israel/enumeration/ynet-urls.csv
+data/israel/normalization-notes.md
+data/israel/outlet-census-v1.csv
+data/israel/raw/kikar/0e0bc3ddb60b4f32.html
+data/israel/raw/kikar/13671679b8337ef8.html
+data/israel/raw/kikar/13b0dde8caae9247.html
+data/israel/raw/kikar/1a02f16d3d1a0e2c.html
+data/israel/raw/kikar/244fafc3e50eb23d.html
+data/israel/raw/kikar/361888163b29a73b.html
+data/israel/raw/kikar/494070c4cd33386f.html
+data/israel/raw/kikar/49f3092a6e85dd3f.html
+data/israel/raw/kikar/4e84dd272cad9c41.html
+data/israel/raw/kikar/5cdcb9b74d891fa6.html
+data/israel/raw/kikar/7fd29c5ea9de34d8.html
+data/israel/raw/kikar/9c9a5a5651d9c9ef.html
+data/israel/raw/kikar/a5de7caca9b68a95.html
+data/israel/raw/kikar/a870a3c508c08973.html
+data/israel/raw/kikar/aaea8f40fbdd03a8.html
+data/israel/raw/kikar/b067effbfb0b4aef.html
+data/israel/raw/kikar/b9d894e05c20f619.html
+data/israel/raw/kikar/bcb1abbf76ec9799.html
+data/israel/raw/kikar/c94cfa701e133a9d.html
+data/israel/raw/kikar/c9c67fb992d168fd.html
+data/israel/raw/kikar/cc202167d19aa8b4.html
+data/israel/raw/kikar/d3a1e9eecb86bc71.html
+data/israel/raw/makan/0140f2ef589a8032.html
+data/israel/raw/makan/2e5c25480b8aa26e.html
+data/israel/raw/makan/5961802f182db903.html
+data/israel/raw/makan/649f23c4cc899045.html
+data/israel/raw/makan/6c19321e52ecb8a2.html
+data/israel/raw/makan/81a4d1b96ef1e082.html
+data/israel/raw/makan/bd5478eb2005ebf0.html
+data/israel/raw/makan/c528a890f38a8388.html
+data/israel/raw/makan/c906716cde87be23.html
+data/israel/raw/makan/c9d393a8251380aa.html
+data/israel/raw/makan/ce489390cac10ebd.html
+data/israel/raw/n12/0f576e9b1deddfe1.html
+data/israel/raw/n12/36b229361f0320af.html
+data/israel/raw/n12/42fc90d847b04e91.html
+data/israel/raw/n12/6ee25e3b1e8b387b.html
+data/israel/raw/n12/aaaa261aca426bf1.html
+data/israel/raw/n12/aadc675d4ccf6fa7.html
+data/israel/raw/n12/ae690238dc50489b.html
+data/israel/raw/n12/bec643728774943b.html
+data/israel/raw/n12/fb580dd84951fc08.html
+data/israel/raw/n12/ffc3325683b29735.html
+data/israel/raw/ynet/026a53962ce6617c.html
+data/israel/raw/ynet/062952dc9ccd7b10.html
+data/israel/raw/ynet/0749079d7ab203c9.html
+data/israel/raw/ynet/07fe8d62f872059b.html
+data/israel/raw/ynet/08469df490dc2d1c.html
+data/israel/raw/ynet/091932500e3da9cc.html
+data/israel/raw/ynet/0a4a386ee9a9517b.html
+data/israel/raw/ynet/0c9640e5077a54ce.html
+data/israel/raw/ynet/0f9066a8b51b13c8.html
+data/israel/raw/ynet/10b5fdd86312d536.html
+data/israel/raw/ynet/11030c144c1bb4b2.html
+data/israel/raw/ynet/12a58ccc249b8807.html
+data/israel/raw/ynet/1e50f88afc94af1d.html
+data/israel/raw/ynet/1e8317cc3af1ec2b.html
+data/israel/raw/ynet/1f6eff025798d5d9.html
+data/israel/raw/ynet/1fa34b83974ceeb5.html
+data/israel/raw/ynet/201268848ba05279.html
+data/israel/raw/ynet/2305c3feff7cd066.html
+data/israel/raw/ynet/2662c441b683e314.html
+data/israel/raw/ynet/2957d478fcf2697c.html
+data/israel/raw/ynet/32d57defeb91c9fa.html
+data/israel/raw/ynet/32ea3d511bcd6f73.html
+data/israel/raw/ynet/34804fbedfbccef9.html
+data/israel/raw/ynet/39d16c66dfab7db2.html
+data/israel/raw/ynet/3d55d2744ef091ff.html
+data/israel/raw/ynet/3e0ef50525f627fb.html
+data/israel/raw/ynet/40b2f608c25796de.html
+data/israel/raw/ynet/410f1a36ab451b6d.html
+data/israel/raw/ynet/4122c02e66f4769b.html
+data/israel/raw/ynet/42b2695dc9ff4d2d.html
+data/israel/raw/ynet/480ac45de50a1556.html
+data/israel/raw/ynet/4a8883c2759f3965.html
+data/israel/raw/ynet/4b24884aa5ea50a4.html
+data/israel/raw/ynet/4d4bdc2a66af8ede.html
+data/israel/raw/ynet/4e4fba89cf11477b.html
+data/israel/raw/ynet/50c8c2a27ce8ae35.html
+data/israel/raw/ynet/57632be591a039bd.html
+data/israel/raw/ynet/595c6c5f8ab014b5.html
+data/israel/raw/ynet/5a14213e7717cee0.html
+data/israel/raw/ynet/5dc8058fe0015b37.html
+data/israel/raw/ynet/5f50e1ff3e826ae7.html
+data/israel/raw/ynet/60e5f1673cb39993.html
+data/israel/raw/ynet/6cac3456ed75dd8e.html
+data/israel/raw/ynet/6d4f77dcff0352fe.html
+data/israel/raw/ynet/6dd0abb5ce822443.html
+data/israel/raw/ynet/77518e2e3b6b431e.html
+data/israel/raw/ynet/7b6f452ccca053ab.html
+data/israel/raw/ynet/7dc59c7a0695f815.html
+data/israel/raw/ynet/7f8388ca56f1e160.html
+data/israel/raw/ynet/869d709b34b3858e.html
+data/israel/raw/ynet/8864a153e1c9d70b.html
+data/israel/raw/ynet/895142082c3d6c12.html
+data/israel/raw/ynet/8aa922b851363e91.html
+data/israel/raw/ynet/8cde670cdeb4aa3b.html
+data/israel/raw/ynet/8fa48a7205dd60c7.html
+data/israel/raw/ynet/8fe7d2f4ed38cc91.html
+data/israel/raw/ynet/93f445ecfecdb6be.html
+data/israel/raw/ynet/965a441518b6a228.html
+data/israel/raw/ynet/9a44f253e2ce3d3f.html
+data/israel/raw/ynet/9ab10136b2f35e74.html
+data/israel/raw/ynet/9d4280debd782a03.html
+data/israel/raw/ynet/a165ae3951834288.html
+data/israel/raw/ynet/a1b7ebc0d3caeb24.html
+data/israel/raw/ynet/a376e10daf968d15.html
+data/israel/raw/ynet/a3d3b8fa81a36cd5.html
+data/israel/raw/ynet/a4504931f74d1990.html
+data/israel/raw/ynet/a91d3b3684a8a98d.html
+data/israel/raw/ynet/ae3fb865b97d1e36.html
+data/israel/raw/ynet/afa3376b865dc15f.html
+data/israel/raw/ynet/b4cd9cfbda4f521f.html
+data/israel/raw/ynet/b7b5028d63d449fa.html
+data/israel/raw/ynet/b81d9107b18ee582.html
+data/israel/raw/ynet/bd220fb05cbbd691.html
+data/israel/raw/ynet/be147e090f832351.html
+data/israel/raw/ynet/be8a76dfffd366c1.html
+data/israel/raw/ynet/c2539acc97fbdf8a.html
+data/israel/raw/ynet/c37ebc84bfd32956.html
+data/israel/raw/ynet/c51d4027a76a2eb7.html
+data/israel/raw/ynet/c5b6f4c003286c2e.html
+data/israel/raw/ynet/ccc955859db6bf56.html
+data/israel/raw/ynet/cebb9bf0aac46ed7.html
+data/israel/raw/ynet/d83e4b62242a1033.html
+data/israel/raw/ynet/db5fe242cc26de99.html
+data/israel/raw/ynet/dcfb7e124f390c74.html
+data/israel/raw/ynet/e2d56cd96825fb0c.html
+data/israel/raw/ynet/e5d2b804a970b73b.html
+data/israel/raw/ynet/e908dde699f8971a.html
+data/israel/raw/ynet/eac0523dc39f4be3.html
+data/israel/raw/ynet/ec9bc5c3f66516b2.html
+data/israel/raw/ynet/ee55735cc0229d5b.html
+data/israel/raw/ynet/ef015c9c7499ff68.html
+data/israel/raw/ynet/f52bdc5f2d61f166.html
+data/israel/reviews/step5-review-codex-raw.md
+data/israel/reviews/step5-review-codex.log
+data/israel/reviews/step5-review-prompt.md
+data/israel/social-counts-raw/backbone-codex.md
+data/israel/social-counts-raw/round2-copilot.md
+data/israel/social-counts-raw/social-copilot.md
+data/israel/triage-notes.md
+
+codex
+The scoped corpus is present, including 22 Kikar, 11 Makan, 10 N12, and a larger Ynet raw set. I’m now extracting the notes’ claims and the comparison’s term definitions so the recomputation matches the corpus’ own rules rather than an ad hoc interpretation.
+exec
+/bin/zsh -lc "sed -n '1,260p' data/israel/triage-notes.md; printf '\\n---NORMALIZATION---\\n'; sed -n '1,300p' data/israel/normalization-notes.md; printf '\\n---COMPARISON---\\n'; sed -n '1,320p' data/analysis/lebanon-israel-comparison-v1.md; printf '\\n---JSONL HEADS---\\n'; sed -n '1,4p' data/israel/corpus-v1.jsonl; sed -n '1,4p' data/israel/corpus-candidates-v1.jsonl" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+# Israel triage + extraction — notes (step 5, v1, 2026-09-06)
+
+Output: [corpus-candidates-v1.jsonl](corpus-candidates-v1.jsonl) (138
+records) + [enumeration/abuali-messages.csv](enumeration/abuali-messages.csv)
+(519 messages, 20 tagged), raw HTML under `raw/`. Scripts:
+`data/scripts/israel_title_sweep.py` (sharded, resumable) +
+`data/scripts/israel_extract.py`.
+
+## Title sweep (the step Lebanon didn't need)
+
+Israeli article URLs are opaque (no slugs), so relevance required
+fetching every enumerated title. Full-manifest sweeps, no sampling:
+
+| outlet | titles swept | route | tagged (strong/related) | empty titles |
+| --- | --- | --- | --- | --- |
+| Ynet | 13,492 | wayback captures, 2 shards | 50/42 | 6 |
+| N12 (mako) | 4,506 | dual workers: live-reverse + wayback, met mid-list | 7/5 | 147 |
+| Kikar | 5,229 | live | 20/2 | 13 |
+| Makan | 647 | wayback | 2/10 | 52 |
+| Abu Ali | 519 messages from 65 captures | wayback capture stream | 20 tagged | — |
+
+Term families: Hebrew ביפר/ביפרים, איתורית, זימונית, גולד אפולו +
+Arabic بيجر + walkie-talkie family. **Pitfall caught during Abu Ali
+tagging: bare ווקי substring-matches שיווקי (sponsored content)** —
+two-word forms only (ווקי טוקי), retag dropped 44→20.
+
+## Extraction
+
+138 candidates fetched (routes per access register: Ynet/Kikar live,
+N12/Makan Wayback): **92 strong, 43 related, 3 fetch-failed**. JSON-LD
+carried both `datePublished` and `articleBody` for 92 records (Ynet and
+mako serve it in-page, as the access review predicted); 43 fell back to
+p-cluster. Dates: 134/138 (97%) — far above Lebanon's step-5 rate, no
+interpolation needed.
+
+**Ynet bodies are leads, not failures**: live and capture pages carry
+only the JSON-LD lead (37–51 words); `PAYWALL_PLANS` markers confirm
+Ynet+ paywalling. Accepted as headline+lead records per the pre-agreed
+paywall policy — typed `flash_or_lead` in normalization, analyzed at
+headline weight.
+
+Abu Ali's first pager message: Sep 17, 13:19 UTC — "הלכה הזימונית (:"
+— minutes after the blasts, before any article in the corpus.
+
+## Known recall limitations (parked, round 2)
+
+1. **N12 is the weak spot: 12 tagged of 4,506.** Title-only sweeping
+   misses Hebrew headlines that skip the device word (e.g. "מבצע"
+   phrasing without ביפר). A GDELT or body-level recall supplement is
+   the parked fix; the 12 collected skew toward the מבצע-celebration
+   register, so treat N12 shares as low-n.
+2. Makan's 52 empty titles (8%) are Wayback capture gaps, not paywalls.
+3. Abu Ali: 65 captures cover 20 of 33 days; uncaptured days may hold
+   unarchived messages. Live `t.me/s` pagination is the completeness
+   fallback if analysis needs it.
+
+---NORMALIZATION---
+# Israel normalization — notes (v1, 2026-09-06)
+
+Script: `data/scripts/normalize_israel.py` ·
+Output: [corpus-v1.jsonl](corpus-v1.jsonl) (schema `1.1.0-phase1`, same
+field groups as Lebanon).
+
+## Result
+
+**153 primary records** (135 from candidates + 20 Abu Ali Telegram
+posts; dropped: 2 out-of-window, 3 fetch-failed; no exact-body
+duplicates survived).
+
+- **Outlets:** Ynet 90 · Kikar 22 · Abu Ali 20 · Makan 11 · N12 10.
+- **Document types:** 78 articles · 55 flash_or_lead (Ynet paywall
+  leads, body <90 words) · 20 telegram_post. The flash_or_lead share
+  (36%) is Israel's genre signature, the counterpart of Lebanon's 40%
+  ticker/brief share — same rule applies: headline-weight analysis for
+  these, body-level for articles.
+- **Languages:** 142 Hebrew, 11 Arabic (Makan) — detected, not assumed.
+- **Dates: 152/153**, of which 132 JSON-LD `datePublished` and 20
+  Telegram timestamps. No interpolation anywhere (vs Lebanon's 40
+  ID-interpolated) — Israeli date quality is the best of any country so
+  far.
+- **Body medians:** Kikar 602w · N12 564w · Makan 229w · Ynet 58w
+  (lead-only by paywall policy).
+- **Time slots:** day_0 34 → **day_1 60 (peak)** → day_2 21 → decay,
+  10 week_2 + 8 first_month tail. Same day-1 walkie-talkie peak as
+  Lebanon.
+
+## Known limitations (for analysis to respect)
+
+1. **"Reuters" credit (19 records) is mostly citation, not
+   syndication.** The lead-keyword wire detector fires on "לפי רויטרס" /
+   "according to Reuters" — in the Israeli context that is the
+   foreign-attribution (censorship-formula) pattern, not wire copy.
+   Don't read `provenance.credit` as syndication for Israel without a
+   body check.
+2. Ynet is 59% of the corpus and lead-weighted — outlet-equal or
+   reach-weighted aggregation is mandatory before publishing
+   country-level shares; raw corpus shares over-weight Ynet flashes.
+3. N12 n=10 (title-sweep recall limit, see triage notes) — its 80%
+   "operation" share is directionally real but low-n.
+4. Abu Ali records are message-level (median far shorter than articles)
+   and cover 20 of 33 days.
+5. No story-level clustering (exact-hash dedup only), same as Lebanon.
+
+Used in `data/analysis/lebanon-israel-comparison-v1.md` and the viz doc
+(`data/analysis/lebanon-israel-viz-v1.html`).
+
+---COMPARISON---
+# Lebanon ↔ Israel: first cross-country comparison (v1, 2026-09-06)
+
+Corpora: Lebanon 338 primary relevant records (5 outlets) · Israel 153
+(4 outlets + Abu Ali Telegram). Same measures, matched per-language term
+families. Record-share %, full available text. Single-pair comparison —
+Germany/US pending.
+
+## Headline table
+
+| measure | Lebanon | Israel |
+|---|---|---|
+| agentless grammar ("explosions happened") | 43.5 | **85.0** |
+| agentive grammar ("someone detonated") | 45.0 | 56.9 |
+| **operation** | 3.3 | **30.7** |
+| attack | 15.4 | 30.7 |
+| aggression/massacre/crime register | 10.7 | 7.2 |
+| casualties as **terrorists** | 0.6 | **20.9** |
+| casualties as **martyrs** | **8.9** | 0.0 |
+| "foreign reports" censorship formula | 0.0 | 5.2 |
+
+## Findings
+
+1. **The naming split is total and clean.** "Operation" framing: Israel
+   31% vs Lebanon 3%. Casualties: Israel calls them terrorists (21% vs
+   0.6%), Lebanon calls them martyrs (9% vs 0.0%). Zero-overlap mirror
+   registers — the מבצע/مجزرة divide, quantified.
+2. **The agency paradox.** Attacker-side coverage uses *agentless* grammar
+   (85%!) far more than victim-side (43.5%) — Israeli mainstream writes
+   "פיצוץ הביפרים" (the beeper explosion) under censorship-shaped caution
+   even while celebrating the מבצע. Meanwhile the victim side is *more*
+   agentive overall, driven by Al-Manar/MTV's تفجير. Grammar tracks
+   institutional constraints, not pride — with the ideological poles
+   (Kikar 100% agentive; Al-Manar 62%) breaking their own side's pattern.
+3. **The censorship fingerprint exists only on one side**: "according to
+   foreign reports" appears in 5.2% of Israeli records and 0.0% of
+   Lebanese ones — a measurable, attacker-side-only attribution mechanism.
+4. **The day-curves are near-identical** (day-1 peak 40% vs 45%) — the
+   walkie-talkie second wave dominated coverage on *both* sides. Whatever
+   divides the framing, the attention rhythm was shared.
+5. Within-country spectra are as wide as the between-country gap on some
+   measures (Kikar↔Ynet on terrorists 82↔14; Al-Manar↔LBCI on massacre
+   17↔2) — supporting the project's design decision to measure outlets,
+   not countries, and weight by reach.
+
+## Caveats
+
+Presence-based keyword shares; Israeli corpus lead-weighted for Ynet
+(flash/paywall format); n=153 vs 338; Abu Ali records are message-level;
+mixed-language matching uses per-language families (Hebrew "massacre"
+register ≈ unused, so the 7.2% Israeli row is mostly quoted terror/crime
+mentions — inspect before publishing). Reach-weighting not yet applied to
+this table.
+
+---JSONL HEADS---
+{"schema_version": "1.1.0-phase1", "document_id": "il_ynet_965a441518", "event_id": "lebanon_pager_attacks_2024", "source": {"page_publisher": "ynet", "country_or_media_system": "Israel", "language": "he"}, "publication": {"published_at": "2024-09-18", "date_source": "ld-json", "time_slot": "day_1", "document_type": "flash_or_lead", "canonical_url": "https://www.ynet.co.il/news/article/SJHBA8dTA"}, "content": {"headline": "בלבנון מדווחים: שוב פיצוצים של ביפרים בדאחייה בביירות ובאזורים נוספים", "body": "בלבנון דיווחו על פיצוצי ביפרים ברובע הדאחייה בביירות ובמספר אזורים בדרום המדינה.", "word_count": 12, "body_sha256": "24a60c53f56a6b64be3f2aa616e8721f8a0ece14cd415b0b1cf3d59141f81590"}, "provenance": {"credit": "", "content_origin": "local_or_unspecified"}, "capture": {"collection_route": "live", "raw_path": "raw/ynet/965a441518b6a228.html"}, "extraction": {"method": "ld-json", "relevance": "strong", "warnings": []}, "deduplication": {"exact_duplicate_cluster_id": "", "is_primary_record": true}}
+{"schema_version": "1.1.0-phase1", "document_id": "il_ynet_1f6eff0257", "event_id": "lebanon_pager_attacks_2024", "source": {"page_publisher": "ynet", "country_or_media_system": "Israel", "language": "he"}, "publication": {"published_at": "2024-09-25", "date_source": "ld-json", "time_slot": "week_2", "document_type": "article", "canonical_url": "https://www.ynet.co.il/news/article/b146i8zca"}, "content": {"headline": "אחרי מתקפת הביפרים: \"כ-1,500 פעילי חיזבאללה יצאו מכשירות\" | דוח: כמה מחבלים חברים בארגון?", "body": "1,500 מחבלי חיזבאללה יצאו מכשירות עקב מתקפת \"פיצוצי הביפרים\", לאחר שרבים מהם התעוורו או איבדו את אחת מידיהם בפיצוצים. כך אמר היום (רביעי) גורם בכיר בארגון הטרור לסוכנות הידיעות רויטרס. • כל העדכונים מהלחימה רשימת ההרוגים שפרסם חיזבאללה בשבוע האחרון לאחר פיצוצי הביפרים וכן מכשירי הקשר יום לאחר מכן הייתה מגוונת מאוד, וכללה 37 הרוגים המגיעים מאזורים שונים בלבנון, מאזור אל-בקאע (בקעת הלבנון) דרך רובע הדאחייה של ביירות המזוהה עם ארגון הטרור ממוקדים רבים בדרום המדינה ועד אזור עכאר שבצפון לבנון. לפי דיווחים שונים בלבנון, כ-3,000 בני אדם נפצעו מפיצוצי הביפרים. ברויטרס ציינו כי בעוד שמדובר ב\"מכה רצינית\" לחיזבאללה, המחבלים שאיבדו את כשירותם מהווים רק חלק קטן מארגון הטרור, שלפי דוח שהוגש לקונגרס האמריקני בסוף השבוע שעבר מחזיק בין 40 ל-50 אלף מחבלים. מזכ\"ל חיזבאללה חסן נסראללה טען כי לארגונו יש \"100 אלף לוחמים\". שלושה גורמים בחיזבאללה ששוחחו עם סוכנות הידיעות אמרו כי מאז 7 באוקטובר ארגון הטרור הציב מחדש את פעיליו \"באזורי החזית בדרום\", בהם גם כאלה שהגיעו ללבנון מסוריה. בנוסף חיזבאללה העביר רקטות נוספות ללבנון בקצב מוגבר, לקראת העימות המתמשך. עם זאת, הגורמים טענו כי חיזבאללה מבקש להימנע ממלחמה כוללת. אנדראס קריג, מרצה בכיר בבית הספר ללימודי ביטחון בקינגס קולג' שבלונדון, אמר כי בעוד שפעילות חיזבאללה נפגעה מהמתקפות בשבוע האחרון, המבנה הארגוני המקושר של ארגון הטרור הופך אותו לכוח \"עמיד ביותר\". \"זה האויב הכי חזק שישראל אי פעם התמודדה איתו בשדה הקרב. לא בגלל מספרים וטכנולוגיה, אלא במובן של חוסן\". \"חיל האוויר תקף יותר מ-100 מטרות, גל נמשך\" בצל הדיווחים על הפגיעה בחיזבאללה, ישראל המשיכה היום בגל תקיפות נרחב בעומק לבנון ובדרומה, ודווח על לפחות 10 הרוגים בשעות הבוקר. מעט לאחר השעה 12:00 צה\"ל עדכן כי מטוסי קרב של חיל האוויר תקפו יותר מ-100 מטרות בלבנון, וכי התקיפות נמשכות. במקביל, חיזבאללה שיגר עשרות רקטות וכטב\"מים לעבר יישובי הצפון, ויחידת דיור ספגה פגיעה ישירה. השיגורים בצפון מגיעים לאחר שחיזבאללה ירה בשעות הבוקר שיגור לעבר המרכז, שבעקבותיו הופעלו אזעקות בגוש דן ויישובי השרון. השיגור יורט באמצעות מערכת קלע דוד. ערוץ הטלוויזיה הסעודי \"אל-חדת'\" דיווח כי \"הירי מלבנון כוון למחנה גלילות\". במקביל ללחימה, העיתון הלבנוני \"אל-אחבאר\", המזוהה עם חיזבאללה, דיווח כי יותר מ-95 אלף עקורים עזבו את דרום לבנון עד כה, אחרי הרחבת התקיפות הישראליות שם. לפי הדיווח, העקורים שוהים בין היתר בבתי ספר שהפכו למקלטים בביירות, הר הלבנון, אזור צידון, אל-בקאע, בעלבכ, אל-הרמל, בעכאר ובצפון המדינה. עוד דווח כי אנשי ביטחון הפנים שאמורים היו לתפקד במצב לפי תוכנית החירום של הממשלה נעדרו, וכי העקורים הושארו לגורלם. רק \"סולידריות חברתית ויוזמות אזרחיות\" הצליחו להקל על המצב, נכתב בדיווח. בעיתון ציינו עוד כי בעקבות העקירה של תושבי דרום לבנון לביירות ופרבריה המזרחיים מנצלים הסוחרים את המצב, ומחיר הלחם עלה פי 6 וחצי. בכתבה אחרת ב\"אל-אחבאר\" תוארה הצפיפות במעברים לכיוון סוריה באזור אל-בקאע שבמזרח המדינה, ובאזור צפון לבנון. לפי הדיווח, אלפי אנשים חוצים את המעברים.", "word_count": 452, "body_sha256": "4aa8bdf2ac14eb7ec6265506fcf465d6946717586f7841168d5cfe473b9de52e"}, "provenance": {"credit": "Reuters", "content_origin": "syndicated_or_adapted"}, "capture": {"collection_route": "live", "raw_path": "raw/ynet/1f6eff025798d5d9.html"}, "extraction": {"method": "ld-json", "relevance": "strong", "warnings": []}, "deduplication": {"exact_duplicate_cluster_id": "x4aa8bdf2ac", "is_primary_record": true}}
+{"schema_version": "1.1.0-phase1", "document_id": "il_ynet_32d57defeb", "event_id": "lebanon_pager_attacks_2024", "source": {"page_publisher": "ynet", "country_or_media_system": "Israel", "language": "he"}, "publication": {"published_at": "2024-09-18", "date_source": "ld-json", "time_slot": "day_1", "document_type": "flash_or_lead", "canonical_url": "https://www.ynet.co.il/news/article/b1aemw00pr"}, "content": {"headline": "רויטרס: מכשירי הקשר שהתפוצצו עתה ברחבי לבנון אינם ביפרים", "body": "לפי מקור ביטחוני של סוכנות הידיעות רויטרס, מכשירי הקשר שהתפוצצו עתה ברחבי לבנון אינם ביפרים, אלא מכשירי רדיו מסוג אחר.", "word_count": 20, "body_sha256": "45afa4e735f6abb9806c772a86c3b0352a76e21be874bbe703e8bcab3cb113e6"}, "provenance": {"credit": "Reuters", "content_origin": "syndicated_or_adapted"}, "capture": {"collection_route": "live", "raw_path": "raw/ynet/32d57defeb91c9fa.html"}, "extraction": {"method": "ld-json", "relevance": "strong", "warnings": []}, "deduplication": {"exact_duplicate_cluster_id": "", "is_primary_record": true}}
+{"schema_version": "1.1.0-phase1", "document_id": "il_ynet_ae3fb865b9", "event_id": "lebanon_pager_attacks_2024", "source": {"page_publisher": "ynet", "country_or_media_system": "Israel", "language": "he"}, "publication": {"published_at": "2024-09-19", "date_source": "ld-json", "time_slot": "day_2", "document_type": "article", "canonical_url": "https://www.ynet.co.il/news/article/b1cihlt60"}, "content": {"headline": "אחרי פיצוץ מכשירי הקשר בלבנון: גלנט שוחח עם שר ההגנה האמריקני", "body": "על רקע פיצוצי הביפרים ומכשירי הקשר בלבנון, שר הביטחון יואב גלנט שוחח עם שר ההגנה האמריקני לויד אוסטין. כך מסר הפנטגון, שהוסיף כי השניים ״סקרו את ההתפתחויות הביטחוניות האזוריות״. לפי הודעת הפנטגון, אוסטין הביע בפני גלנט את תמיכתה \"הבלתי מעורערת\" של ארה\"ב בישראל אל מול האיומים מצד איראן, חיזבאללה ושאר השותפים האזוריים של טהרן. עוד נמסר כי אוסטין הדגיש את מחויבותה של ארה\"ב להרתיע את אויביה של ישראל ואת המאמצים להפחית את המתיחות ברחבי האזור, ובנוסף הדגיש כי ארה\"ב מעדיפה להגיע להסכם הפסקת אש בעזה שתשיב את החטופים, וכן ל\"פתרון דיפלומטי מתמשך לסכסוך בגבול ישראל-לבנון שיאפשר לאזרחים משני הצדדים לחזור לבתיהם״. (דניאל אדלסון, ניו יורק)", "word_count": 105, "body_sha256": "6c8d3ece07fc1d69b8977b14f25468e28aef5e5c2de738fe717fead10d7b78a6"}, "provenance": {"credit": "", "content_origin": "local_or_unspecified"}, "capture": {"collection_route": "live", "raw_path": "raw/ynet/ae3fb865b97d1e36.html"}, "extraction": {"method": "ld-json", "relevance": "strong", "warnings": []}, "deduplication": {"exact_duplicate_cluster_id": "x6c8d3ece07", "is_primary_record": true}}
+{"outlet": "ynet", "url": "https://www.ynet.co.il/news/article/SJHBA8dTA", "fetch_route": "live", "sweep_title": "בלבנון מדווחים: שוב פיצוצים של ביפרים בדאחייה בביירות ובאזורים נוספים", "raw_path": "raw/ynet/965a441518b6a228.html", "title": "בלבנון מדווחים: שוב פיצוצים של ביפרים בדאחייה בביירות ובאזורים נוספים", "published_at": "2024-09-18", "date_source": "ld-json", "body_words": 12, "body_text": "בלבנון דיווחו על פיצוצי ביפרים ברובע הדאחייה בביירות ובמספר אזורים בדרום המדינה.", "extract_method": "ld-json", "relevance": "strong"}
+{"outlet": "ynet", "url": "https://www.ynet.co.il/news/article/b146i8zca", "fetch_route": "live", "sweep_title": "דיווח: \"כ-1,500 פעילי חיזבאללה יצאו מכשירות במתקפת הביפרים\"", "raw_path": "raw/ynet/1f6eff025798d5d9.html", "title": "אחרי מתקפת הביפרים: \"כ-1,500 פעילי חיזבאללה יצאו מכשירות\" | דוח: כמה מחבלים חברים בארגון?", "published_at": "2024-09-25", "date_source": "ld-json", "body_words": 452, "body_text": "1,500 מחבלי חיזבאללה יצאו מכשירות עקב מתקפת \"פיצוצי הביפרים\", לאחר שרבים מהם התעוורו או איבדו את אחת מידיהם בפיצוצים. כך אמר היום (רביעי) גורם בכיר בארגון הטרור לסוכנות הידיעות רויטרס. • כל העדכונים מהלחימה רשימת ההרוגים שפרסם חיזבאללה בשבוע האחרון לאחר פיצוצי הביפרים וכן מכשירי הקשר יום לאחר מכן הייתה מגוונת מאוד, וכללה 37 הרוגים המגיעים מאזורים שונים בלבנון, מאזור אל-בקאע (בקעת הלבנון) דרך רובע הדאחייה של ביירות המזוהה עם ארגון הטרור ממוקדים רבים בדרום המדינה ועד אזור עכאר שבצפון לבנון. לפי דיווחים שונים בלבנון, כ-3,000 בני אדם נפצעו מפיצוצי הביפרים. ברויטרס ציינו כי בעוד שמדובר ב\"מכה רצינית\" לחיזבאללה, המחבלים שאיבדו את כשירותם מהווים רק חלק קטן מארגון הטרור, שלפי דוח שהוגש לקונגרס האמריקני בסוף השבוע שעבר מחזיק בין 40 ל-50 אלף מחבלים. מזכ\"ל חיזבאללה חסן נסראללה טען כי לארגונו יש \"100 אלף לוחמים\". שלושה גורמים בחיזבאללה ששוחחו עם סוכנות הידיעות אמרו כי מאז 7 באוקטובר ארגון הטרור הציב מחדש את פעיליו \"באזורי החזית בדרום\", בהם גם כאלה שהגיעו ללבנון מסוריה. בנוסף חיזבאללה העביר רקטות נוספות ללבנון בקצב מוגבר, לקראת העימות המתמשך. עם זאת, הגורמים טענו כי חיזבאללה מבקש להימנע ממלחמה כוללת. אנדראס קריג, מרצה בכיר בבית הספר ללימודי ביטחון בקינגס קולג' שבלונדון, אמר כי בעוד שפעילות חיזבאללה נפגעה מהמתקפות בשבוע האחרון, המבנה הארגוני המקושר של ארגון הטרור הופך אותו לכוח \"עמיד ביותר\". \"זה האויב הכי חזק שישראל אי פעם התמודדה איתו בשדה הקרב. לא בגלל מספרים וטכנולוגיה, אלא במובן של חוסן\". \"חיל האוויר תקף יותר מ-100 מטרות, גל נמשך\" בצל הדיווחים על הפגיעה בחיזבאללה, ישראל המשיכה היום בגל תקיפות נרחב בעומק לבנון ובדרומה, ודווח על לפחות 10 הרוגים בשעות הבוקר. מעט לאחר השעה 12:00 צה\"ל עדכן כי מטוסי קרב של חיל האוויר תקפו יותר מ-100 מטרות בלבנון, וכי התקיפות נמשכות. במקביל, חיזבאללה שיגר עשרות רקטות וכטב\"מים לעבר יישובי הצפון, ויחידת דיור ספגה פגיעה ישירה. השיגורים בצפון מגיעים לאחר שחיזבאללה ירה בשעות הבוקר שיגור לעבר המרכז, שבעקבותיו הופעלו אזעקות בגוש דן ויישובי השרון. השיגור יורט באמצעות מערכת קלע דוד. ערוץ הטלוויזיה הסעודי \"אל-חדת'\" דיווח כי \"הירי מלבנון כוון למחנה גלילות\". במקביל ללחימה, העיתון הלבנוני \"אל-אחבאר\", המזוהה עם חיזבאללה, דיווח כי יותר מ-95 אלף עקורים עזבו את דרום לבנון עד כה, אחרי הרחבת התקיפות הישראליות שם. לפי הדיווח, העקורים שוהים בין היתר בבתי ספר שהפכו למקלטים בביירות, הר הלבנון, אזור צידון, אל-בקאע, בעלבכ, אל-הרמל, בעכאר ובצפון המדינה. עוד דווח כי אנשי ביטחון הפנים שאמורים היו לתפקד במצב לפי תוכנית החירום של הממשלה נעדרו, וכי העקורים הושארו לגורלם. רק \"סולידריות חברתית ויוזמות אזרחיות\" הצליחו להקל על המצב, נכתב בדיווח. בעיתון ציינו עוד כי בעקבות העקירה של תושבי דרום לבנון לביירות ופרבריה המזרחיים מנצלים הסוחרים את המצב, ומחיר הלחם עלה פי 6 וחצי. בכתבה אחרת ב\"אל-אחבאר\" תוארה הצפיפות במעברים לכיוון סוריה באזור אל-בקאע שבמזרח המדינה, ובאזור צפון לבנון. לפי הדיווח, אלפי אנשים חוצים את המעברים.", "extract_method": "ld-json", "relevance": "strong"}
+{"outlet": "ynet", "url": "https://www.ynet.co.il/news/article/b1aemw00pr", "fetch_route": "live", "sweep_title": "רויטרס: מכשירי הקשר שהתפוצצו עתה ברחבי לבנון אינם ביפרים", "raw_path": "raw/ynet/32d57defeb91c9fa.html", "title": "רויטרס: מכשירי הקשר שהתפוצצו עתה ברחבי לבנון אינם ביפרים", "published_at": "2024-09-18", "date_source": "ld-json", "body_words": 20, "body_text": "לפי מקור ביטחוני של סוכנות הידיעות רויטרס, מכשירי הקשר שהתפוצצו עתה ברחבי לבנון אינם ביפרים, אלא מכשירי רדיו מסוג אחר.", "extract_method": "ld-json", "relevance": "strong"}
+{"outlet": "ynet", "url": "https://www.ynet.co.il/news/article/b1cihlt60", "fetch_route": "live", "sweep_title": "אחרי פיצוץ מכשירי הקשר בלבנון: גלנט שוחח עם שר ההגנה האמריקני", "raw_path": "raw/ynet/ae3fb865b97d1e36.html", "title": "אחרי פיצוץ מכשירי הקשר בלבנון: גלנט שוחח עם שר ההגנה האמריקני", "published_at": "2024-09-19", "date_source": "ld-json", "body_words": 105, "body_text": "על רקע פיצוצי הביפרים ומכשירי הקשר בלבנון, שר הביטחון יואב גלנט שוחח עם שר ההגנה האמריקני לויד אוסטין. כך מסר הפנטגון, שהוסיף כי השניים ״סקרו את ההתפתחויות הביטחוניות האזוריות״. לפי הודעת הפנטגון, אוסטין הביע בפני גלנט את תמיכתה \"הבלתי מעורערת\" של ארה\"ב בישראל אל מול האיומים מצד איראן, חיזבאללה ושאר השותפים האזוריים של טהרן. עוד נמסר כי אוסטין הדגיש את מחויבותה של ארה\"ב להרתיע את אויביה של ישראל ואת המאמצים להפחית את המתיחות ברחבי האזור, ובנוסף הדגיש כי ארה\"ב מעדיפה להגיע להסכם הפסקת אש בעזה שתשיב את החטופים, וכן ל\"פתרון דיפלומטי מתמשך לסכסוך בגבול ישראל-לבנון שיאפשר לאזרחים משני הצדדים לחזור לבתיהם״. (דניאל אדלסון, ניו יורק)", "extract_method": "ld-json", "relevance": "strong"}
+
+exec
+/bin/zsh -lc "python3 -c 'import csv,glob,json,collections; fs=glob.glob(\"data/israel/enumeration/*titles*.csv\")+[\"data/israel/enumeration/abuali-messages.csv\"]; [(lambda f: (lambda h: (lambda rd,rows: print(\"\\\\n\",f,len(rows),rd.fieldnames,rows[:2]))(csv.DictReader(h),list(csv.DictReader(h))))(open(f,encoding=\"utf-8-sig\",newline=\"\")))(f) for f in fs]; [(lambda f: (lambda rows: print(\"\\\\n\",f,len(rows),collections.Counter(r.get(\"source\",{}).get(\"page_publisher\") for r in rows),collections.Counter(r.get(\"extraction\",{}).get(\"relevance\") for r in rows),collections.Counter(r.get(\"publication\",{}).get(\"document_type\") for r in rows),collections.Counter(r.get(\"publication\",{}).get(\"date_source\") for r in rows))([json.loads(x) for x in open(f,encoding=\"utf-8\")]))(f) for f in [\"data/israel/corpus-candidates-v1.jsonl\",\"data/israel/corpus-v1.jsonl\"]]'" in /Users/jknauber/Documents/Projects/news
+ exited 1 in 0ms:
+  File "<string>", line 1
+    import csv,glob,json,collections; fs=glob.glob("data/israel/enumeration/*titles*.csv")+["data/israel/enumeration/abuali-messages.csv"]; [(lambda f: (lambda h: (lambda rd,rows: print("\\n",f,len(rows),rd.fieldnames,rows[:2]))(csv.DictReader(h),list(csv.DictReader(h))))(open(f,encoding="utf-8-sig",newline="")))(f) for f in fs]; [(lambda f: (lambda rows: print("\\n",f,len(rows),collections.Counter(r.get("source",{}).get("page_publisher") for r in rows),collections.Counter(r.get("extraction",{}).get("relevance") for r in rows),collections.Counter(r.get("publication",{}).get("document_type") for r in rows),collections.Counter(r.get("publication",{}).get("date_source") for r in rows))([json.loads(x) for x in open(f,encoding="utf-8")]))(f) for f in ["data/israel/corpus-candidates-v1.jsonl","data/israel/corpus-v1.jsonl"]]
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^
+SyntaxError: closing parenthesis ']' does not match opening parenthesis '('
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import csv,glob,json,collections\\nfor f in glob.glob(\\\"data/israel/enumeration/*titles*.csv\\\")+[\\\"data/israel/enumeration/abuali-messages.csv\\\"]:\\n h=open(f,encoding=\\\"utf-8-sig\\\",newline=\\\"\\\"); rd=csv.DictReader(h); rows=list(rd); print(\\\"\\\\n\\\",f,len(rows),rd.fieldnames); print(rows[:2])\\nfor f in [\\\"data/israel/corpus-candidates-v1.jsonl\\\",\\\"data/israel/corpus-v1.jsonl\\\"]:\\n rows=[json.loads(x) for x in open(f,encoding=\\\"utf-8\\\")]; print(\\\"\\\\n\\\",f,len(rows),collections.Counter(r.get(\\\"source\\\",{}).get(\\\"page_publisher\\\") for r in rows),collections.Counter(r.get(\\\"extraction\\\",{}).get(\\\"relevance\\\") for r in rows),collections.Counter(r.get(\\\"publication\\\",{}).get(\\\"document_type\\\") for r in rows),collections.Counter(r.get(\\\"publication\\\",{}).get(\\\"date_source\\\") for r in rows))\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+
+ data/israel/enumeration/kikar-titles-0.csv 5229 ['url', 'title', 'relevance', 'fetch_route']
+[{'url': 'http://www.kikar.co.il/actualy/skeyzq', 'title': 'כתר הרימון – האם באמת יש ברימון תרי"ג גרעינים? | כיכר השבת', 'relevance': '', 'fetch_route': 'live'}, {'url': 'http://www.kikar.co.il/actualy/sky57g', 'title': 'מחר: תוכנית הלכתית מיוחדת לקראת יום כיפור; כנסו ושלחו את שאלותיכם | כיכר השבת', 'relevance': '', 'fetch_route': 'live'}]
+
+ data/israel/enumeration/n12-titles-live.csv 1006 ['url', 'title', 'relevance', 'fetch_route']
+[{'url': 'https://www.mako.co.il/news-world/usa_elections/Article-e421fedc1a33d11004.htm', 'title': 'מי רוצה להיראות כמו שרה פיילין? | N12', 'relevance': '', 'fetch_route': 'live'}, {'url': 'https://www.mako.co.il/news-world/usa_elections/Article-e0e8aa675216d11004.htm', 'title': 'Radware Block Page', 'relevance': '', 'fetch_route': 'live'}]
+
+ data/israel/enumeration/ynet-titles-0.csv 6746 ['url', 'title', 'relevance', 'fetch_route']
+[{'url': 'https://www.ynet.co.il/news/article/0887sim77', 'title': 'תחזית מזג האוויר: ירידה בטמפרטורות, לצד הקלה בעומסי החום', 'relevance': '', 'fetch_route': 'live'}, {'url': 'https://www.ynet.co.il/news/article/1apd3hiul', 'title': 'מזג אוויר: עלייה בטמפרטורות, גשם מקומי קל בצפון', 'relevance': '', 'fetch_route': 'live'}]
+
+ data/israel/enumeration/ynet-titles-1.csv 6746 ['url', 'title', 'relevance', 'fetch_route']
+[{'url': 'https://www.ynet.co.il/news/article/0dy7k4gkh', 'title': 'תחזית מזג האוויר: עלייה בטמפרטורות, לקראת התחממות נוספת בסוף השבוע', 'relevance': '', 'fetch_route': 'live'}, {'url': 'https://www.ynet.co.il/news/article/1pqanmbxq', 'title': 'תחזית מזג האוויר: הכבדה נוספת בעומסי החום', 'relevance': '', 'fetch_route': 'live'}]
+
+ data/israel/enumeration/makan-titles-0.csv 647 ['url', 'title', 'relevance', 'fetch_route']
+[{'url': 'https://makan.org.il/content/news/makan-news/makannews/135670/', 'title': 'لحظة غرق شاب وصديقته في أحد شواطئ اسبانيا بعد', 'relevance': '', 'fetch_route': 'wayback'}, {'url': 'https://makan.org.il/content/news/makan-news/makannews/137922/', 'title': 'قتلى وجرحى بالولايات المتحدة بحادث دهس متعمد', 'relevance': '', 'fetch_route': 'wayback'}]
+
+ data/israel/enumeration/n12-titles-0.csv 3500 ['url', 'title', 'relevance', 'fetch_route']
+[{'url': 'https://www.mako.co.il/news-business/2022_q3/Article-d8adb783d3c1281027.htm', 'title': 'N12 - רשלנות רפואית? "התקנות החדשות הן קטסטרופה"', 'relevance': '', 'fetch_route': 'wayback'}, {'url': 'https://www.mako.co.il/news-business/2024_q4/Article-e63a590c89b4291027.htm', 'title': 'N12 - ביבשה, באוויר ובים: "ידידים" הוא ארגון המתנדבים הגדול...', 'relevance': '', 'fetch_route': 'wayback'}]
+
+ data/israel/enumeration/abuali-messages.csv 519 ['post_id', 'datetime', 'relevance', 'text']
+[{'post_id': '75470', 'datetime': '2024-09-15T05:58:33+00:00', 'relevance': '', 'text': 'מתוך הודעת דובר צה"ל: בהמשך להתרעות שהופעלו בין השעות 8:19-8:20 במרחב הגליל העליון ובצפון רמת הגולן, זוהו כ-40 שיגורים שחצו משטח לבנון, חלקם יורטו, השאר נפלו בשטחים פתוחים, אין נפגעים #אין_נפגעים_ברמת_טראמפ כדי להגיב לכתבה לחצו כאן'}, {'post_id': '75471', 'datetime': '2024-09-15T05:59:00+00:00', 'relevance': '', 'text': '°תוכן שיווקי'}]
+
+ data/israel/corpus-candidates-v1.jsonl 138 Counter({None: 138}) Counter({None: 138}) Counter({None: 138}) Counter({None: 138})
+
+ data/israel/corpus-v1.jsonl 153 Counter({'ynet': 90, 'kikar': 22, 'abuali': 20, 'makan': 11, 'n12': 10}) Counter({'strong': 103, 'related': 50}) Counter({'article': 78, 'flash_or_lead': 55, 'telegram_post': 20}) Counter({'ld-json': 132, 'telegram-ts': 20, '': 1})
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import csv,json,collections,glob,re\\nfor f in glob.glob(\\\"data/israel/enumeration/*titles*.csv\\\"):\\n rows=list(csv.DictReader(open(f,encoding=\\\"utf-8-sig\\\"))); print(f,collections.Counter(x[\\\"relevance\\\"] for x in rows),\\\"empty\\\",sum(not x[\\\"title\\\"].strip() for x in rows))\\nf=\\\"data/israel/enumeration/abuali-messages.csv\\\"; rows=list(csv.DictReader(open(f,encoding=\\\"utf-8-sig\\\"))); print(f,collections.Counter(x[\\\"relevance\\\"] for x in rows))\\nrows=[json.loads(x) for x in open(\\\"data/israel/corpus-candidates-v1.jsonl\\\")]; print(\\\"candidate keys\\\",rows[0].keys()); print(\\\"candidate outlets\\\",collections.Counter(x[\\\"outlet\\\"] for x in rows)); print(\\\"candidate relevance\\\",collections.Counter(x.get(\\\"relevance\\\") for x in rows)); print(\\\"candidate dates\\\",collections.Counter(x.get(\\\"date_source\\\") for x in rows)); print(\\\"candidate failed\\\",[x for x in rows if x.get(\\\"body_text\\\",\\\"\\\") in (None,\\\"\\\") or x.get(\\\"extract_method\\\")==\\\"fetch-failed\\\"]); print(\\\"candidate date vals\\\",collections.Counter(x.get(\\\"published_at\\\") for x in rows).most_common(5))\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+data/israel/enumeration/kikar-titles-0.csv Counter({'': 5207, 'strong': 20, 'related': 2}) empty 13
+data/israel/enumeration/n12-titles-live.csv Counter({'': 1006}) empty 0
+data/israel/enumeration/ynet-titles-0.csv Counter({'': 6705, 'strong': 26, 'related': 15}) empty 4
+data/israel/enumeration/ynet-titles-1.csv Counter({'': 6695, 'related': 27, 'strong': 24}) empty 2
+data/israel/enumeration/makan-titles-0.csv Counter({'': 635, 'related': 10, 'strong': 2}) empty 52
+data/israel/enumeration/n12-titles-0.csv Counter({'': 3488, 'strong': 7, 'related': 5}) empty 147
+data/israel/enumeration/abuali-messages.csv Counter({'': 499, 'strong': 11, 'related': 9})
+candidate keys dict_keys(['outlet', 'url', 'fetch_route', 'sweep_title', 'raw_path', 'title', 'published_at', 'date_source', 'body_words', 'body_text', 'extract_method', 'relevance'])
+candidate outlets Counter({'ynet': 92, 'kikar': 22, 'makan': 12, 'n12': 12})
+candidate relevance Counter({'strong': 92, 'related': 43, 'fetch-failed': 3})
+candidate dates Counter({'ld-json': 134, None: 3, '': 1})
+candidate failed [{'outlet': 'makan', 'url': 'https://www.makan.org.il/content/news/makan-news/p-11371/801469/', 'fetch_route': 'wayback', 'sweep_title': 'بهذه السخرية غطت الصحافة العربية انفجارات اللاسلكي', 'raw_path': '', 'title': 'بهذه السخرية غطت الصحافة العربية انفجارات اللاسلكي', 'published_at': '', 'body_words': 0, 'body_text': '', 'relevance': 'fetch-failed'}, {'outlet': 'n12', 'url': 'https://www.mako.co.il/news-military/2024_q3/Article-664e7436e571291026.htm', 'fetch_route': 'wayback', 'sweep_title': 'N12 - פרטים חדשים על מבצע הביפרים הנועז', 'raw_path': '', 'title': 'N12 - פרטים חדשים על מבצע הביפרים הנועז', 'published_at': '', 'body_words': 0, 'body_text': '', 'relevance': 'fetch-failed'}, {'outlet': 'n12', 'url': 'https://www.mako.co.il/news-money/tech12/Article-a58e1dee4500291026.htm', 'fetch_route': 'wayback', 'sweep_title': 'N12 - מהו מכשיר הביפר, שפוצץ מרחוק לאנשי חיזבאללה?', 'raw_path': '', 'title': 'N12 - מהו מכשיר הביפר, שפוצץ מרחוק לאנשי חיזבאללה?', 'published_at': '', 'body_words': 0, 'body_text': '', 'relevance': 'fetch-failed'}]
+candidate date vals [('2024-09-18', 50), ('2024-09-17', 26), ('2024-09-19', 21), ('2024-09-22', 6), ('2024-09-25', 5)]
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import csv,re,json,collections\\nrows=[]\\nfor f in [\\\"data/israel/enumeration/ynet-titles-0.csv\\\",\\\"data/israel/enumeration/ynet-titles-1.csv\\\"]: rows+=list(csv.DictReader(open(f,encoding=\\\"utf-8-sig\\\")))\\nterms=[\\\"חיזבאללה\\\",\\\"לבנון\\\",\\\"מטען\\\"]\\nsel=[r for r in rows if not r[\\\"relevance\\\"] and any(t in r[\\\"title\\\"] for t in terms)]\\nprint(\\\"eligible\\\",len(sel))\\nfor i,r in enumerate(sel[:100]): print(i,r[\\\"url\\\"],r[\\\"title\\\"])\\nprint(\\\"\\\\nTAGGED\\\")\\nfor r in [r for r in rows if r[\\\"relevance\\\"]][:20]: print(r[\\\"relevance\\\"],r[\\\"url\\\"],r[\\\"title\\\"])\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+eligible 1634
+0 https://www.ynet.co.il/news/article/B1eqAAJqT צה"ל: תקפנו מהאוויר מסלול תעופה ששימש את חיזבאללה
+1 https://www.ynet.co.il/news/article/B1pErjwOp מבצע בג'נין: 4 לוחמי מג"ב נפצעו, בהם אחד קשה, ממטען שהוטמן בציר
+2 https://www.ynet.co.il/news/article/BJX88oBC0 דיווח: היעד בתקיפה האחרונה בדאחייה - ראש המועצה המבצעת של חיזבאללה נביל קאווק
+3 https://www.ynet.co.il/news/article/BJYp35mXd מהומות בלבנון: הכבישים לביירות נחסמו, הנשיא קורא לצבא להתערב
+4 https://www.ynet.co.il/news/article/BJqm11CM0C יעד החיסול בדאחייה - מפקד היחידה האווירית של חיזבאללה
+5 https://www.ynet.co.il/news/article/BkOfUtF0A לפחות רקטה אחת ששוגרה מלבנון התפוצצה באזור נתניה
+6 https://www.ynet.co.il/news/article/ByDSnxiTC מקורב לחיזבאללה לסוכנות הידיעות הצרפתית: איברהים עקיל חוסל בתקיפה
+7 https://www.ynet.co.il/news/article/H15FwBLAC גורמים אמריקנים: "ייתכן שהחלו פעולות חוצות גבול בקנה מידה קטן בלבנון"
+8 https://www.ynet.co.il/news/article/H1bVxI2RA הותר לפרסום: סרן בן ציון פלח, קצין בצנחנים, נפל בקרב בדרום לבנון
+9 https://www.ynet.co.il/news/article/HJ5YCTekkl הותר לפרסום: רס"ר (במיל') איתי אזולאי, לוחם ביחידת הניוד, נפל בקרב בגבול לבנון
+10 https://www.ynet.co.il/news/article/HkGNqVkhu "היום זה ירי ומטען, מחר ירצחו אותנו": זעקת העיתונאים הערבים
+11 https://www.ynet.co.il/news/article/S1VtFI7ou קריסה כלכלית בלבנון: מכות בתחנות דלק, התרופות נגמרות
+12 https://www.ynet.co.il/news/article/S1ZznjS0R צה"ל: חיסלנו בדאחייה בכיר במטה המודיעין של חיזבאללה
+13 https://www.ynet.co.il/news/article/S1uZY11f00 כוח צה"ל ירה לעבר שתי דמויות חשודות בגבול לבנון, הנסיבות בבדיקה
+14 https://www.ynet.co.il/news/article/SJ0v1ii7v ידבר גם עם חיזבאללה: מקרון מנסה להציל את לבנון
+15 https://www.ynet.co.il/news/article/SJD5c0Cw00 לאחר חצי שנה: חודש המו"מ בין ישראל ללבנון על הגבול הימי
+16 https://www.ynet.co.il/news/article/SJo00RHDRR דיווח בלבנון על תקיפה בביירות
+17 https://www.ynet.co.il/news/article/SkBrsk7RA גורמים ביטחוניים לרויטרס: מפקד היחידה האווירית של חיזבאללה חוסל בדאחייה
+18 https://www.ynet.co.il/news/article/SyJ0vFMiR דיווח בלבנון על תקיפות בעומק המדינה - כמעט 100 ק"מ מהגבול עם ישראל
+19 https://www.ynet.co.il/news/article/Syt7HUeaC סירה ישראלית נסחפה לשטח הימי של לבנון, וחולצה ע"י צה"ל מול חופי צור
+20 https://www.ynet.co.il/news/article/b102wy4ia תקיפות נרחבות של צה"ל בכמה יעדים בדרום לבנון
+21 https://www.ynet.co.il/news/article/b10fz1ekje דיווחים: פיצוצים נשמעו במערב סוריה, תקיפה בעומק לבנון
+22 https://www.ynet.co.il/news/article/b111hffac דיווחים בלבנון: הרוגים ופצועים בתקיפות צה"ל בדאחייה בביירות
+23 https://www.ynet.co.il/news/article/b111poricc גורמים אמריקנים: "ייתכן שהחלו פעולות חוצות-גבול בקנה מידה קטן בלבנון"
+24 https://www.ynet.co.il/news/article/b11dffrcr צה"ל: ממשיכים לתקוף מטרות חיזבאללה בשטח לבנון
+25 https://www.ynet.co.il/news/article/b13wgq0tr צפי למתקפה "בהיקפים עצומים" בלבנון: "חיזבאללה יגיב"
+26 https://www.ynet.co.il/news/article/b13xc7ugr פסיקה היסטורית בארגנטינה: איראן תכננה את פיגועי התופת בקהילה היהודית, חיזבאללה ביצע
+27 https://www.ynet.co.il/news/article/b150xnky1g דיווחים בלבנון: תקיפות ברובע הדאחייה בביירות
+28 https://www.ynet.co.il/news/article/b17qhzorr צה"ל: חיסלנו בביירות גם את ראש מערך הרקטות לטווח בינוני של חיזבאללה
+29 https://www.ynet.co.il/news/article/b18jagfaa צבא לבנון מכחיש את הדיווחים על נסיגתו צפונה: "נערכנו מחדש בעמדות קדמיות"
+30 https://www.ynet.co.il/news/article/b18myax76 גלנט בגבול הצפון: "אם נסראללה יעשה טעות - הוא יחרוץ את גורל לבנון"
+31 https://www.ynet.co.il/news/article/b19bra86a מבנה עם מחבלים הותקף בלבנון, יישובים בגליל הונחו לשהות ליד מרחב מוגן
+32 https://www.ynet.co.il/news/article/b1abviqfp דיווח בלבנון: ביקור שליח ארה"ב במדינה - אזהרה אחרונה לפני הסלמה גדולה
+33 https://www.ynet.co.il/news/article/b1bfq91v6 מטוסי קרב תקפו תשתיות טרור ואתרים צבאיים של חיזבאללה בלבנון
+34 https://www.ynet.co.il/news/article/b1bp80cpr דובר צה"ל: תקפנו טילים וכלי טיס בלתי מאוישים בבתים בדרום לבנון
+35 https://www.ynet.co.il/news/article/b1c87eo6r מקרון האשים: אתם דוחפים את האזור למלחמה. נתניהו: תלחצו על חיזבאללה
+36 https://www.ynet.co.il/news/article/b1chdgvp0 צה"ל: תקפנו הלילה בדרום לבנון, כוחות פועלים לכיבוי שריפות בצפון
+37 https://www.ynet.co.il/news/article/b1coormia כ"ץ: "חיזבאללה, הפרוקסי של איראן, מוביל את לבנון לאפלה - תרתי משמע"
+38 https://www.ynet.co.il/news/article/b1czhjsa0 לאחר המטחים לצפון: צה"ל תקף במספר אזורים בדרום לבנון
+39 https://www.ynet.co.il/news/article/b1dgnzt00a גלנט ל-WSJ: חיזבאללה רואה את עזה ויודע שנוכל לעשות העתק-הדבק לביירות
+40 https://www.ynet.co.il/news/article/b1e11vcfa0 שר ההגנה האמריקני: "ארה"ב תומכת בישראל מול איראן, חיזבאללה ושותפיהם"
+41 https://www.ynet.co.il/news/article/b1eco7grc דיווחים: נפגעים בתקיפת צה"ל בביירות - שכוונה למפקד חיזבאללה
+42 https://www.ynet.co.il/news/article/b1eve0yg6 האירוע בגבול לבנון: לפחות מחבל אחד חדר, המצוד נמשך
+43 https://www.ynet.co.il/news/article/b1gcwwdra דיווח בלבנון: לפחות 11 הרוגים ו"פצועים רבים" בתקיפות צה"ל בעומק המדינה
+44 https://www.ynet.co.il/news/article/b1hdgho10 מפקד כוח קודס בסוריה ולבנון חוסל בתקיפה ליד שגרירות איראן בדמשק
+45 https://www.ynet.co.il/news/article/b1hhpoeft צה"ל תקף מטרות צבאיות של חיזבאללה
+46 https://www.ynet.co.il/news/article/b1ieilrma אחרי שעובדי חברת חשמל נפגעו מירי נ"ט: צה"ל חיסל בלבנון את חוליית השיגור
+47 https://www.ynet.co.il/news/article/b1igdz2rc צה"ל: תקפנו בביירות יעדים של מטה המודיעין של חיזבאללה
+48 https://www.ynet.co.il/news/article/b1inojo6a הבית הלבן: לא היינו מעורבים בפיצוצים בלבנון, עדיין איננו מעוניינים בהסלמה
+49 https://www.ynet.co.il/news/article/b1jqneyda חיזבאללה הודיע על ההרוג ה-113 בשורותיו מפרוץ המלחמה
+50 https://www.ynet.co.il/news/article/b1k24m28a הפה והעיניים של חיזבאללה בדרום לבנון
+51 https://www.ynet.co.il/news/article/b1l9e11wa0 דיווח בלבנון: "הלווייתו של נסראללה לא תתקיים מחר"
+52 https://www.ynet.co.il/news/article/b1lhvmcsa נקודות השיגור במתקפת חיזבאללה - ומי יהיה רמטכ"ל ארגון הטרור?
+53 https://www.ynet.co.il/news/article/b1ljajctc 1,000 קני שיגור הופצצו בלבנון. בעשרות יישובים בצפון שהו ליד מרחב מוגן כל הלילה
+54 https://www.ynet.co.il/news/article/b1lpk71ut מהאוויר ובטנקים: צה"ל תקף בלבנון שלוש חוליות מחבלים
+55 https://www.ynet.co.il/news/article/b1m2qu660 גורם צבאי: "הפעולות בלבנון מנעו בוקר קשה יותר, פנינו להעצים את התקיפות"
+56 https://www.ynet.co.il/news/article/b1mdrdg0r על סף מלחמה שלישית: הכול על הסכסוך עם לבנון
+57 https://www.ynet.co.il/news/article/b1prakva0 כטב"מים התפוצצו בגולן, חיזבאללה: שיגרנו נחיל בתגובה לתקיפה בעומק לבנון
+58 https://www.ynet.co.il/news/article/b1qcjhncc דיווחים בלבנון: תקיפות בדאחייה ובעומק המדינה
+59 https://www.ynet.co.il/news/article/b1qiodmrc סמוטריץ' על הפסקת האש בצפון: "סיום המערכה - רק בריסוק חיזבאללה"
+60 https://www.ynet.co.il/news/article/b1qkgv00t0 הירי לאצבע הגליל: זוהו כ-25 שיגורים שחצו מלבנון, לא דווח על נפגעים
+61 https://www.ynet.co.il/news/article/b1qwpbym6 שני לוחמים נפצעו קל ובינוני בחילופי אש עם חיזבאללה
+62 https://www.ynet.co.il/news/article/b1rxfgkc0 הבית הלבן: "תומכים בפעולה הקרקעית המוגבלת של צה"ל בדרום לבנון"
+63 https://www.ynet.co.il/news/article/b1tglzha0 הירי לשומרון: רקטה אחת חצתה מלבנון והתפוצצה בשטח פתוח
+64 https://www.ynet.co.il/news/article/b1whqznrc בצה"ל מעריכים: יותר מ-100 מחבלי חיזבאללה חוסלו מתחילת התמרון בלבנון
+65 https://www.ynet.co.il/news/article/b1wymhyaa גורם בצבא לבנון: "לא נצפתה פלישה קרקעית של צה"ל לדרום המדינה"
+66 https://www.ynet.co.il/news/article/b1x5iu00jc מאות בהלווייתו של רס"ל (מיל') ניתאי מיטודי, שנהרג מפיצוץ מטען בעזה
+67 https://www.ynet.co.il/news/article/b1yc0rfdp אחרי הירי לצפון: צה"ל תקף חוליה ותשתית טרור של חיזבאללה בלבנון
+68 https://www.ynet.co.il/news/article/b1yjnpe0a צה"ל קורא פעם נוספת לתושבים בדאחייה: "התרחקו ממבנים שקשורים לחיזבאללה"
+69 https://www.ynet.co.il/news/article/b1yppy2ka 166 מפרוץ המלחמה: חיזבאללה הודיע על הרוג נוסף בשורותיו
+70 https://www.ynet.co.il/news/article/b1ywztrba חמאס קיבל אחריות על הירי לצפון: "שיגרנו 30 רקטות מדרום לבנון"
+71 https://www.ynet.co.il/news/article/b1yxxzo60 המסר הישראלי: נגמרה ההתשה. ההערכה: חיזבאללה יכול להגיב בכלים חדשים
+72 https://www.ynet.co.il/news/article/b1zcw3myyx דיווח בלבנון: כטב"ם תקף דחפורים שפינו הריסות בדרום המדינה
+73 https://www.ynet.co.il/news/article/b1zo36v6c חיזבאללה: "מנהלים חקירה על המכשירים שהתפוצצו - החשבון יגיע"
+74 https://www.ynet.co.il/news/article/bj005x0car בשל תקיפות צה"ל: תושבים רבים מדרום לבנון מתפנים צפונה
+75 https://www.ynet.co.il/news/article/bj0pf6djt דיווח בלבנון: הותקף בית בכפר בדרום המדינה
+76 https://www.ynet.co.il/news/article/bj0uk4u0a גרמניה: פינינו מלבנון משפחות של צוותים דיפלומטיים ואזרחים בסיכון
+77 https://www.ynet.co.il/news/article/bj11rpwxkye פעילות צה"ל בדרום לבנון: אמל"ח רב נמצא במבנים אזרחיים שבהם השתמש חיזבאללה
+78 https://www.ynet.co.il/news/article/bj4sa07cp דיווח בלבנון: התקיפות הישראליות נמשכות בדרום המדינה
+79 https://www.ynet.co.il/news/article/bj5sgpfzt עקב ניסיון שיגור טילי נ"ט: צה"ל תקף תשתית של חיזבאללה
+80 https://www.ynet.co.il/news/article/bj68welf6 שיגורים מלבנון לאזור הר דב, צה"ל מגיב בירי
+81 https://www.ynet.co.il/news/article/bj6k3sy11t מופיד אלזיר, בן 57 מאבו סנאן, הוא האיש שנהרג מירי חיזבאללה לעבר שתולה
+82 https://www.ynet.co.il/news/article/bj9qbd2i0 כוח שמירת השלום בדרום לבנון יישאר שנה נוספת - חרף הכישלון
+83 https://www.ynet.co.il/news/article/bjamvaiy0 צה"ל: חוסל פואד שוכר, "המפקד הצבאי הבכיר ביותר בחיזבאללה"
+84 https://www.ynet.co.il/news/article/bjavwutaa דיווח: תקיפה אווירית על מקטע כביש בדרום לבנון - שכבר הופצץ בעבר
+85 https://www.ynet.co.il/news/article/bjb0nocp0 "הדייר" הסמוי בבית המשפחות השיעיות בלבנון: הפרויקט של חיזבאללה שצה"ל החל לסכל
+86 https://www.ynet.co.il/news/article/bjbuaddba חיזבאללה הודיע על ההרוג ה-89 מתחילת המלחמה
+87 https://www.ynet.co.il/news/article/bjcebfgar לבנון: לפחות 569 נהרגו מאתמול בתקיפות הישראליות במדינה
+88 https://www.ynet.co.il/news/article/bjcjrcc60 דיווחים בלבנון: ישראל פורצת למכשירי רדיו ומתקשרת לתושבים, גם שר קיבל שיחה
+89 https://www.ynet.co.il/news/article/bjdbve8sa חיזבאללה הודיע על הרוג שישי מהבוקר
+90 https://www.ynet.co.il/news/article/bjdrrcp90 התקיפה בנבטיה שבלבנון: עלה ל-10 מניין ההרוגים
+91 https://www.ynet.co.il/news/article/bjehwedv6 סדרת שיגורי נ"ט ליישובים בגבול לבנון, אזרח נפצע מירי לכנסייה
+92 https://www.ynet.co.il/news/article/bjeq6l39a דיווח בלבנון: ישראל תקפה בדרום המדינה
+93 https://www.ynet.co.il/news/article/bjfngnuq6 צה"ל: השמדנו מחסן אמל"ח, עמדות שיגור ותשתיות של חיזבאללה בלבנון
+94 https://www.ynet.co.il/news/article/bjfy0aapc הערכות: מלחמה עם חיזבאללה עלולה לגרום במיידי להורדות דירוג אשראי נוספות
+95 https://www.ynet.co.il/news/article/bjgic1na0 דיווח קטארי: ייתכן שישראל תפנה לעקוף את כוחות חיזבאללה מהחזית הסורית
+96 https://www.ynet.co.il/news/article/bjixmprtt צה"ל תקף תשתיות טרור ומבנים צבאיים של חיזבאללה בלבנון
+97 https://www.ynet.co.il/news/article/bjj0g9fsa דיווחים בלבנון: הרוג ו-16 פצועים ב"תקיפה הישראלית" במזרח המדינה
+98 https://www.ynet.co.il/news/article/bjj4ipxaa תורגלה לחימה קרקעית בשטח לבנון, גלנט: "יש לנו מכות נוספות שכבר מוכנות"
+99 https://www.ynet.co.il/news/article/bjjf13kt0 החל נאום נסראללה, נמשך גל התקיפות של צה"ל בדרום לבנון
+
+TAGGED
+strong https://www.ynet.co.il/news/article/SJHBA8dTA בלבנון מדווחים: שוב פיצוצים של ביפרים בדאחייה בביירות ובאזורים נוספים
+strong https://www.ynet.co.il/news/article/b146i8zca דיווח: "כ-1,500 פעילי חיזבאללה יצאו מכשירות במתקפת הביפרים"
+strong https://www.ynet.co.il/news/article/b1aemw00pr רויטרס: מכשירי הקשר שהתפוצצו עתה ברחבי לבנון אינם ביפרים
+related https://www.ynet.co.il/news/article/b1cihlt60 אחרי פיצוץ מכשירי הקשר בלבנון: גלנט שוחח עם שר ההגנה האמריקני
+related https://www.ynet.co.il/news/article/b1dxchdp0 ההלם והבהלה בלבנון אחרי פיצוצי מכשירי הקשר, הדיווחים והשמועות
+strong https://www.ynet.co.il/news/article/b1nvs1d6c דיווח: פעילי חיזבאללה חשדו - ופיצוץ הביפרים "נכפה" על ישראל
+strong https://www.ynet.co.il/news/article/bj06phqt0 היעלמותו של רינסון חוזה, איש הייטק הודי, אחרי פיצוצי הביפרים בלבנון
+strong https://www.ynet.co.il/news/article/bjf64fupc רוסיה גינתה את פיצוץ הביפרים: "אלפי חפים מפשע נפגעו"
+related https://www.ynet.co.il/news/article/bjfcfvwar כך פיצוצי מכשירי הקשר בלבנון הקפיאו את החלפת גלנט בסער
+related https://www.ynet.co.il/news/article/bjwsqmdac "וול סטריט ג'ורנל": "התקבל מסר רגע לפני פיצוץ מכשירי הקשר"
+related https://www.ynet.co.il/news/article/byioqdutr ראש ממשלת לבנון על פיצוץ מכשירי הקשר: "לא ניתן לבטא את אכזריות הפשע"
+strong https://www.ynet.co.il/news/article/byvgmwypr מינהלת התעופה האזרחית בלבנון אסרה על העלאת ביפרים ומכשירי קשר לטיסות
+strong https://www.ynet.co.il/news/article/h1fz4p00tr דיווח: מכשירי הקשר שהתפוצצו בלבנון נרכשו ע"י חיזבאללה יחד עם הביפרים
+strong https://www.ynet.co.il/news/article/h1gl400ppr רונן ברגמן עם פרשנות מאחורי הקלעים של מבצע פיצוץ הביפרים של חיזבאללה
+strong https://www.ynet.co.il/news/article/h1rrqz9a0 יתרון הביפרים: כשהטכנולוגיה מקדמת תרבות זכויות אדם
+related https://www.ynet.co.il/news/article/hjd7a0v6a דיווח שמכשירי הקשר יובאו מחברה בטייוואן, שטוענת: "הם יוצרו במקום אחר"
+strong https://www.ynet.co.il/news/article/hk1zjiza0 דיווח: כ-1,500 מחבלי חיזבאללה התעוורו או איבדו יד בפיצוצי הביפרים ומכשירי הקשר
+related https://www.ynet.co.il/news/article/hkbfurwt0 דיווחים: "המוסד מלכד את מכשירי הקשר לפני שהועברו לחיזבאללה"
+related https://www.ynet.co.il/news/article/hkfki5uac דיווח: 95 פצועים לבנונים הועברו לטיפול באיראן בעקבות פיצוץ מכשירי הקשר
+strong https://www.ynet.co.il/news/article/hkgj7kua0 פיצוצי הביפרים: שגריר איראן בלבנון איבד את עינו ונפצע קשה בעין השנייה
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import csv,re\\nrows=[]\\nfor f in [\\\"data/israel/enumeration/ynet-titles-0.csv\\\",\\\"data/israel/enumeration/ynet-titles-1.csv\\\"]: rows+=list(csv.DictReader(open(f,encoding=\\\"utf-8-sig\\\")))\\nfor pat in [\\\"ביפר\\\",\\\"מכשיר\\\",\\\"פיצוץ\\\",\\\"פיצוצ\\\",\\\"מכשירי הקשר\\\",\\\"ווקי\\\",\\\"התפוצצ\\\",\\\"מטען\\\"]:\\n x=[r for r in rows if not r[\\\"relevance\\\"] and pat in r[\\\"title\\\"]]; print(\\\"\\\\nPAT\\\",pat,len(x)); [print(r[\\\"url\\\"],r[\\\"title\\\"]) for r in x[:40]]\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+
+PAT ביפר 0
+
+PAT מכשיר 14
+https://www.ynet.co.il/news/article/b1zo36v6c חיזבאללה: "מנהלים חקירה על המכשירים שהתפוצצו - החשבון יגיע"
+https://www.ynet.co.il/news/article/bjcjrcc60 דיווחים בלבנון: ישראל פורצת למכשירי רדיו ומתקשרת לתושבים, גם שר קיבל שיחה
+https://www.ynet.co.il/news/article/hygjdfv6a דיווח: שגריר איראן בלבנון נפצע ממכשיר שנשא אחד משומריו
+https://www.ynet.co.il/news/article/r1n61l2cc נתניהו על הטענה ששתל מכשיר ציתות לג'ונסון: "משוללת כל יסוד ואבסורדית"
+https://www.ynet.co.il/news/article/rk0ijpisa חומה בגובה של 7 מטרים: האם מצרים מכשירה שטח לקליטת עזתים בשטחה?
+https://www.ynet.co.il/news/article/sjerysv6a הדיווח המביך ברוסיה: "האחראי לפיצוצים - הסוכן 'מכשיר קשר'"
+https://www.ynet.co.il/news/article/sk77zh300 בוריס ג'ונסון טוען: מצאתי מכשיר האזנה בשירותים אחרי ביקור של נתניהו
+https://www.ynet.co.il/news/article/b100wivot0 דיווחים בסוריה: המשטר הנחה את גורמי הביטחון לכבות מכשירים אלחוטיים
+https://www.ynet.co.il/news/article/bjfbdde52 נתניהו עבר בדיקות בחדר הצנתור ובליבו הושתל מכשיר ניטור שבודק את קצב הלב
+https://www.ynet.co.il/news/article/hj5oanhr0 בוריס ג'ונסון: מצאתי מכשיר האזנה בשירותים אחרי ביקור של נתניהו
+https://www.ynet.co.il/news/article/hkdrpd006c מקור לבנוני ל-CNN: המכשירים שהתפוצצו - בשימוש פעילים שמארגנים קהלים לאירועים
+https://www.ynet.co.il/news/article/hkmkkxwch נתניהו שוחרר משיבא, לאחר שהושתל בגופו מכשיר לאבחון הפרעות קצב לב
+https://www.ynet.co.il/news/article/hkrcbtkec ממצאי ועדת הבדיקה בפרשת NSO: אין אינדיקציה שמכשירי האנשים שפורסמו הודבקו בפגסוס ללא צ
+https://www.ynet.co.il/news/article/rjvbcko6c דיווח: הרוג בבקעת הלבנון כתוצאה מפיצוץ מכשיר קשר
+
+PAT פיצוץ 123
+https://www.ynet.co.il/news/article/5518528 נעדרים ופצועים בפיצוץ במפעל לחומרי נפץ ברוסיה
+https://www.ynet.co.il/news/article/H1lngWDWP עשרות הרוגים וכ-3,000 פצועים בפיצוץ אדיר בנמל ביירות | תיעוד
+https://www.ynet.co.il/news/article/SyPOAKsKp דיווח: פיצוץ עז בצפון-מזרח איראן, באזור מרכז החלל שממנו משוגרים טילים
+https://www.ynet.co.il/news/article/b1mh8qbcp פיצוץ אירע בבאר שבע, אין נפגעים; הרקע פלילי
+https://www.ynet.co.il/news/article/b1pskupp0 איראן: 51 בני אדם נהרגו בפיצוץ מכרה פחם
+https://www.ynet.co.il/news/article/b1x5iu00jc מאות בהלווייתו של רס"ל (מיל') ניתאי מיטודי, שנהרג מפיצוץ מטען בעזה
+https://www.ynet.co.il/news/article/b1zef6jn6 ה-FBI חוקר פיצוץ רכב במעבר הגבול בין קנדה לארה"ב
+https://www.ynet.co.il/news/article/bjkpilc9r רס"ן יותם נהרג מפיצוץ מטען בציר נצרים, באזרחות התנדב בעזרה למשפחות אבלות
+https://www.ynet.co.il/news/article/bjo8wavt0 הותר לפרסום: 3 לוחמי גבעתי ופרמדיקית צה"ל נהרגו בפיצוץ מבנה ברפיח
+https://www.ynet.co.il/news/article/bkv7jp0tr חשד לניסיון חיסול בקריית מלאכי: גבר נפצע קשה בפיצוץ רכב סמוך לבתי ספר
+https://www.ynet.co.il/news/article/bkw00bn1sa פיצוץ המשאית בדרום תל אביב: אדם נוסף נפצע באורח בינוני
+https://www.ynet.co.il/news/article/bkxc5y0yp ה"תקרית" בים האדום: דיווח על פיצוץ סמוך לספינה, אין נפגעים
+https://www.ynet.co.il/news/article/bkzzlq11kkl דנמרק: פיצוץ נשמע באזור שגרירות ישראל בקופנהגן
+https://www.ynet.co.il/news/article/bydxgavpr ניו יורק טיימס: שגריר איראן בלבנון איבד עין בפיצוץ
+https://www.ynet.co.il/news/article/byinpzvg6 רישי סונאק על הפיצוץ בביה"ח בעזה: "מעריכים שנגרם מרקטה ששוגרה מהרצועה"
+https://www.ynet.co.il/news/article/bynpnr1160 גבר נפצע קשה בפיצוץ רכב בעכו, ילד נפצע קל. הרקע פלילי
+https://www.ynet.co.il/news/article/byrmsmbcc צה"ל על הפיצוץ בגוש דן: טיל קרקע-קרקע שוגר מלבנון ונפל בשטח פתוח
+https://www.ynet.co.il/news/article/h11ceggra תיעוד דרמטי: רגע פיצוץ רקטת חיזבאללה ליד רכב בקריות | מבצע חיצי הצפון
+https://www.ynet.co.il/news/article/h1omm12vt דיווח: פיצוץ הרכב בגבול ארה"ב עם קנדה - בשל "נהג פזיז"
+https://www.ynet.co.il/news/article/hjcyplbdc הותר לפרסום: נדב אלחנן נולר ואייל אבניאון נהרגו בפיצוץ בפרוזדור נצרים
+https://www.ynet.co.il/news/article/hjkehuttc איראן: 51 הרוגים ו-24 לכודים בפיצוץ במכרה פחם
+https://www.ynet.co.il/news/article/hjohgx1jo בתו של יועצו הקרוב של פוטין נהרגה בפיצוץ רכב ליד מוסקבה
+https://www.ynet.co.il/news/article/hkhx4h26r דיווחים: לפחות הרוג אחד ו-20 פצועים מפיצוץ במכרה פחם במזרח איראן
+https://www.ynet.co.il/news/article/hkya5akv0 הותר לפרסום: רס"ל במיל' יהודה גטו נהרג מפיצוץ מטען ליד טול כרם
+https://www.ynet.co.il/news/article/hy2kub2rr נער וצעיר משבדיה הואשמו בפיצוץ רימוני יד ליד שגרירות ישראל בדנמרק אתמול
+https://www.ynet.co.il/news/article/hy9hm119wa פיצוץ גרם לנזק בהרצליה, חשד: הרקע פלילי
+https://www.ynet.co.il/news/article/hybfiafr6 בריטניה: "דיווחים על פעילות כטב"מים ופיצוץ בים האדום ליד תימן"
+https://www.ynet.co.il/news/article/hycw4d3ba עקב הפיצוץ בביה"ח בעזה: דרישה לקיים דיון דחוף במועצת הביטחון של האו"ם
+https://www.ynet.co.il/news/article/hyfmgoptc הותר לפרסום: 3 לוחמים ופרמדיקית נהרגו בפיצוץ מבנה ברפיח
+https://www.ynet.co.il/news/article/hykhepf002 תיעוד: מכתש עצום, עשן ו"חומר צהוב", שעות לאחר הפיצוץ שהרעיד את המרכז; החשד: חומר נפץ
+https://www.ynet.co.il/news/article/hykw900r50 רס"מ במיל' מרדכי יוסף בן שועם נהרג בפיצוץ בציר נצרים, יחד עם המ"פ יותם
+https://www.ynet.co.il/news/article/hysiw00xqa שיגור בלי אזעקה - ואז קול פיצוץ אדיר: תיעוד דרמטי מפגיעה ישירה בקריית שמונה
+https://www.ynet.co.il/news/article/hytfraloc "הציבור יודע רק 5% מהסיפור": איך חוקרים פיצוץ במרכז הארץ, ומתי שב"כ מתערב?
+https://www.ynet.co.il/news/article/r1d00bf2bt הבית הלבן: ביידן שוחח עם נתניהו ועם מלך ירדן בעקבות הפיצוץ בביה"ח בעזה
+https://www.ynet.co.il/news/article/r1hmiqtbt בריטניה על הפיצוץ בבית החולים: "נחפזו למסקנות - חכו לעובדות ודווחו מדויק"
+https://www.ynet.co.il/news/article/rjiqz6het 5 חודשים אחרי שנפצע בפיצוץ מטען חבלה: גבר נרצח ביריות בעוספיה
+https://www.ynet.co.il/news/article/rjmreb4er הותר לפרסום: 3 לוחמים נהרגו מפיצוץ מטען באזור רפיח
+https://www.ynet.co.il/news/article/rjtmsa39a חשד לרצח: נהג משאית נהרג בפיצוץ בגליל המערבי
+https://www.ynet.co.il/news/article/rkgkhxwu6 המבצע בג'נין: 6 מחבלים חוסלו, 4 חיילים נפצעו קל מפיצוץ יזום של פיר תת-קרקעי
+https://www.ynet.co.il/news/article/rkmai0rar שריפה פרצה בבנימין עקב פיצוץ רקטה, מד"א: לא התקבלו דיווחים על נפגעים
+
+PAT פיצוצ 68
+https://www.ynet.co.il/news/article/b10fz1ekje דיווחים: פיצוצים נשמעו במערב סוריה, תקיפה בעומק לבנון
+https://www.ynet.co.il/news/article/b1hxuh90c משטרת דנמרק: הפיצוצים ליד השגרירות הישראלית נגרמו כנראה מרימוני יד
+https://www.ynet.co.il/news/article/b1inojo6a הבית הלבן: לא היינו מעורבים בפיצוצים בלבנון, עדיין איננו מעוניינים בהסלמה
+https://www.ynet.co.il/news/article/bkfkz00gkp דיווח: שוב פיצוצים באזור עיר הנמל אל-חודיידה בתימן
+https://www.ynet.co.il/news/article/byqw00f11jc אוקראינה: פיצוצים נשמעו בקייב, ההגנה האווירית הופעלה
+https://www.ynet.co.il/news/article/h1laiif0c 180 טילים שוגרו מאיראן לישראל: אזעקות ופיצוצים ברחבי הארץ, נפילות ופצועים
+https://www.ynet.co.il/news/article/h1qhikxi6 דיווחים בסוריה: פיצוצים נשמעו באזור דמשק
+https://www.ynet.co.il/news/article/hk1h5s9cc דנמרק: שלושה נעצרו בעקבות הפיצוצים ליד שגרירות ישראל
+https://www.ynet.co.il/news/article/hkr11zkixa הדי הפיצוצים בערי המרכז: רקטות מעזה שנפלו בים
+https://www.ynet.co.il/news/article/hkwcvafrc בשוך הפיצוצים, נשאלת השאלה לאן זה הולך: סבב - או מלחמה אזורית
+https://www.ynet.co.il/news/article/hytu9su6r מאלי: דיווחים על ירי והדי פיצוצים בכמה מוקדים בבירה במקו
+https://www.ynet.co.il/news/article/r1fafy00up פיצוצים חזקים סמוך לגבול עם סוריה, צה"ל בודק את מקורם
+https://www.ynet.co.il/news/article/r1i611ysra דיווחים: פיצוצים נשמעו במערב סוריה, מערכות ההגנה האווירית הופעלו
+https://www.ynet.co.il/news/article/r1yebneR0 דיווח בלבנון על פיצוצים מדרום לביירות
+https://www.ynet.co.il/news/article/rjgq2da59 פיצוצים במיקולאייב, לפחות 21 הרוגים ליד אודסה. זלנסקי: "טרור רוסי"
+https://www.ynet.co.il/news/article/rkevojxyt גל רציחות ופיצוצים בשבדיה: "אלימות חסרת תקדים"
+https://www.ynet.co.il/news/article/rkft11a11yyx האזעקות במרכז: הדי פיצוצים נשמעו באזור
+https://www.ynet.co.il/news/article/rktpiqlyt דיווח: פיצוצים בעיר הנמל חודיידה שבתימן
+https://www.ynet.co.il/news/article/ryoc8bvwt ה"פיצוצים" בסוריה: דיווח על תקיפה ישראלית נגד מחסנים באזור דמשק
+https://www.ynet.co.il/news/article/s1m2k00dtr גלנט אחרי הפיצוצים בלבנון: "אנחנו בפתיחת שלב חדש במלחמה"
+https://www.ynet.co.il/news/article/s1n4goqi0 דיווח על שני פיצוצים סמוך לספינה מדרום לתימן, אין נפגעים
+https://www.ynet.co.il/news/article/s1n8xvfdr הרוגים ופצועים בתקיפה ישראלית בתימן, פיצוצים אדירים בנמל חודיידה
+https://www.ynet.co.il/news/article/sj5vetdpc דיווח בלבנון: פיצוצים חדשים בעומק המדינה
+https://www.ynet.co.il/news/article/sjerysv6a הדיווח המביך ברוסיה: "האחראי לפיצוצים - הסוכן 'מכשיר קשר'"
+https://www.ynet.co.il/news/article/skzqxuqa0 דנמרק: פיצוצים נשמעו באזור שגרירות ישראל בקופנהגן, אין נפגעים
+https://www.ynet.co.il/news/article/sybb9u9zr דיווח: הפיצוצים בדרעא - פינוי מוקשים על ידי צבא סוריה
+https://www.ynet.co.il/news/article/syeh0koa0 שיירת נתניהו נצפתה הערב סמוך למטה המוסד, אחרי רצף הפיצוצים בלבנון
+https://www.ynet.co.il/news/article/syrmhjrha המטח מלבנון: נשמעו עשרות פיצוצים, נפילות בתוך קריית שמונה
+https://www.ynet.co.il/news/article/BkZ1i9kHp דיווחים על פיצוצים באילת, נבדק אם בוצע יירוט
+https://www.ynet.co.il/news/article/H17ZELj0A צה"ל על הפיצוצים שנשמעו במרכז: מטרה אווירית חשודה יורטה מול חופי גוש דן
+https://www.ynet.co.il/news/article/b1cluwvyye דיווחים בעיראק על פיצוצים בבגדד
+https://www.ynet.co.il/news/article/b1ivgkpa0 דיווחים: פיצוצים בנמל חודיידה בתימן
+https://www.ynet.co.il/news/article/b1oimhfpc נסראללה: הפיצוצים בלבנון יכולים להיקרא הכרזת מלחמה
+https://www.ynet.co.il/news/article/bj3qchwpa בצל הפיצוצים בלבנון: "אייר פראנס" מבטלת טיסות לישראל
+https://www.ynet.co.il/news/article/bj7izdk6r בדאחייה, בדרום וגם בצפון לבנון: אלה מחבלי חיזבאללה שנהרגו, ב-48 שעות של פיצוצים
+https://www.ynet.co.il/news/article/bjppugqu6 חמינאי: "תהיה תגובה חמורה לפיצוצים שהפכו הרבה מבני עמנו לשהידים"
+https://www.ynet.co.il/news/article/bjprjlm2t סוריה: דיווחים על פיצוצים עזים בדמשק - שעות אחרי "תקיפה ישראלית"
+https://www.ynet.co.il/news/article/bk2mutos0 הבהלה בלבנון: "התעוררתי לרעשי מטוסים ופיצוצים, זה הרגיש כמו האפוקליפסה"
+https://www.ynet.co.il/news/article/bkcbatu6c ליברמן על הפיצוצים בלבנון: "אי-אפשר להפסיק באמצע - חייבים ללכת עד הסוף"
+https://www.ynet.co.il/news/article/bkcz9u7dp ארה"ב: הפיצוצים ליד קבר סולימאני באיראן מזכירים פיגועים של דאעש
+
+PAT מכשירי הקשר 0
+
+PAT ווקי 1
+https://www.ynet.co.il/news/article/syuwrsw70 השליטה של חמאס, והסחורות מחבילות הסיוע שנמכרות בשווקים במחיר מופקע
+
+PAT התפוצצ 44
+https://www.ynet.co.il/news/article/BkOfUtF0A לפחות רקטה אחת ששוגרה מלבנון התפוצצה באזור נתניה
+https://www.ynet.co.il/news/article/b1prakva0 כטב"מים התפוצצו בגולן, חיזבאללה: שיגרנו נחיל בתגובה לתקיפה בעומק לבנון
+https://www.ynet.co.il/news/article/b1tglzha0 הירי לשומרון: רקטה אחת חצתה מלבנון והתפוצצה בשטח פתוח
+https://www.ynet.co.il/news/article/b1zo36v6c חיזבאללה: "מנהלים חקירה על המכשירים שהתפוצצו - החשבון יגיע"
+https://www.ynet.co.il/news/article/bjfb8mwja הירי לק"ש והסביבה: רקטות התפוצצו בשטחים פתוחים, אין נפגעים
+https://www.ynet.co.il/news/article/bkjqakia0 רקטה התפוצצה בחצר בית במטולה וגרמה לנזק כבד, שריפה בשמורת נחל עיון
+https://www.ynet.co.il/news/article/byhztyw6a צה"ל: כמה כלי טיס שחדרו מלבנון יורטו, אחרים התפוצצו ליד רמות נפתלי
+https://www.ynet.co.il/news/article/h1aaguvsa הירי לק"ש: רקטה התפוצצה סמוך לבית ספר, עץ נשרף וכובה. אין נפגעים
+https://www.ynet.co.il/news/article/h1extastr הירי לגליל העליון: כ-10 רקטות נורו לרמות נפתלי, חלקן התפוצצו בשטחים פתוחים
+https://www.ynet.co.il/news/article/h1hifo11g5 ראש העיר לבוב: טילים רוסיים התפוצצו ליד נמל התעופה
+https://www.ynet.co.il/news/article/hjey2mdj0 צרפת: שני רכבים התפוצצו ליד בית כנסת בדרום המדינה, שוטר נפצע
+https://www.ynet.co.il/news/article/hjsyftbpc הירי לגליל העליון: כ-10 רקטות התפוצצו בשטחים פתוחים, אין נפגעים
+https://www.ynet.co.il/news/article/hkkywcug0 טילים בליסטיים התפוצצו בנבטים, דובר צה"ל: "הבסיס מתפקד. איראן נכשלה"
+https://www.ynet.co.il/news/article/hkn3i00u5c 3 רקטות התפוצצו בשטחים פתוחים באצבע הגליל, אין נפגעים
+https://www.ynet.co.il/news/article/hy9icdntr שתי רקטות שוגרו לגליל העליון: אחת יורטה, השנייה התפוצצה בשטח פתוח
+https://www.ynet.co.il/news/article/rkmqisxsc כ-10 רקטות נורו לעבר רמות נפתלי, אחת יורטה והיתר התפוצצו בשטחים פתוחים
+https://www.ynet.co.il/news/article/rkym9uqcr הירי לק"ש: זוהו 10 שיגורים שחצו מלבנון והתפוצצו בשטחים פתוחים, אין נפגעים
+https://www.ynet.co.il/news/article/ryllj2it0 ההתרעות בגליל העליון: 3 רקטות התפוצצו בשטחים פתוחים, אין נפגעים
+https://www.ynet.co.il/news/article/ryurmskic הירי לגליל המערבי: לפחות 4 רקטות התפוצצו בשטחים פתוחים
+https://www.ynet.co.il/news/article/ryw7cya90 5 רקטות שוגרו לשלומי, חלקן יורטו. בירי לאביבים זוהו כמה שיגורים שהתפוצצו בלבנון
+https://www.ynet.co.il/news/article/s11uqipp0 דיווח: "שתי רקטות ששוגרו מדרום סוריה התפוצצו ברמת הגולן"
+https://www.ynet.co.il/news/article/s1liwenyjl רקטה התפוצצה בבית העלמין בקריית ביאליק: "גם למתים אין פה מנוחה"
+https://www.ynet.co.il/news/article/sjcpzxscc האזעקות בגליל: 5 רקטות נורו - חלקן יורטו, היתר התפוצצו בשטחים פתוחים
+https://www.ynet.co.il/news/article/sjp4hytw6 האזעקה בצפון: 2 כטב"מים של חיזבאללה התפוצצו בשטח פתוח במורדות הר דב
+https://www.ynet.co.il/news/article/sycmwn0t0 גבר נפגע מהתפוצצות רכב בקריית מלאכי, מצבו קשה
+https://www.ynet.co.il/news/article/H1iZEaA6A צה"ל על המטחים מלבנון: זוהו כ-35 שיגורים, חלק יורטו ואחרים התפוצצו
+https://www.ynet.co.il/news/article/b1gybgke0 כרוניקה של התפוצצות: רצח הנער בנימין מאיים להצית את יהודה ושומרון
+https://www.ynet.co.il/news/article/h1idnfia0 ההתרעה במנרה: רקטה התפוצצה בשטח פתוח, אין נפגעים
+https://www.ynet.co.il/news/article/hjqoy0xk1e צה"ל: 4 רקטות נורו מרצועת עזה, 3 יורטו ואחת התפוצצה בשטח פתוח
+https://www.ynet.co.il/news/article/hkaj0kac0 הירי לגליל: חלקי יירוט התפוצצו בשטחים חלקאיים, שריפה פרצה ביער ביריה
+https://www.ynet.co.il/news/article/hkdrpd006c מקור לבנוני ל-CNN: המכשירים שהתפוצצו - בשימוש פעילים שמארגנים קהלים לאירועים
+https://www.ynet.co.il/news/article/hyc4k00ys0 הירי לשלומי: זוהו 5 שיגורים שחצו משטח לבנון והתפוצצו בשטחים פתוחים
+https://www.ynet.co.il/news/article/hyzvt0h0a רקטה מלבנון התפוצצה בפאתי ירושלים, שריפה רפצה באזור
+https://www.ynet.co.il/news/article/r1w11ij6qc שריפה פרצה בגולן אחרי יירוטים, בעוטף: רקטה התפוצצה בשטח פתוח סמוך לזיקים
+https://www.ynet.co.il/news/article/rkroqlqjr הירי לקריית שמונה: כ-10 שיגורים התפוצצו בשטחים פתוחים, אין נפגעים
+https://www.ynet.co.il/news/article/rktwyx8i0 ההתרעות בעוטף: 2 רקטות שוגרו מהרצועה - אחת יורטה, השנייה התפוצצה בשטח פתוח
+https://www.ynet.co.il/news/article/ryqo0zh60 האזעקות בגליל העליון: 2 רקטות התפוצצו בשטחים פתוחים, אין נפגעים
+https://www.ynet.co.il/news/article/s149cv8sa 15 רקטות נורו לקריית שמונה, כמה מהן התפוצצו בעיר
+https://www.ynet.co.il/news/article/sjjdgu6a0 האזעקות בעוטף: שתי רקטות נורו, אחת יורטה והשנייה התפוצצה בשטח פתוח
+https://www.ynet.co.il/news/article/ski519vcc הירי ליישובי הגליל: 65 רקטות נורו - חלקן יורטו, כמה התפוצצו בצפת
+
+PAT מטען 52
+https://www.ynet.co.il/news/article/B1pErjwOp מבצע בג'נין: 4 לוחמי מג"ב נפצעו, בהם אחד קשה, ממטען שהוטמן בציר
+https://www.ynet.co.il/news/article/HkGNqVkhu "היום זה ירי ומטען, מחר ירצחו אותנו": זעקת העיתונאים הערבים
+https://www.ynet.co.il/news/article/b1x5iu00jc מאות בהלווייתו של רס"ל (מיל') ניתאי מיטודי, שנהרג מפיצוץ מטען בעזה
+https://www.ynet.co.il/news/article/bjkpilc9r רס"ן יותם נהרג מפיצוץ מטען בציר נצרים, באזרחות התנדב בעזרה למשפחות אבלות
+https://www.ynet.co.il/news/article/h1c2hksfp כוחות הביטחון עצרו הלילה 32 מבוקשים ביו"ש, לוחם נפצע בינוני ממטען חבלה
+https://www.ynet.co.il/news/article/h1i17hwfa צה"ל חיסל שני מחבלים שהשליכו מטען לעבר בסיס ליד רמאללה
+https://www.ynet.co.il/news/article/hkya5akv0 הותר לפרסום: רס"ל במיל' יהודה גטו נהרג מפיצוץ מטען ליד טול כרם
+https://www.ynet.co.il/news/article/hyp6kwki0 מטען צינור הופעל הלילה בבניין בבאר שבע, אין נפגעים
+https://www.ynet.co.il/news/article/hysblvds0 מחבלים זרקו מטען על כוחות שנכנסו לקלקיליה, אחד נפגע מירי הלוחמים
+https://www.ynet.co.il/news/article/rjiqz6het 5 חודשים אחרי שנפצע בפיצוץ מטען חבלה: גבר נרצח ביריות בעוספיה
+https://www.ynet.co.il/news/article/rjmreb4er הותר לפרסום: 3 לוחמים נהרגו מפיצוץ מטען באזור רפיח
+https://www.ynet.co.il/news/article/rjucl6aso הפיגוע בלב איסטנבול: "המחבלת השאירה תיק עם מטען שהופעל בשלט או בטיימר"
+https://www.ynet.co.il/news/article/rklvfuc8c סרן אלון סקאג'יו נהרג ממטען בג'נין, 16 לוחמים נפצעו - אחד מהם במצב קשה
+https://www.ynet.co.il/news/article/ry6s9xutc הותר לפרסום: חיזבאללה תכנן להתנקש בבוגי יעלון בפיצוץ המטען בפארק הירקון
+https://www.ynet.co.il/news/article/ryi0glvsa הפלסטינים טוענים: זה המחבל שהתפוצץ עם מטען בתל אביב
+https://www.ynet.co.il/news/article/s1eib5psc הותר לפרסום: שלושה לוחמי מילואים נהרגו ברצועה, שניים מהם מפיצוץ המטען בזייתון
+https://www.ynet.co.il/news/article/s1suzba006 סיכול הפיגוע של דאעש בי-ם: החשודים תכננו להטיל מטען מרחפן על רכב משטרה
+https://www.ynet.co.il/news/article/sj5zjn3up פעילות צה"ל בטול כרם: הלוחמים איתרו מטען במרפאה שבה התחבאו מבוקשים
+https://www.ynet.co.il/news/article/sjccstf6c מטען הוסלק בארון, ליד מסגד: יומיים לאחר הפיגוע הפלילי - סוכל ניסיון חיסול ברמלה
+https://www.ynet.co.il/news/article/sjisgvjl3 הותר לפרסום: מחבל חדר מלבנון, הטמין מטען שפצע קשה ישראלי - וחוסל; נבדק קשר לחיזבאללה
+https://www.ynet.co.il/news/article/sk4j9f9pt אחד מהנופלים נהרג מפגיעת נ"ט בטנק, אחר בפיצוץ מטען
+https://www.ynet.co.il/news/article/sk6iamvac עוד אירוע פלילי ברמלה: מטען פוצץ מתחת לרכבו של שוטר
+https://www.ynet.co.il/news/article/skivj7ljr הכוח זוהה במצלמה, והמטען הופעל מרחוק: רס"ל במיל' אביתר עטואר נהרג, 7 נפצעו
+https://www.ynet.co.il/news/article/synuvvoor 700 חללים מפתיחת המלחמה: סמ"ר עמית צדיקוב נהרג בחאן יונס מפיצוץ מטען
+https://www.ynet.co.il/news/article/sythbyl20 הרצוג על המטען שאותר בעגלת תינוק ביו"ש: "המחבלים מתעללים באזרחים"
+https://www.ynet.co.il/news/article/b1fekalir המשטרה על הפיגוע בת"א: "המטען כנראה יוצר בשטחים, זו הייתה יכולה להיות טרגדיה"
+https://www.ynet.co.il/news/article/b1idniyoc הרוג בפיצוץ בת"א: "הוא נשא מטען, הכיוון שזה פיגוע מאוד רלוונטי"; עובר אורח נפצע בינונ
+https://www.ynet.co.il/news/article/bjzopsqjr מטען חבלה אותר בשטח פתוח סמוך לרמלה
+https://www.ynet.co.il/news/article/bkaseagj0 מפקד מחוז ת"א: "המחבל כנראה הבחין בבית הכנסת, רצה לדרוך את המטען והפעיל אותו"
+https://www.ynet.co.il/news/article/bkxifok6r צה"ל תקף במקביל לנאום נסראללה, השבוע סוכל פיגוע הנחת מטען בגבול לבנון
+https://www.ynet.co.il/news/article/by10bn4ia מטען מאולתר הושלך לבית ראש העיר רמלה, תושב העיר בשנות ה-20 לחייו נעצר
+https://www.ynet.co.il/news/article/h12bx001116 מטען חבלה התפוצץ באזור פארק הירקון בת"א | תיעוד בלעדי
+https://www.ynet.co.il/news/article/h193zfqjc פיצוץ המטען בפארק הירקון: פרטים חדשים נחשפו בפניית הנאשם להחזרת הרכב השכור
+https://www.ynet.co.il/news/article/h1fikaj9a דיווח: סוכני המוסד תצפתו מצמרות העצים, הנייה כיבה את האור - והמטען התפוצץ
+https://www.ynet.co.il/news/article/hj1sntmjkx דיווח: סינוואר הנחה "להחיות" את פיגועי ההתאבדות - ימים לפני פיצוץ המטען בת"א
+https://www.ynet.co.il/news/article/hjawgqss0 מטען התפוצץ על טנק: שני לוחמי שריון במילואים נפלו בקרב בעיר עזה
+https://www.ynet.co.il/news/article/hjezhwdo6 מג"ד 630 ושני לוחמי מילואים נהרגו ממטען במבנה ממולכד: "זה היה הגדוד של נתי"
+https://www.ynet.co.il/news/article/hji3klwor מטען חבלה התפוצץ על כוח צה"ל בזמן סריקות בצפון השומרון, אין נפגעים
+https://www.ynet.co.il/news/article/hkabazwo5 חשוד בהשלכת מטען נהרג מירי שוטרים בצפון: תיעוד הפיצוץ
+https://www.ynet.co.il/news/article/hknbioar0 עיראק: 4 פצועים מפיצוץ מטען צד בצפון המדינה
+
+codex
+The first recomputation already exposes a likely defect: `corpus-candidates-v1.jsonl` has 138 rows, but its 3 `fetch-failed` rows are still counted in that file, while normalization keeps 135 article candidates and adds 20 Abu Ali posts. I’m checking whether the notes distinguish those stages consistently, then I’ll test the raw HTML and the headline-table formulas.
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import json,collections,os,re\\nrows=[json.loads(x) for x in open(\\\"data/israel/corpus-v1.jsonl\\\")]\\nfor outlet in [\\\"ynet\\\",\\\"kikar\\\",\\\"makan\\\",\\\"n12\\\",\\\"abuali\\\"]:\\n print(\\\"\\\\n\\\",outlet)\\n for r in rows:\\n  if r[\\\"source\\\"][\\\"page_publisher\\\"]==outlet: print(r[\\\"document_id\\\"],r[\\\"publication\\\"][\\\"published_at\\\"],r[\\\"publication\\\"][\\\"document_type\\\"],r[\\\"extraction\\\"][\\\"method\\\"],r[\\\"capture\\\"][\\\"raw_path\\\"],r[\\\"content\\\"][\\\"headline\\\"][:100])\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+
+ ynet
+il_ynet_965a441518 2024-09-18 flash_or_lead ld-json raw/ynet/965a441518b6a228.html בלבנון מדווחים: שוב פיצוצים של ביפרים בדאחייה בביירות ובאזורים נוספים
+il_ynet_1f6eff0257 2024-09-25 article ld-json raw/ynet/1f6eff025798d5d9.html אחרי מתקפת הביפרים: "כ-1,500 פעילי חיזבאללה יצאו מכשירות" | דוח: כמה מחבלים חברים בארגון?
+il_ynet_32d57defeb 2024-09-18 flash_or_lead ld-json raw/ynet/32d57defeb91c9fa.html רויטרס: מכשירי הקשר שהתפוצצו עתה ברחבי לבנון אינם ביפרים
+il_ynet_ae3fb865b9 2024-09-19 article ld-json raw/ynet/ae3fb865b97d1e36.html אחרי פיצוץ מכשירי הקשר בלבנון: גלנט שוחח עם שר ההגנה האמריקני
+il_ynet_b81d9107b1 2024-09-17 article ld-json raw/ynet/b81d9107b18ee582.html ההלם והבהלה בלבנון - וההקלטה שהופצה בוואטסאפ: "אירוע ביטחוני גדול בביירות"
+il_ynet_afa3376b86 2024-09-18 flash_or_lead ld-json raw/ynet/afa3376b865dc15f.html דיווח: פעילי חיזבאללה חשדו - ופיצוץ הביפרים "נכפה" על ישראל
+il_ynet_895142082c 2024-09-20 article ld-json raw/ynet/895142082c3d6c12.html תעלומת חברות הקש, איש ההייטק ההודי שנעלם - והקשר לפיצוצי הביפרים בלבנון
+il_ynet_4a8883c275 2024-09-18 flash_or_lead ld-json raw/ynet/4a8883c2759f3965.html רוסיה גינתה את פיצוץ הביפרים: "אלפי חפים מפשע נפגעו"
+il_ynet_6cac3456ed 2024-09-17 article ld-json raw/ynet/6cac3456ed75dd8e.html כך פיצוצי מכשירי הקשר בלבנון טרפו את הקלפים, והקפיאו את הדחת גלנט
+il_ynet_5dc8058fe0 2024-09-17 flash_or_lead ld-json raw/ynet/5dc8058fe0015b37.html "וול סטריט ג'ורנל": "התקבל מסר רגע לפני פיצוץ מכשירי הקשר"
+il_ynet_a165ae3951 2024-09-18 flash_or_lead ld-json raw/ynet/a165ae3951834288.html ראש ממשלת לבנון על פיצוץ מכשירי הקשר: "לא ניתן לבטא את אכזריות הפשע"
+il_ynet_595c6c5f8a 2024-09-19 flash_or_lead ld-json raw/ynet/595c6c5f8ab014b5.html מינהלת התעופה האזרחית בלבנון אסרה על העלאת ביפרים ומכשירי קשר לטיסות
+il_ynet_7b6f452ccc 2024-09-18 flash_or_lead ld-json raw/ynet/7b6f452ccca053ab.html דיווח: מכשירי הקשר שהתפוצצו בלבנון נרכשו ע"י חיזבאללה יחד עם הביפרים
+il_ynet_3d55d2744e 2024-09-18 article ld-json raw/ynet/3d55d2744ef091ff.html מקורי, מבריק, מפתיע: מאחורי הקלעים של מבצע פצצת זמן מתקתקת כפול 4,000 
+il_ynet_39d16c66df 2024-09-19 article ld-json raw/ynet/39d16c66dfab7db2.html יתרון הביפרים: כשהטכנולוגיה מקדמת תרבות זכויות אדם
+il_ynet_8fa48a7205 2024-09-18 flash_or_lead ld-json raw/ynet/8fa48a7205dd60c7.html דיווח שמכשירי הקשר יובאו מחברה בטייוואן, שטוענת: "הם יוצרו במקום אחר"
+il_ynet_3e0ef50525 2024-09-25 flash_or_lead ld-json raw/ynet/3e0ef50525f627fb.html דיווח: כ-1,500 מחבלי חיזבאללה התעוורו או איבדו יד בפיצוצי הביפרים ומכשירי הקשר
+il_ynet_4122c02e66 2024-09-17 flash_or_lead ld-json raw/ynet/4122c02e66f4769b.html דיווחים: "המוסד מלכד את מכשירי הקשר לפני שהועברו לחיזבאללה"
+il_ynet_5a14213e77 2024-09-18 flash_or_lead ld-json raw/ynet/5a14213e7717cee0.html דיווח: 95 פצועים לבנונים הועברו לטיפול באיראן בעקבות פיצוץ מכשירי הקשר 
+il_ynet_a91d3b3684 2024-09-18 article ld-json raw/ynet/a91d3b3684a8a98d.html פיצוצי הביפרים: שגריר איראן בלבנון איבד את עינו ונפצע קשה בעין השנייה
+il_ynet_12a58ccc24 2024-09-18 flash_or_lead ld-json raw/ynet/12a58ccc249b8807.html משרד הבריאות הלבנוני: לפחות 9 נהרגו ו-300 נפצעו בפיצוץ מכשירי הקשר
+il_ynet_bd220fb05c 2024-09-18 flash_or_lead ld-json raw/ynet/bd220fb05cbbd691.html דיווחים: רבים נפצעו בבטן ובידיים מפיצוץ מכשירי הקשר, ר"מ לבנון עוקב 
+il_ynet_8aa922b851 2024-09-18 flash_or_lead ld-json raw/ynet/8aa922b851363e91.html נשיא מצרים על פיצוץ הביפרים: "תומכים בביטחון לבנון"
+il_ynet_07fe8d62f8 2024-09-17 article ld-json raw/ynet/07fe8d62f872059b.html פיצוץ ביפרים מסתורי: "מאות פעילי חיזבאללה נפגעו ברחבי לבנון" | תיעודים
+il_ynet_be8a76dfff 2024-09-21 article ld-json raw/ynet/be8a76dfffd366c1.html בין "הערצה" ל"חרדה": פרטים חדשים על פיצוצי הביפרים והתדהמה בבית הלבן
+il_ynet_2662c441b6 2024-09-18 flash_or_lead ld-json raw/ynet/2662c441b683e314.html אחרי פיצוץ הביפרים: נסראללה ינאם מחר ב-17:00
+il_ynet_091932500e 2024-09-18 article ld-json raw/ynet/091932500e3da9cc.html הקריקטורות אחרי הפיצוץ, והטלטלה בשופר חיזבאללה: "אחת המכות הקשות"
+il_ynet_40b2f608c2 2024-09-21 flash_or_lead ld-json raw/ynet/40b2f608c25796de.html חברת Icom היפנית: "מאוד לא סביר שהמכשירים שהתפוצצו בלבנון הם שלנו"
+il_ynet_7dc59c7a06 2024-09-22 flash_or_lead ld-json raw/ynet/7dc59c7a0695f815.html דיווח: פיצוץ מכשירי הקשר - חלק מפיתוח "הכפתור האדום" שנלחץ במבצע הביפרים
+il_ynet_8864a153e1 2024-09-17 article ld-json raw/ynet/8864a153e1c9d70b.html תיעוד מפיצוץ מכשירי הקשר - והודאת חיזבאללה: "פרצת האבטחה הגדולה ביותר"
+il_ynet_93f445ecfe 2024-09-18 article ld-json raw/ynet/93f445ecfecdb6be.html ממוקמת בהונגריה, עוסקת ב"ייעוץ": זו החברה שייצרה את הביפרים שהתפוצצו בלבנון
+il_ynet_c5b6f4c003 2024-09-18 article ld-json raw/ynet/c5b6f4c003286c2e.html "מחר סיגריות יתפוצצו?": הבהלה בלבנון, הכותרות בעולם והדרמה - שלב אחר שלב 
+il_ynet_9d4280debd 2024-09-19 flash_or_lead ld-json raw/ynet/9d4280debd782a03.html בלבנון טוענים שמכשירי הקשר והביפרים שהתפוצצו מולכדו לפני הגעתם למדינה
+il_ynet_201268848b 2024-09-18 flash_or_lead ld-json raw/ynet/201268848ba05279.html ירי רקטות ראשון מאז מתקפת הביפרים: 10 שיגורים נפלו בשטחים פתוחים בצפון
+il_ynet_0a4a386ee9 2024-09-25 flash_or_lead ld-json raw/ynet/0a4a386ee9a9517b.html חיזבאללה: "הטיל נורה לעבר מטה המוסד, שאחראי על פיצוץ מכשירי הקשר"
+il_ynet_a376e10daf 2024-09-19 article ld-json raw/ynet/a376e10daf968d15.html המאמר שמשקף את החשש והמבוכה של חיזבאללה: "ישראל רוצה לחסל את הארגון"
+il_ynet_dcfb7e124f 2024-10-06 article ld-json raw/ynet/dcfb7e124f390c74.html הביפרים שהפכו לסוס טרויאני בחיזבאללה: "רצינו שהמחבלים ישתמשו בשתי הידיים"
+il_ynet_eac0523dc3 2024-09-18 article ld-json raw/ynet/eac0523dc39f4be3.html "יצרנית הביפרים" המסתורית רק מתווכת? הדף בדלת הכניסה, והאתר שירד מהרשת
+il_ynet_0749079d7a 2024-09-22 flash_or_lead ld-json raw/ynet/0749079d7ab203c9.html חיזבאללה: "שיגרנו עשרות טילים למתקן של רפאל בקריות בתגובה למתקפות הביפרים"
+il_ynet_b4cd9cfbda 2024-09-19 flash_or_lead ld-json raw/ynet/b4cd9cfbda4f521f.html בעקבות הפיצוצים בלבנון: טורקיה בוחנת את בטיחות מכשירי הקשר שלה 
+il_ynet_c51d4027a7 2024-09-19 flash_or_lead ld-json raw/ynet/c51d4027a76a2eb7.html חברת Icom היפנית: "חוקרים בקשר למכשירים שהתפוצצו - שנושאים את הלוגו שלנו"
+il_ynet_b7b5028d63 2024-09-17 flash_or_lead ld-json raw/ynet/b7b5028d63d449fa.html סוכנות ידיעות איראנית: השגריר בלבנון נפגע בפיצוץ מכשירי הקשר
+il_ynet_f52bdc5f2d 2024-09-18 flash_or_lead ld-json raw/ynet/f52bdc5f2d61f166.html לראשונה מאז פיצוץ הביפרים בלבנון: אזעקות בגליל ובאזור הכינרת
+il_ynet_410f1a36ab 2024-09-17 flash_or_lead ld-json raw/ynet/410f1a36ab451b6d.html דיווח: חמישה נהרגו בפיצוץ מכשירי הקשר, יותר מ-1,500 נפצעו
+il_ynet_a1b7ebc0d3 2024-09-17 article ld-json raw/ynet/a1b7ebc0d3caeb24.html השתיקה של ישראל, הדאגה האמריקנית - והנחת העבודה: חיזבאללה יגיב
+il_ynet_7f8388ca56 2024-09-23 article ld-json raw/ynet/7f8388ca56f1e160.html בהלה בצמרת באיראן אחרי פיצוצי הביפרים: "משמרות המהפכה אסרו שימוש במכשירי קשר"
+il_ynet_2305c3feff 2024-09-18 flash_or_lead ld-json raw/ynet/2305c3feff7cd066.html לבנון: שריפות פרצו בעשרות חנויות בדרום המדינה בשל פיצוץ מכשירי הקשר
+il_ynet_11030c144c 2024-09-17 flash_or_lead ld-json raw/ynet/11030c144c1bb4b2.html שר לבנוני מאשים את ישראל בפיצוץ מכשירי הקשר
+il_ynet_60e5f1673c 2024-09-17 article ld-json raw/ynet/60e5f1673cb39993.html אחרי מבצע פיצוץ הביפרים: בצה"ל נערכים לתגובה | זה המסר האמריקני
+il_ynet_0c9640e507 2024-09-21 flash_or_lead ld-json raw/ynet/0c9640e5077a54ce.html דיווח: איראן הוציאה משלחת לביירות כדי לחקור את אספקת מכשירי הקשר שהתפוצצו
+il_ynet_ec9bc5c3f6 2024-09-18 flash_or_lead ld-json raw/ynet/ec9bc5c3f66516b2.html רויטרס: "המוסד הטמין חומר נפץ ב-5,000 ביפרים בתהליך הייצור, 3,000 התפוצצו"
+il_ynet_e5d2b804a9 2024-09-17 article ld-json raw/ynet/e5d2b804a970b73b.html "ניו יורק טיימס": חומר נפץ הושתל בביפרים, הודעה מ"הנהגת חיזבאללה" גרמה לפיצוץ
+il_ynet_2957d478fc 2024-09-18 flash_or_lead ld-json raw/ynet/2957d478fcf2697c.html לבנון: עלה ל-20 מניין ההרוגים מפיצוץ מכשירי הקשר 
+il_ynet_10b5fdd863 2024-09-17 article ld-json raw/ynet/10b5fdd86312d536.html כ-3,000 נפצעו, לפחות 9 נהרגו: "חיזבאללה קיבל את מכשירי הקשר בימים האחרונים"
+il_ynet_026a53962c 2024-09-19 article ld-json raw/ynet/026a53962ce6617c.html דיווח: "קציני מודיעין ייצרו את הביפרים" | "נאום הטלפונים" של נסראללה, וההזדמנות שזיהו בישראל
+il_ynet_869d709b34 2024-09-18 flash_or_lead ld-json raw/ynet/869d709b34b3858e.html קרעי פרסם פסוק מהתנ"ך שרומז על אחריות לפיצוץ מכשירי הקשר
+il_ynet_8fe7d2f4ed 2024-09-17 article ld-json raw/ynet/8fe7d2f4ed38cc91.html פיצוץ מכשירי הקשר המחיש לחיזבאללה עד כמה הוא חדיר, אך זה לא מהלך משנה מציאות
+il_ynet_08469df490 2024-09-26 flash_or_lead ld-json raw/ynet/08469df490dc2d1c.html מסתמן: הדיווחים על תקיפה נוספת בדאחייה - פיצוץ מבוקר של ביפרים 
+il_ynet_e908dde699 2024-09-22 article ld-json raw/ynet/e908dde699f8971a.html הסתרת קשר לישראל, ולחיצה על ה"כפתור האדום": הפעולות מאחורי פיצוצי הביפרים
+il_ynet_062952dc9c 2024-09-18 flash_or_lead ld-json raw/ynet/062952dc9ccd7b10.html סגנית ראש ממשלת בלגיה גינתה את מתקפת הביפרים: "שתיקה היא לא אופציה"
+il_ynet_6dd0abb5ce 2024-10-08 article ld-json raw/ynet/6dd0abb5ce822443.html חבושים, עם אצבעות חסרות: תיעוד מאיראן של מחבלי חיזבאללה שנפגעו בפיצוץ הביפרים
+il_ynet_ee55735cc0 2024-09-18 flash_or_lead ld-json raw/ynet/ee55735cc0229d5b.html דיווח סעודי: 19 אנשי משמרות המהפכה נהרגו בפיצוץ הביפרים במזרח סוריה
+il_ynet_4b24884aa5 2024-09-17 article ld-json raw/ynet/4b24884aa5ea50a4.html "חומר נפץ הושתל ב-5,000 ביפרים, הודעה מ'הנהגת חיזבאללה' גרמה לפיצוץ": פרטים חדשים
+il_ynet_480ac45de5 2024-09-18 flash_or_lead ld-json raw/ynet/480ac45de50a1556.html דיווח על נפגעים בפיצוצי מכשירי הקשר הנוספים בלבנון, גם בתוך בתים
+il_ynet_ef015c9c74 2024-09-18 flash_or_lead ld-json raw/ynet/ef015c9c7499ff68.html מקור ביטחוני של רויטרס: מכשירי קשר של אנשי חיזבאללה התפוצצו ברחבי לבנון 
+il_ynet_c2539acc97 2024-09-18 flash_or_lead ld-json raw/ynet/c2539acc97fbdf8a.html איראן: שומרים על זכותנו תחת החוק הבינ"ל להגיב לפיצוץ מכשירי הקשר בלבנון
+il_ynet_77518e2e3b 2024-09-18 flash_or_lead ld-json raw/ynet/77518e2e3b6b431e.html דיווח: פיצוצים אירעו בעיראק במקביל לפיצוץ מכשירי הקשר בלבנון
+il_ynet_e2d56cd968 2024-09-27 article ld-json raw/ynet/e2d56cd96825fb0c.html "מעולם לא ראיתי דבר כזה": בלבנון ובעולם עדיין מנסים לפענח את מבצע הביפרים
+il_ynet_34804fbedf 2024-09-20 flash_or_lead ld-json raw/ynet/34804fbedfbccef9.html שר הכלכלה של טייוואן: "הרכיבים לביפרים של חיזבאללה לא יוצרו אצלנו"
+il_ynet_a4504931f7 2024-09-18 flash_or_lead ld-json raw/ynet/a4504931f74d1990.html דיווח סעודי: מכשירי הקשר שהתפוצצו בלבנון הוכנסו לשירות לפני כחצי שנה
+il_ynet_ccc955859d 2024-09-19 flash_or_lead ld-json raw/ynet/ccc955859db6bf56.html  חברת Icom היפנית: הפסקנו לייצר את המכשירים שהתפוצצו בלבנון לפני עשור
+il_ynet_1e50f88afc 2024-09-17 flash_or_lead ld-json raw/ynet/1e50f88afc94af1d.html דיווח בלבנון: כ-1,000 פצועים מפיצוץ מכשירי הקשר
+il_ynet_6d4f77dcff 2024-09-23 flash_or_lead ld-json raw/ynet/6d4f77dcff0352fe.html אחרי פיצוצי הביפרים: "משמרות המהפכה הורו להפסיק לחלוטין שימוש במכשירי קשר"
+il_ynet_cebb9bf0aa 2024-09-18 flash_or_lead ld-json raw/ynet/cebb9bf0aac46ed7.html דיווח: פיצוצי הביפרים בביירות התרחשו במקביל להלוויית בנו של חבר פרלמנט 
+il_ynet_9ab10136b2 2024-09-17 article ld-json raw/ynet/9ab10136b2f35e74.html ברקע מבצע פיצוץ הביפרים בלבנון ובסוריה: גלנט שוחח עם אוסטין, שיגיע לישראל
+il_ynet_57632be591 2024-09-19 article ld-json raw/ynet/57632be591a039bd.html גורמי מודיעין בארה"ב: "מבצע הביפרים תוכנן במשך 15 שנים לפחות"
+il_ynet_d83e4b6224 2024-09-17 article ld-json raw/ynet/d83e4b62242a1033.html פיצוצי הביפרים בראש כותרות העולם: "כמו סרט הוליוודי, מבוכה עצומה לחיזבאללה"
+il_ynet_8cde670cde 2024-09-18 flash_or_lead ld-json raw/ynet/8cde670cdeb4aa3b.html דיווחים סותרים לגבי אופן פיצוץ מכשירי הקשר בלבנון
+il_ynet_be147e090f 2024-09-18 flash_or_lead ld-json raw/ynet/be147e090f832351.html גורמים המעורים בפרטי פיצוץ הביפרים: "המטרה העיקרית - הרתעה"
+il_ynet_0f9066a8b5 2024-09-18 article ld-json raw/ynet/0f9066a8b51b13c8.html "המטרה הייתה הרתעה": התכלית במבצע הביפרים, וההופעה הגדולה שבוטלה בצפון
+il_ynet_4d4bdc2a66 2024-09-18 flash_or_lead ld-json raw/ynet/4d4bdc2a66af8ede.html שר הבריאות של לבנון: 12 הרוגים, ובהם שני ילדים, בפיצוץ מכשירי הקשר
+il_ynet_a3d3b8fa81 2024-09-18 flash_or_lead ld-json raw/ynet/a3d3b8fa81a36cd5.html דיווח סעודי: כ-100 פצועים כתוצאה מפיצוץ מכשירי הקשר בלבנון
+il_ynet_4e4fba89cf 2024-09-23 flash_or_lead ld-json raw/ynet/4e4fba89cf11477b.html גורם איראני: "הפסקת השימוש במכשירי קשר - מחשש לפגיעה במתקני הגרעין"
+il_ynet_1e8317cc3a 2024-09-19 article ld-json raw/ynet/1e8317cc3af1ec2b.html "מנכ"לית יצרנית הביפרים? זו לא מי שבתמונה": בבודפשט, ליד משרדי החברה שבעין הסערה
+il_ynet_5f50e1ff3e 2024-09-18 article ld-json raw/ynet/5f50e1ff3e826ae7.html שאלת העיתוי, והדיווח: פעילי חיזבאללה חשדו - ופיצוץ הביפרים "נכפה" על ישראל
+il_ynet_db5fe242cc 2024-09-19 flash_or_lead ld-json raw/ynet/db5fe242cc26de99.html נסראללה: "בכירי חיזבאללה אינם נושאים את סוגי מכשירי הקשר שהתפוצצו"
+il_ynet_50c8c2a27c 2024-09-18 article ld-json raw/ynet/50c8c2a27ce8ae35.html מתקפת מכשירי קשר חדשה בלבנון: 14 הרוגים ו-450 פצועים, אש בבתים ובכלי רכב
+il_ynet_32ea3d511b 2024-09-17 flash_or_lead ld-json raw/ynet/32ea3d511bcd6f73.html ארה"ב: לא היינו מעורבים בפיצוץ מכשירי הקשר של חיזבאללה
+il_ynet_c37ebc84bf 2024-09-18 flash_or_lead ld-json raw/ynet/c37ebc84bfd32956.html איראן גינתה את פיצוץ מכשירי הקשר בלבנון
+il_ynet_1fa34b8397 2024-10-06 flash_or_lead ld-json raw/ynet/1fa34b83974ceeb5.html דיווח: הביפרים של פעילי חיזבאללה הורכבו בישראל, ונועדו לפצוע את שתי ידיהם
+
+ kikar
+il_kikar_cc202167d1 2024-09-18 article p-cluster raw/kikar/cc202167d19aa8b4.html פיצוץ מכשירי קשר במתקפה נוספת בלבנון: מאות פצועים ו-5 הרוגים, מבנים עולים באש
+il_kikar_9c9a5a5651 2024-09-18 article p-cluster raw/kikar/9c9a5a5651d9c9ef.html "חומר נפץ הושתל ב-5,000 ביפרים", ומה גרם לפיצוץ? | כל מה שידוע על המבצע הדרמטי
+il_kikar_49f3092a6e 2024-09-19 article p-cluster raw/kikar/49f3092a6e85dd3f.html בולגריה חוקרת: האם מפעל בסופיה סיפק לחיזבאללה את הביפרים שהתפוצצו בלבנון?
+il_kikar_c9c67fb992 2024-09-23 article p-cluster raw/kikar/c9c67fb992d168fd.html פניקה באיראן: זו ההוראה שניתנה למשמרות המהפכה לאחר מתקפת הביפרים
+il_kikar_361888163b 2024-10-02 article p-cluster raw/kikar/361888163b29a73b.html ב'ביפרים' השווצתי, אמש קיבלתי תשובה אמיתית | רבקה רביץ
+il_kikar_0e0bc3ddb6 2024-09-17 article p-cluster raw/kikar/0e0bc3ddb60b4f32.html תיעוד: מחבל חיזבאללה קונה ירקות - והביפר מתפוצץ
+il_kikar_a870a3c508 2024-09-19 article p-cluster raw/kikar/a870a3c508c08973.html כשמנדי ג'רופי חשף: מדוע הוא ורעייתו חייבים הכרת הטוב ל...ביפר
+il_kikar_494070c4cd 2024-09-17 article p-cluster raw/kikar/494070c4cd33386f.html אלפי מחבלים בלבנון נפצעו בפיצוץ הביפרים | בחיזבאללה  מאשימים את ישראל ומאיימים
+il_kikar_7fd29c5ea9 2024-09-17 article p-cluster raw/kikar/7fd29c5ea9de34d8.html חיזבאללה מאשר: "התפוצצו מספר רב של מכשירי קשר, אנשים רבים נפצעו"
+il_kikar_b9d894e05c 2024-09-18 article p-cluster raw/kikar/b9d894e05c20f619.html לאחר פיצוץ הביפרים בלבנון: אזעקות הופעלו בצפון הארץ | כטב"מ יורט באזור טבריה
+il_kikar_1a02f16d3d 2024-09-18 article p-cluster raw/kikar/1a02f16d3d1a0e2c.html פעילי חיזבאללה חשדו בביפרים - וישראל החליטה לפוצץ אותם "בדקה ה-90" | פרטים חדשים
+il_kikar_5cdcb9b74d 2024-09-19 article p-cluster raw/kikar/5cdcb9b74d891fa6.html ארכי ביפר | המכשיר המיושן שכמעט נעלם וחזר לחיינו בסדרת פיצוצים
+il_kikar_13b0dde8ca 2024-09-20 article p-cluster raw/kikar/13b0dde8caae9247.html דיווח: מתקפת הביפרים תוכננה במשך 15 שנה לפחות
+il_kikar_d3a1e9eecb 2024-09-22 article p-cluster raw/kikar/d3a1e9eecb86bc71.html בתגובה ל"טבח הביפרים" | חיזבאללה לקח אחריות לירי לחיפה
+il_kikar_c94cfa701e 2024-09-17 article p-cluster raw/kikar/c94cfa701e133a9d.html מבצע ה'ביפרים' בראש הכותרות: כך סוקרה המתקפה בעולם
+il_kikar_bcb1abbf76 2024-09-17 article p-cluster raw/kikar/bcb1abbf76ec9799.html רחפן תיעד: המוסד השתלט על משלוח הביפרים ומלכד אותם 
+il_kikar_4e84dd272c 2024-09-22 article p-cluster raw/kikar/4e84dd272cad9c41.html האם ביפר ממולכד הוא שהפיל את המסוק של ראיסי?
+il_kikar_244fafc3e5 2024-09-24 article p-cluster raw/kikar/244fafc3e50eb23d.html האנטישמיות הרוסית לא פוסחת על בלארוס: "שואת ביפרים" 
+il_kikar_b067effbfb 2024-09-25 article p-cluster raw/kikar/b067effbfb0b4aef.html ריגול ישראלי חובק עולם: גם נורבגיה פותחת בחקירת הביפרים 
+il_kikar_a5de7caca9 2024-09-25 article p-cluster raw/kikar/a5de7caca9b68a95.html מקור בחיזבאללה: איבדנו 1,500 לוחמים במתקפת הביפרים
+il_kikar_aaea8f40fb 2024-09-29 article p-cluster raw/kikar/aaea8f40fbdd03a8.html נסראללה חשש לחייו אחרי מתקפת הביפרים ונזהר - המוסד חדר לעומק הארגון
+il_kikar_13671679b8 2024-10-16 article p-cluster raw/kikar/13671679b8337ef8.html בין שני חלקי סוללה - יריעה דקה וקטלנית: כך הוטמן חומר הנפץ בביפרים של חיזבאללה
+
+ makan
+il_makan_2e5c25480b 2024-09-19 article p-cluster raw/makan/2e5c25480b8aa26e.html اليابان: "آيكوم" تحقق بانفجار أجهزة لاسلكية تحمل شعارها في لبنان
+il_makan_c9d393a825 2024-09-21 article p-cluster raw/makan/c9d393a8251380aa.html التنديد برسم كاريكاتيري: رشيدة طليب إلى جانب جهاز "بيجر"
+il_makan_0140f2ef58 2024-09-22 article p-cluster raw/makan/0140f2ef589a8032.html السلطات المجرية تنفي علاقتها بأجهزة اللاسلكي المنفجرة في لبنان
+il_makan_c906716cde 2024-09-18 article p-cluster raw/makan/c906716cde87be23.html الصحة اللبنانية:إصابة نحو 4000 شخص في انفجارات اللاسلكي
+il_makan_649f23c4cc 2024-09-18 article p-cluster raw/makan/649f23c4cc899045.html انفجارات اللاسلكي في لبنان: التخطيط والتنفيذ
+il_makan_ce489390ca 2024-09-20 article p-cluster raw/makan/ce489390cac10ebd.html تايوان تستجوب رئيس شركة أجهزة البيجر بعد انفجارات لبنان
+il_makan_c528a890f3 2024-10-06 article p-cluster raw/makan/c528a890f38a8388.html واشنطن بوست: أجهزة اللاسلكي المتفجرة صنعت في إسرائيل
+il_makan_81a4d1b96e 2024-09-18 article p-cluster raw/makan/81a4d1b96ef1e082.html حوار مع محلل لبناني حول تفجيرات اللاسلكي في لبنان 
+il_makan_5961802f18 2024-09-19 article p-cluster raw/makan/5961802f182db903.html لبنان: مقتل 20 شخصا وإصابة 450 في انفجارات اللاسلكي
+il_makan_6c19321e52 2024-09-19 article p-cluster raw/makan/6c19321e52ecb8a2.html نيويورك تايمز: إسرائيل هي التي زودت حزب الله بأجهزة اللاسلكي
+il_makan_bd5478eb20 2024-10-16 article p-cluster raw/makan/bd5478eb2005ebf0.html احتيال وتسويق: تحقيق جديد في تفجير اللاسلكي لحزب الله
+
+ n12
+il_n12_bec6437287 2024-09-19 article p-cluster raw/n12/bec643728774943b.html אחרי פיצוץ מכשירי הקשר: המנייה של היצרנית היפנית מתחזקת
+il_n12_42fc90d847  article p-cluster raw/n12/42fc90d847b04e91.html N12 - הפרשנים: השאלות הגדולות אחרי "מבצע פיצוץ הביפרים" בלבנון
+il_n12_ffc3325683 2024-09-19 article p-cluster raw/n12/ffc3325683b29735.html לאחר מתקפת הביפרים בלבנון: החל נאום נסראללה
+il_n12_0f576e9b1d 2024-09-18 article p-cluster raw/n12/0f576e9b1deddfe1.html אלפי מכשירי הקשר הצבאיים שהתפוצצו - רשת הקשר החלופית לביפרים
+il_n12_aadc675d4c 2024-10-06 article p-cluster raw/n12/aadc675d4ccf6fa7.html הדרך שבה המוסד הבטיח פגיעה מקסימלית במבצע הביפרים
+il_n12_aaaa261aca 2024-09-17 article p-cluster raw/n12/aaaa261aca426bf1.html דיווחים בלבנון: עשרות נפגעים בפיצוץ של מכשירי קשר של חיזבאללה
+il_n12_6ee25e3b1e 2024-09-18 article p-cluster raw/n12/6ee25e3b1e8b387b.html אלה מכשירי הקשר שהתפוצצו בגל השני של הפיצוצים בלבנון
+il_n12_fb580dd849 2024-09-17 article p-cluster raw/n12/fb580dd84951fc08.html לאחר מבצע הביפרים: ברשתות בישראל - צוחקים כרגיל
+il_n12_36b229361f 2024-09-18 article p-cluster raw/n12/36b229361f0320af.html אלה מכשירי הקשר שהתפוצצו בגל השני של הפיצוצים בלבנון
+il_n12_ae690238dc 2024-09-19 article p-cluster raw/n12/ae690238dc50489b.html ״אחד ביום״: מתקפת הביפרים בלבנון
+
+
+ abuali
+il_abuali_75659 2024-09-17 telegram_post telegram-capture  הפצועים בדאחיה בביירות. דיווחים כי פעילי חזבאללה נקראים להשליך את מכשירי הטלפון שלהם ואת מכשירי הזימ
+il_abuali_75663 2024-09-17 telegram_post telegram-capture  הלכה הזימונית (: כדי להגיב לכתבה לחצו כאן
+il_abuali_75664 2024-09-17 telegram_post telegram-capture  מקורות לבנוניים לא רשמיים המזוהים עם חזבאללה: מעל ל 70 נפגעים מפיצוץ מכשירי הזימונית. כדי להגיב לכתב
+il_abuali_75667 2024-09-17 telegram_post telegram-capture  סרטון בו נראים רגעי פיצוץ של חלק ממכשירי הזימונית בלבנון. ודאי יצוצו עוד רבים כדי להגיב לכתבה לחצו כ
+il_abuali_75675 2024-09-17 telegram_post telegram-capture  הכאוס בלבנון בעקבות פיצוץ מכשירי הזימונית: מאות פצועים, בתי החולים קורסים. בתי החולים בלבנון מדווחים
+il_abuali_75676 2024-09-17 telegram_post telegram-capture  דיווחים כי מספר פיצוצים בסוריה קשורים אף הם לפעילי חזבאללה במתווה דומה לפיצוצים בלבנון (מכשירי זימונ
+il_abuali_75726 2024-09-17 telegram_post telegram-capture  מקורות סורים: כטב"מ אמריקאי מסוג MQ-4C ריחף היום מהשעה 14:00 עד השעה 15:30 מול חופי לבנון. ע"פ הדיוו
+il_abuali_75731 2024-09-17 telegram_post telegram-capture  אלג'זירה מפי מקור בטחוני לבנוני: מכשירי הזימונית יובאו ללבנון לפני 5 חודשים. הם היו ממולכדים מראש. ב
+il_abuali_75840 2024-09-18 telegram_post telegram-capture  אלג'זירה מפי משרד הבריאות הלבנוני בדיווח ראשון על היקף הנפגעים: הרוג אחד ויותר מ 100 פצועים בפיצוץ מ
+il_abuali_75841 2024-09-18 telegram_post telegram-capture  אלג'זירה מפי משרד הבריאות הלבנוני בדיווח ראשון על היקף הנפגעים: הרוג אחד ויותר מ 100 פצועים בפיצוץ מ
+il_abuali_75847 2024-09-18 telegram_post telegram-capture  בגל הפיצוצים הנוכחי של מכשירי הקשר, היום, ניכר, לפחות בעיני, שהאפקט התודעתי והחשש אצל כל לבנוני שאוח
+il_abuali_75850 2024-09-18 telegram_post telegram-capture  משרד הבריאות הלבנוני מעדכן מספרי נפגעים בגל הפיצוצים הנוכחי (מכשירי הקשר): 9 הרוגים ויותר מ 300 פצוע
+il_abuali_75852 2024-09-18 telegram_post telegram-capture  ההגנה האזרחית בלבנון עם נתונים לגבי המצב בנבטיה בדרום לבנון בעקבות פיצוץ מכשירי הקשר: 60 דירות עלו ב
+il_abuali_75859 2024-09-18 telegram_post telegram-capture  מקורות לבנוניים מדווחים שאחד ממכשירי הקשר התפוצץ במשרדו של מחמד קאנצו שהוא ראש לשכתו של חבר הפרלמנט 
+il_abuali_75861 2024-09-18 telegram_post telegram-capture  לבנון: דיווחים על התפוצצותם של מספר מכשירי קשר מסוג V180 באזור בעלבכ לפני זמן קצר. כדי להגיב לכתבה ל
+il_abuali_75867 2024-09-18 telegram_post telegram-capture  משרד הבריאות הלבנוני מעדכן את הנתונים לגבי הנפגעים בפיצוץ מכשירי הקשר היום בלבנון: 14 הרוגים ו 450 פ
+il_abuali_75870 2024-09-18 telegram_post telegram-capture  שמחת הסורים מתנגדי חזבאללה: יום פיצוץ המכשירים בלבנון הוא יום חג בלוח השנה. פעילי חזבאללה כבר "אינם 
+il_abuali_75875 2024-09-18 telegram_post telegram-capture  חזבאללה מתחיל להזרים כרזות של אנשיו שנהרגו היום בפיצוץ מכשירי הקשר. אפרסם אותם במרוכז, אך אני רוצה ל
+il_abuali_76763 2024-09-26 telegram_post telegram-capture  מקורות לבנוניים מדווחים על פיצוץ מטען מתחת למושב הנהג ברכב שנסע באזור אלכחאלה, על הכביש המוביל לבייר
+il_abuali_77125 2024-09-29 telegram_post telegram-capture  ג׳ארד קושנר, חתנו של טראמפ ושליחו למזה״ת בפוסט חריג: ״27 בספטמבר הוא היום החשוב ביותר במזרח התיכון מ
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"from bs4 import BeautifulSoup\\nimport json, re, os\\nids=[(\\\"ynet\\\",\\\"965a441518b6a228\\\"),(\\\"ynet\\\",\\\"1f6eff025798d5d9\\\"),(\\\"kikar\\\",\\\"cc202167d19aa8b4\\\"),(\\\"makan\\\",\\\"c906716cde87be23b\\\"),(\\\"n12\\\",\\\"aaaa261aca426bf1\\\")]\\nfor o,h in ids:\\n p=f\\\"data/israel/raw/{o}/{h}.html\\\"; s=BeautifulSoup(open(p,encoding=\\\"utf-8\\\"),\\\"html.parser\\\"); print(\\\"\\\\n###\\\",o,h,\\\"bytes\\\",os.path.getsize(p)); print(\\\"title\\\",s.title.get_text(\\\" \\\",strip=True) if s.title else \\\"\\\"); print(\\\"meta dates\\\",[(m.get(\\\"property\\\") or m.get(\\\"name\\\"),m.get(\\\"content\\\")) for m in s.find_all(\\\"meta\\\") if any(k in ((m.get(\\\"property\\\") or m.get(\\\"name\\\") or \\\"\\\")) for k in [\\\"date\\\",\\\"published\\\",\\\"article\\\"])]);\\n for sc in s.find_all(\\\"script\\\",type=\\\"application/ld+json\\\"):\\n  t=sc.string or sc.get_text();\\n  try:\\n   x=json.loads(t); xs=x if isinstance(x,list) else [x]\\n   for q in xs:\\n    if isinstance(q,dict) and (\\\"articleBody\\\" in q or \\\"datePublished\\\" in q): print(\\\"LD\\\",q.get(\\\"datePublished\\\"),str(q.get(\\\"headline\\\"))[:100],str(q.get(\\\"articleBody\\\"))[:500])\\n  except: pass\\n print(\\\"p sample\\\",\\\" | \\\\\".join(x.get_text(\\\" \\\",strip=True) for x in s.find_all(\\\"p\\\")[:8]))\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ exited 1 in 0ms:
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    exec("""from bs4 import BeautifulSoup\nimport json, re, os\nids=[(\"ynet\",\"965a441518b6a228\"),(\"ynet\",\"1f6eff025798d5d9\"),(\"kikar\",\"cc202167d19aa8b4\"),(\"makan\",\"c906716cde87be23b\"),(\"n12\",\"aaaa261aca426bf1\")]\nfor o,h in ids:\n p=f\"data/israel/raw/{o}/{h}.html\"; s=BeautifulSoup(open(p,encoding=\"utf-8\"),\"html.parser\"); print(\"\\n###\",o,h,\"bytes\",os.path.getsize(p)); print(\"title\",s.title.get_text(\" \",strip=True) if s.title else \"\"); print(\"meta dates\",[(m.get(\"property\") or m.get(\"name\"),m.get(\"content\")) for m in s.find_all(\"meta\") if any(k in ((m.get(\"property\") or m.get(\"name\") or \"\")) for k in [\"date\",\"published\",\"article\"])]);\n for sc in s.find_all(\"script\",type=\"application/ld+json\"):\n  t=sc.string or sc.get_text();\n  try:\n   x=json.loads(t); xs=x if isinstance(x,list) else [x]\n   for q in xs:\n    if isinstance(q,dict) and (\"articleBody\" in q or \"datePublished\" in q): print(\"LD\",q.get(\"datePublished\"),str(q.get(\"headline\"))[:100],str(q.get(\"articleBody\"))[:500])\n  except: pass\n print(\"p sample\",\" | \\".join(x.get_text(\" \",strip=True) for x in s.find_all(\"p\")[:8]))\n""")
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 13
+    print("p sample"," | \".join(x.get_text(" ",strip=True) for x in s.find_all("p")[:8]))
+                                                                                  ^
+SyntaxError: unterminated string literal (detected at line 13)
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"from bs4 import BeautifulSoup\\nimport json,os\\nids=[(\\\"ynet\\\",\\\"965a441518b6a228\\\"),(\\\"ynet\\\",\\\"1f6eff025798d5d9\\\"),(\\\"kikar\\\",\\\"cc202167d19aa8b4\\\"),(\\\"makan\\\",\\\"c906716cde87be23b\\\"),(\\\"n12\\\",\\\"aaaa261aca426bf1\\\")]\\nfor o,h in ids:\\n p=\\\"data/israel/raw/%s/%s.html\\\"%(o,h); s=BeautifulSoup(open(p,encoding=\\\"utf-8\\\"),\\\"html.parser\\\"); print(\\\"\\\\n###\\\",o,h,os.path.getsize(p)); print(\\\"title\\\",s.title.get_text(\\\" \\\",strip=True) if s.title else \\\"\\\"); print(\\\"meta dates\\\",[(m.get(\\\"property\\\") or m.get(\\\"name\\\"),m.get(\\\"content\\\")) for m in s.find_all(\\\"meta\\\") if any(k in ((m.get(\\\"property\\\") or m.get(\\\"name\\\") or \\\"\\\")) for k in [\\\"date\\\",\\\"published\\\",\\\"article\\\"])]);\\n for sc in s.find_all(\\\"script\\\",type=\\\"application/ld+json\\\"):\\n  try:\\n   x=json.loads(sc.string or sc.get_text()); xs=x if isinstance(x,list) else [x]\\n   for q in xs:\\n    if isinstance(q,dict) and (\\\"articleBody\\\" in q or \\\"datePublished\\\" in q): print(\\\"LD\\\",q.get(\\\"datePublished\\\"),str(q.get(\\\"headline\\\"))[:100],str(q.get(\\\"articleBody\\\"))[:300])\\n  except Exception: pass\\n print(\\\"p sample\\\",\\\" || \\\\\".join([x.get_text(\\\" \\\",strip=True) for x in s.find_all(\\\"p\\\")[:8]]))\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ exited 1 in 0ms:
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    exec("""from bs4 import BeautifulSoup\nimport json,os\nids=[(\"ynet\",\"965a441518b6a228\"),(\"ynet\",\"1f6eff025798d5d9\"),(\"kikar\",\"cc202167d19aa8b4\"),(\"makan\",\"c906716cde87be23b\"),(\"n12\",\"aaaa261aca426bf1\")]\nfor o,h in ids:\n p=\"data/israel/raw/%s/%s.html\"%(o,h); s=BeautifulSoup(open(p,encoding=\"utf-8\"),\"html.parser\"); print(\"\\n###\",o,h,os.path.getsize(p)); print(\"title\",s.title.get_text(\" \",strip=True) if s.title else \"\"); print(\"meta dates\",[(m.get(\"property\") or m.get(\"name\"),m.get(\"content\")) for m in s.find_all(\"meta\") if any(k in ((m.get(\"property\") or m.get(\"name\") or \"\")) for k in [\"date\",\"published\",\"article\"])]);\n for sc in s.find_all(\"script\",type=\"application/ld+json\"):\n  try:\n   x=json.loads(sc.string or sc.get_text()); xs=x if isinstance(x,list) else [x]\n   for q in xs:\n    if isinstance(q,dict) and (\"articleBody\" in q or \"datePublished\" in q): print(\"LD\",q.get(\"datePublished\"),str(q.get(\"headline\"))[:100],str(q.get(\"articleBody\"))[:300])\n  except Exception: pass\n print(\"p sample\",\" || \\".join([x.get_text(\" \",strip=True) for x in s.find_all(\"p\")[:8]]))\n""")
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 12
+    print("p sample"," || \".join([x.get_text(" ",strip=True) for x in s.find_all("p")[:8]]))
+                                                                                    ^
+SyntaxError: unterminated string literal (detected at line 12)
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"from bs4 import BeautifulSoup\\nimport json,os\\nids=[(\\\"ynet\\\",\\\"965a441518b6a228\\\"),(\\\"ynet\\\",\\\"1f6eff025798d5d9\\\"),(\\\"kikar\\\",\\\"cc202167d19aa8b4\\\"),(\\\"makan\\\",\\\"c906716cde87be23b\\\"),(\\\"n12\\\",\\\"aaaa261aca426bf1\\\")]\\nfor o,h in ids:\\n p=\\\"data/israel/raw/%s/%s.html\\\"%(o,h); s=BeautifulSoup(open(p,encoding=\\\"utf-8\\\"),\\\"html.parser\\\"); print(\\\"\\\\n###\\\",o,h,os.path.getsize(p)); print(\\\"title\\\",s.title.get_text(\\\" \\\",strip=True) if s.title else \\\"\\\"); print(\\\"meta dates\\\",[(m.get(\\\"property\\\") or m.get(\\\"name\\\"),m.get(\\\"content\\\")) for m in s.find_all(\\\"meta\\\") if any(k in ((m.get(\\\"property\\\") or m.get(\\\"name\\\") or \\\"\\\")) for k in [\\\"date\\\",\\\"published\\\",\\\"article\\\"])]);\\n for sc in s.find_all(\\\"script\\\",type=\\\"application/ld+json\\\"):\\n  try:\\n   x=json.loads(sc.string or sc.get_text()); xs=x if isinstance(x,list) else [x]\\n   for q in xs:\\n    if isinstance(q,dict) and (\\\"articleBody\\\" in q or \\\"datePublished\\\" in q): print(\\\"LD\\\",q.get(\\\"datePublished\\\"),str(q.get(\\\"headline\\\"))[:100],str(q.get(\\\"articleBody\\\"))[:300])\\n  except Exception: pass\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ exited 1 in 0ms:
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    exec("""from bs4 import BeautifulSoup\nimport json,os\nids=[(\"ynet\",\"965a441518b6a228\"),(\"ynet\",\"1f6eff025798d5d9\"),(\"kikar\",\"cc202167d19aa8b4\"),(\"makan\",\"c906716cde87be23b\"),(\"n12\",\"aaaa261aca426bf1\")]\nfor o,h in ids:\n p=\"data/israel/raw/%s/%s.html\"%(o,h); s=BeautifulSoup(open(p,encoding=\"utf-8\"),\"html.parser\"); print(\"\\n###\",o,h,os.path.getsize(p)); print(\"title\",s.title.get_text(\" \",strip=True) if s.title else \"\"); print(\"meta dates\",[(m.get(\"property\") or m.get(\"name\"),m.get(\"content\")) for m in s.find_all(\"meta\") if any(k in ((m.get(\"property\") or m.get(\"name\") or \"\")) for k in [\"date\",\"published\",\"article\"])]);\n for sc in s.find_all(\"script\",type=\"application/ld+json\"):\n  try:\n   x=json.loads(sc.string or sc.get_text()); xs=x if isinstance(x,list) else [x]\n   for q in xs:\n    if isinstance(q,dict) and (\"articleBody\" in q or \"datePublished\" in q): print(\"LD\",q.get(\"datePublished\"),str(q.get(\"headline\"))[:100],str(q.get(\"articleBody\"))[:300])\n  except Exception: pass\n""")
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 5, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: 'data/israel/raw/makan/c906716cde87be23b.html'
+
+### ynet 965a441518b6a228 124577
+title בלבנון מדווחים: שוב פיצוצים של ביפרים בדאחייה בביירות ובאזורים נוספים
+meta dates [('article:published_time', '2024-09-18T14:05:49.010433Z'), ('article:update_time', '2024-09-18T14:05:49.010433Z'), ('article:content_tier', 'free'), ('vr:published_time', '2024-09-18T14:05:49.010433Z'), ('publishedPageId', '58655')]
+LD 2024-09-18T14:05:49.010433Z בלבנון מדווחים: שוב פיצוצים של ביפרים בדאחייה בביירות ובאזורים נוספים בלבנון דיווחו על פיצוצי ביפרים ברובע הדאחייה בביירות ובמספר אזורים בדרום המדינה.
+
+### ynet 1f6eff025798d5d9 160989
+title דיווח: "כ-1,500 פעילי חיזבאללה יצאו מכשירות במתקפת הביפרים"
+meta dates [('article:published_time', '2024-09-25T09:55:35.792423Z'), ('article:update_time', '2024-09-25T09:55:35.792423Z'), ('article:content_tier', 'free'), ('vr:published_time', '2024-09-25T09:55:35.792423Z'), ('publishedPageId', '57761')]
+LD 2024-09-25T09:55:35.792423Z אחרי מתקפת הביפרים: "כ-1,500 פעילי חיזבאללה יצאו מכשירות" | דוח: כמה מחבלים חברים בארגון? 1,500 מחבלי חיזבאללה יצאו מכשירות עקב מתקפת "פיצוצי הביפרים", לאחר שרבים מהם התעוורו או איבדו את אחת מידיהם בפיצוצים. כך אמר היום (רביעי) גורם בכיר בארגון הטרור לסוכנות הידיעות רויטרס. • כל העדכונים מהלחימה   רשימת ההרוגים שפרסם חיזבאללה בשבוע האחרון לאחר פיצוצי הביפרים וכן מכשירי הקשר יום לאחר מכן 
+
+### kikar cc202167d19aa8b4 443953
+title פיצוץ מכשירי קשר במתקפה נוספת בלבנון: מאות פצועים ו-5 הרוגים, מבנים עולים.. | כיכר השבת
+meta dates [('article:published_time', '2024-09-18T14:17:00.000Z'), ('article:modified_time', '2024-09-18T15:17:00.000Z'), ('article:author', 'בני סולומון')]
+LD 2024-09-18T14:17:00.000Z פיצוץ מכשירי קשר במתקפה נוספת בלבנון: מאות פצועים ו-5 הרוגים, מבנים עולים באש None
+
+exec
+/bin/zsh -lc 'ls data/israel/raw/makan | sort; ls data/israel/raw/n12 | sort' in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+0140f2ef589a8032.html
+2e5c25480b8aa26e.html
+5961802f182db903.html
+649f23c4cc899045.html
+6c19321e52ecb8a2.html
+81a4d1b96ef1e082.html
+bd5478eb2005ebf0.html
+c528a890f38a8388.html
+c906716cde87be23.html
+c9d393a8251380aa.html
+ce489390cac10ebd.html
+0f576e9b1deddfe1.html
+36b229361f0320af.html
+42fc90d847b04e91.html
+6ee25e3b1e8b387b.html
+aaaa261aca426bf1.html
+aadc675d4ccf6fa7.html
+ae690238dc50489b.html
+bec643728774943b.html
+fb580dd84951fc08.html
+ffc3325683b29735.html
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"from bs4 import BeautifulSoup\\nimport json,os\\nids=[(\\\"makan\\\",\\\"c906716cde87be23\\\"),(\\\"n12\\\",\\\"aaaa261aca426bf1\\\")]\\nfor o,h in ids:\\n p=\\\"data/israel/raw/%s/%s.html\\\"%(o,h); s=BeautifulSoup(open(p,encoding=\\\"utf-8\\\"),\\\"html.parser\\\"); print(\\\"\\\\n###\\\",o,h,os.path.getsize(p)); print(\\\"title\\\",s.title.get_text(\\\" \\\",strip=True) if s.title else \\\"\\\"); print(\\\"meta dates\\\",[(m.get(\\\"property\\\") or m.get(\\\"name\\\"),m.get(\\\"content\\\")) for m in s.find_all(\\\"meta\\\") if any(k in ((m.get(\\\"property\\\") or m.get(\\\"name\\\") or \\\"\\\")) for k in [\\\"date\\\",\\\"published\\\",\\\"article\\\"])]);\\n for sc in s.find_all(\\\"script\\\",type=\\\"application/ld+json\\\"):\\n  try:\\n   x=json.loads(sc.string or sc.get_text()); xs=x if isinstance(x,list) else [x]\\n   for q in xs:\\n    if isinstance(q,dict) and (\\\"articleBody\\\" in q or \\\"datePublished\\\" in q): print(\\\"LD\\\",q.get(\\\"datePublished\\\"),str(q.get(\\\"headline\\\"))[:100],str(q.get(\\\"articleBody\\\"))[:300])\\n  except Exception: pass\\n print(\\\"p count\\\",len(s.find_all(\\\"p\\\")),\\\"first\\\",[x.get_text(\\\" \\\",strip=True)[:180] for x in s.find_all(\\\"p\\\")[:5]])\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+
+### makan c906716cde87be23 71976
+title الصحة اللبنانية:إصابة نحو 4000 شخص في انفجارات اللاسلكي
+meta dates []
+LD 2024-09-18T03:19:21+03:00 الصحة اللبنانية:إصابة نحو 4000 شخص في انفجارات اللاسلكي None
+p count 7 first ['قال وزير الصحة اللبناني فراس الأبيض في إحاطة إعلامية لمجموعة الصحافيين في بيروت ان عدد الإصابات الناجمة عن انفجارات أجهزة الاتصالات اللاسليكية قد بلغ حتى الآن اكثر من 4000 مصاب.', 'وأضاف الوزير اللبناني ان نحو 400 مصابا من هؤلاء يعانون من جراح حرجة تشكل خطرا على حياتهم، كما أضاف ان تسعة مصابين قد توفوا متأثرين بجراحهم وان من بينهم طفلة.', 'وأضاف الوزير اللبناني ان الإصابات تقع عادة في ثلاثة أجزاء من جسم مستخدم هذه الأجهزة، وهي اما في الوجه او في منطقة البطن او في اليدين.', 'وجاء في اقوال الوزير اللبناني ان نحو 100 مستشفى لبناني استقبلت المصابين في اقسام الطوارئ وان قدرات هذه المستشفيات قد بلغت أقصاها، مما اضطر السلطات الى ارسال المصابينالى مستشفيات في', 'وقالت مصادر لبنانية ان من بين الذين قتلوا جراء الانفجارات المذكورة، هو نجل علي عمار – النائب عن كتلة حزب الله في مجلس النواب اللبناني.']
+
+### n12 aaaa261aca426bf1 151295
+title N12 - דיווחים בלבנון: עשרות נפגעים בפיצוץ של מכשירי קשר של...
+meta dates [('article:published_time', '2024-09-17T15:59:00+0300>'), ('article:modified_time', ''), ('article:section', 'N12'), ('article:published_time', '2024-09-17T15:59:00+0300'), ('article:section', 'החדשות')]
+LD 2024-09-17T15:59+0300 דיווחים בלבנון: עשרות נפגעים בפיצוץ של מכשירי קשר של חיזבאללה None
+p count 10 first ['בלבנון מדווחים היום (שלישי) על סדרת פיצוצים עם מאות נפגעים ברובע הדאחייה בביירות ובמוקדים נוספים בבקאע ובדרום המדינה. בכלי התקשורת טענו שישראל חדרה למכשירי הקשר של חיזבאללה ופוצצה ', 'מקור בארגון הטרור אמר לעיתון אל-ערבי אל-ג\'דיד הקטארי: "לא ניתן לקבוע כרגע את המספר המדויק של המוקדים בלבנון שפוצצו בהם מכשירי קשר של אנשי חיזבאללה. הפיצוצים אירעו במקביל ביותר ממוק', 'בארגון הטרור קראו לפעילים לנטוש את מכשירי הקשר שלהם. באחד התיעודים מלבנון נראה פעיל חיזבאללה מקבל הודעה במכשיר קשר, מביט לעברו ומרים אותו - המכשיר מתפוצץ רגעים ספורים לאחר מכן.', 'מקורות מחיזבאללה, שצוטטו בכלי התקשורת במדינה, העריכו שמדובר בתקיפת סייבר, שבוצעה באמצעות כלי טכנולוגיים שהופעלו מרחוק. בכיר בארגון הטרור כינה את האירוע כ"פרצת האבטחה הגדולה ביותר ע', 'משרד הבריאות הלבנוני דורש מבתי החולים בכל המדינה להיות בכוננות הגבוהה ביותר ולהגביר את ההיערכות לקבלת פצועים. בין הנפגעים גם שגריר איראן בלבנון אמאני, כך לפי חלק מהדיווחים.']
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import json\\nfrom bs4 import BeautifulSoup\\nrows={r[\\\"capture\\\"][\\\"raw_path\\\"]:r for r in [json.loads(x) for x in open(\\\"data/israel/corpus-v1.jsonl\\\")]}\\nfor path,r in rows.items():\\n if path in [\\\"raw/ynet/965a441518b6a228.html\\\",\\\"raw/ynet/1f6eff025798d5d9.html\\\",\\\"raw/kikar/cc202167d19aa8b4.html\\\",\\\"raw/makan/c906716cde87be23.html\\\",\\\"raw/n12/aaaa261aca426bf1.html\\\"]:\\n  s=BeautifulSoup(open(\\\"data/israel/\\\"+path,encoding=\\\"utf-8\\\"),\\\"html.parser\\\"); ps=[x.get_text(\\\" \\\",strip=True) for x in s.find_all(\\\"p\\\")]; b=r[\\\"content\\\"][\\\"body\\\"]; print(\\\"\\\\n\\\",r[\\\"document_id\\\"],r[\\\"content\\\"][\\\"word_count\\\"],r[\\\"publication\\\"][\\\"published_at\\\"]); print(\\\"STORED START\\\",b[:240]); print(\\\"STORED END\\\",b[-240:]); print(\\\"RAW P START\\\",\\\" \\\\\".join(ps[:2])[:240]); print(\\\"RAW P END\\\",\\\" \\\\\".join(ps[-2:])[-240:])\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ exited 1 in 0ms:
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    exec("""import json\nfrom bs4 import BeautifulSoup\nrows={r[\"capture\"][\"raw_path\"]:r for r in [json.loads(x) for x in open(\"data/israel/corpus-v1.jsonl\")]}\nfor path,r in rows.items():\n if path in [\"raw/ynet/965a441518b6a228.html\",\"raw/ynet/1f6eff025798d5d9.html\",\"raw/kikar/cc202167d19aa8b4.html\",\"raw/makan/c906716cde87be23.html\",\"raw/n12/aaaa261aca426bf1.html\"]:\n  s=BeautifulSoup(open(\"data/israel/\"+path,encoding=\"utf-8\"),\"html.parser\"); ps=[x.get_text(\" \",strip=True) for x in s.find_all(\"p\")]; b=r[\"content\"][\"body\"]; print(\"\\n\",r[\"document_id\"],r[\"content\"][\"word_count\"],r[\"publication\"][\"published_at\"]); print(\"STORED START\",b[:240]); print(\"STORED END\",b[-240:]); print(\"RAW P START\",\" \\".join(ps[:2])[:240]); print(\"RAW P END\",\" \\".join(ps[-2:])[-240:])\n""")
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 6
+    s=BeautifulSoup(open("data/israel/"+path,encoding="utf-8"),"html.parser"); ps=[x.get_text(" ",strip=True) for x in s.find_all("p")]; b=r["content"]["body"]; print("\n",r["document_id"],r["content"]["word_count"],r["publication"]["published_at"]); print("STORED START",b[:240]); print("STORED END",b[-240:]); print("RAW P START"," \".join(ps[:2])[:240]); print("RAW P END"," \".join(ps[-2:])[-240:])
+                                                                                                                                                                                                                                                                                                                                                                             ^^^^^^^^^
+SyntaxError: invalid syntax. Is this intended to be part of the string?
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import json\\nfrom bs4 import BeautifulSoup\\nrows={r[\\\"capture\\\"][\\\"raw_path\\\"]:r for r in [json.loads(x) for x in open(\\\"data/israel/corpus-v1.jsonl\\\")]}\\nfor path,r in rows.items():\\n if path in [\\\"raw/ynet/965a441518b6a228.html\\\",\\\"raw/ynet/1f6eff025798d5d9.html\\\",\\\"raw/kikar/cc202167d19aa8b4.html\\\",\\\"raw/makan/c906716cde87be23.html\\\",\\\"raw/n12/aaaa261aca426bf1.html\\\"]:\\n  s=BeautifulSoup(open(\\\"data/israel/\\\"+path,encoding=\\\"utf-8\\\"),\\\"html.parser\\\"); ps=[x.get_text(\\\" \\\",strip=True) for x in s.find_all(\\\"p\\\")]; b=r[\\\"content\\\"][\\\"body\\\"]; print(\\\"\\\\n\\\",r[\\\"document_id\\\"],r[\\\"content\\\"][\\\"word_count\\\"],r[\\\"publication\\\"][\\\"published_at\\\"]); print(\\\"STORED START\\\",b[:240]); print(\\\"STORED END\\\",b[-240:]); print(\\\"RAW FIRST\\\",ps[0][:240] if ps else \\\"\\\"); print(\\\"RAW LAST\\\",ps[-1][-240:] if ps else \\\"\\\")\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+
+ il_ynet_965a441518 12 2024-09-18
+STORED START בלבנון דיווחו על פיצוצי ביפרים ברובע הדאחייה בביירות ובמספר אזורים בדרום המדינה.
+STORED END בלבנון דיווחו על פיצוצי ביפרים ברובע הדאחייה בביירות ובמספר אזורים בדרום המדינה.
+RAW FIRST 
+RAW LAST 
+
+ il_ynet_1f6eff0257 452 2024-09-25
+STORED START 1,500 מחבלי חיזבאללה יצאו מכשירות עקב מתקפת "פיצוצי הביפרים", לאחר שרבים מהם התעוורו או איבדו את אחת מידיהם בפיצוצים. כך אמר היום (רביעי) גורם בכיר בארגון הטרור לסוכנות הידיעות רויטרס. • כל העדכונים מהלחימה רשימת ההרוגים שפרסם חיזבאללה בשבו
+STORED END ל תושבי דרום לבנון לביירות ופרבריה המזרחיים מנצלים הסוחרים את המצב, ומחיר הלחם עלה פי 6 וחצי. בכתבה אחרת ב"אל-אחבאר" תוארה הצפיפות במעברים לכיוון סוריה באזור אל-בקאע שבמזרח המדינה, ובאזור צפון לבנון. לפי הדיווח, אלפי אנשים חוצים את המעברים.
+RAW FIRST 
+RAW LAST 
+
+ il_kikar_cc202167d1 842 2024-09-18
+STORED START החלפת מצב תצוגה כיכר השבת פנו אלינו מכה שנייה, אחרי יממה פיצוץ מכשירי קשר במתקפה נוספת בלבנון: מאות פצועים ו-5 הרוגים, מבנים עולים באש מסתמן: נסראללה ייאלץ לדחות את נאומו | בלבנון מדווחים על נפגעים רבים | הפיצוצים החלו בזמן הלווית ארבעה מחב
+STORED END ו" דוד הכהן | 04.09.26 ברגעי הטבח: נתניהו חושף - זה היה הלו"ז האישי שלי בבוקר ה-7 לאוקטובר דוד הכהן | 03.09.26 עוד בצבא וביטחון: אולי יעניין אותך כיכר השבת RSS Facebook פייסבוק X X פנו אלינו חדשות ואקטואליה כל הזכויות שמורות לכיכר השבת בע״מ
+RAW FIRST חדשות ואקטואליה
+RAW LAST כל הזכויות שמורות לכיכר השבת בע״מ
+
+ il_makan_c906716cde 143 2024-09-18
+STORED START قال وزير الصحة اللبناني فراس الأبيض في إحاطة إعلامية لمجموعة الصحافيين في بيروت ان عدد الإصابات الناجمة عن انفجارات أجهزة الاتصالات اللاسليكية قد بلغ حتى الآن اكثر من 4000 مصاب. وأضاف الوزير اللبناني ان نحو 400 مصابا من هؤلاء يعانون من جراح
+STORED END  قدرات هذه المستشفيات قد بلغت أقصاها، مما اضطر السلطات الى ارسال المصابينالى مستشفيات في الجنوب اللبناني. وقالت مصادر لبنانية ان من بين الذين قتلوا جراء الانفجارات المذكورة، هو نجل علي عمار – النائب عن كتلة حزب الله في مجلس النواب اللبناني.
+RAW FIRST قال وزير الصحة اللبناني فراس الأبيض في إحاطة إعلامية لمجموعة الصحافيين في بيروت ان عدد الإصابات الناجمة عن انفجارات أجهزة الاتصالات اللاسليكية قد بلغ حتى الآن اكثر من 4000 مصاب.
+RAW LAST Website created by IdeoDigital
+
+ il_n12_aaaa261aca 268 2024-09-17
+STORED START הדפסה Social-icon-26X26px-facebook Created with Sketch. Social-icon-26X26px-Whatsapp Created with Sketch. Social-icon-26X26px-eMail Created with Sketch. בלבנון מדווחים היום (שלישי) על סדרת פיצוצים עם מאות נפגעים ברובע הדאחייה בביירות ובמוקד
+STORED END ידא, שבדרום לבנון: "בסגירת מעגל מהאוויר, מטוסי קרב תקפו את המבנה וחיסלו שלושה מחבלים שפעלו בו". במהלך היום התרעות על חדירת כלי טיס עוין הופעלו ביישובים יפתח, רמות נפתלי, מלכיה ודישון. כמו כן, התרעות על ירי רקטות וטילים הופעלו במלכיה ודישון.
+RAW FIRST בלבנון מדווחים היום (שלישי) על סדרת פיצוצים עם מאות נפגעים ברובע הדאחייה בביירות ובמוקדים נוספים בבקאע ובדרום המדינה. בכלי התקשורת טענו שישראל חדרה למכשירי הקשר של חיזבאללה ופוצצה אותם.
+RAW LAST לתגובות
+
+exec
+/bin/zsh -lc "rg --files data | rg 'lebanon/.+corpus-v1.jsonl|corpus-v1.jsonl|comparison' | sort; rg -n \"agentless|agentive|operation|terror|martyr|foreign|מجزرة|عملية|מחבלים|שהידים|تفجير|פיצוץ\" data -g '*.py' -g '*.md' | sed -n '1,240p'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+data/analysis/lebanon-israel-comparison-v1.md
+data/israel/corpus-v1.jsonl
+data/lebanon/corpus-v1.jsonl
+data/lebanon/triage-notes.md:63:plus the Iranian ambassador's injury, EU/Ireland condemnations, "terrorist
+data/lebanon/analysis/smoke-raw.md:12:| outlet | n | israel_plain | enemy_register | explosion_intrans | detonation_trans | aggression | attack | massacre | crime_terror | operation | martyr | casualty_neutral |
+data/lebanon/analysis/smoke-raw.md:31:| crime_terror | 7.1 | 8.3 |
+data/lebanon/analysis/smoke-raw.md:32:| operation | 2.8 | 3.3 |
+data/lebanon/analysis/smoke-raw.md:33:| martyr | 10.0 | 11.7 |
+data/lebanon/analysis/smoke-raw.md:47:| crime_terror | 2.3 | 8.2 |
+data/lebanon/analysis/smoke-raw.md:48:| operation | 6.8 | 2.7 |
+data/lebanon/analysis/smoke-raw.md:49:| martyr | 2.3 | 10.9 |
+data/lebanon/analysis/smoke-findings.md:38:| martyr (شهيد) | 2.7 | 12.0 | 1.7 | **33.3** |
+data/lebanon/analysis/smoke-findings.md:48:انفجار (intransitive: "explosion happened") vs تفجير (transitive:
+data/lebanon/analysis/smoke-findings.md:51:- **LBCI: 60.9% intransitive vs 36.4% transitive** — the agentless frame.
+data/lebanon/analysis/smoke-findings.md:63:explosion 71% vs 41; martyr 2% vs 11; enemy register 4% vs 11; crime/
+data/lebanon/analysis/smoke-findings.md:64:terror 2% vs 8. The distribution corpus is measurably agent-less and
+data/lebanon/analysis/smoke-findings.md:80:MTV (anti-Hezbollah) still uses "martyr" in 12% of records — Lebanese
+data/lebanon/census-notes-v2.md:96:## Inclusion/exclusion rule for foreign entries in digital rankings
+data/lebanon/census-notes-v2.md:98:Rule: a foreign outlet gets a census row when it (a) appears in a Lebanon
+data/lebanon/census-notes-v2.md:105:| yahoo.com (#4) | exclude | portal traffic, not a news operation targeting Lebanon |
+data/lebanon/census-notes-v2.md:158:| Ahrefs foreign entries admitted inconsistently | explicit inclusion/exclusion rule + table above |
+data/israel/normalization-notes.md:35:   foreign-attribution (censorship-formula) pattern, not wire copy.
+data/israel/normalization-notes.md:42:   "operation" share is directionally real but low-n.
+data/israel/enumeration/notes.md:35:   (מחבלים, פיצוץ/פוצצו).
+data/scripts/analyze_lebanon_smoke.py:12:      crime/terror
+data/scripts/analyze_lebanon_smoke.py:13:    - casualty register: martyr vs neutral killed/victim
+data/scripts/analyze_lebanon_smoke.py:31: "detonation_trans": ["تفجير","تفجيرات","detonat","bombing of"],
+data/scripts/analyze_lebanon_smoke.py:35: "crime_terror": ["جريمة","إجرام","اجرام","إرهاب","ارهاب","إرهابية","ارهابية","terror","crime"],
+data/scripts/analyze_lebanon_smoke.py:36: "operation": ["عملية أمنية","العملية الإسرائيلية","العملية الاسرائيلية","operation"],
+data/scripts/analyze_lebanon_smoke.py:37: "martyr": ["شهيد","شهداء","استشهاد","استشهد","martyr"],
+data/israel/access-notes.md:41:  called "מחבלים" (terrorists) in the headline — the attacker-side
+data/germany/census-notes.md:153:are folded into the ARD row for this study because national/foreign news on
+data/germany/census-notes.md:183:   whose foreign coverage is what most regional readers actually saw. The
+data/scripts/build_viz.py:18: "“the pagers exploded” — no actor": dict(ar=["انفجار", "انفجارات", "انفجرت"], he=["פיצוץ", "פיצוצים", "התפוצצ"], en=["explosion", "blast", "exploded"]),
+data/scripts/build_viz.py:19: "“detonated” — actor named": dict(ar=["تفجير", "تفجيرات"], he=["פוצצו", "פיצצה", "פיצץ", "פוצץ"], en=["detonat"]),
+data/scripts/build_viz.py:20: "an “operation”": dict(ar=["عملية أمنية", "العملية الإسرائيلية"], he=["מבצע"], en=["operation"]),
+data/scripts/build_viz.py:22: "a “massacre” or “crime”": dict(ar=["عدوان", "العدوان", "مجزرة", "جريمة", "إرهاب", "ارهاب"], he=["טבח", "פשע מלחמה"], en=["massacre", "aggression", "war crime", "terror"]),
+data/scripts/build_viz.py:23: "the dead are “terrorists”": dict(ar=[], he=["מחבל"], en=["terrorist"]),
+data/scripts/build_viz.py:24: "the dead are “martyrs”": dict(ar=["شهيد", "شهداء", "استشهاد"], he=[], en=["martyr"]),
+data/scripts/build_viz.py:25: "“according to foreign reports”": dict(ar=[], he=["דיווחים זרים", "פרסומים זרים", "גורמים זרים"], en=[]),
+data/scripts/build_viz.py:27:SPECTRUM_MEASURES = ["“detonated” — actor named", "an “operation”",
+data/scripts/build_viz.py:28:                     "the dead are “terrorists”", "the dead are “martyrs”"]
+data/scripts/step5_triage_extract.py:23:           "أجهزة الاتصال", "اجهزة الاتصال", "exploding devices", "تفجير الأجهزة", "تفجير أجهزة"]
+data/us/census-notes.md:100:| Local TV news (27% category) | context, no representative | foreign news on local TV is network/wire-syndicated — covered via network + AP rows (differs from Germany's RND decision because US locals do not run a shared original-reporting network for foreign news) |
+data/us/census-notes.md:101:| Regional/local papers (12%) | context, no representative | foreign coverage predominantly AP; Gannett network carried by USA Today row |
+data/us/census-notes.md:145:foreign-news newsroom — sports-network logic); Substack (a platform, not an
+data/us/reviews/review-1-grok-2026-09-05.md:124:**5. The Weather Channel.** YouGov May 2026 trust battery lists it as the most trusted brand in that poll (50% net). It is incidental news, not a foreign-news newsroom. **Exclude**, with a one-line note, same logic as sports networks.
+data/analysis/lebanon-israel-comparison-v1.md:12:| agentless grammar ("explosions happened") | 43.5 | **85.0** |
+data/analysis/lebanon-israel-comparison-v1.md:13:| agentive grammar ("someone detonated") | 45.0 | 56.9 |
+data/analysis/lebanon-israel-comparison-v1.md:14:| **operation** | 3.3 | **30.7** |
+data/analysis/lebanon-israel-comparison-v1.md:17:| casualties as **terrorists** | 0.6 | **20.9** |
+data/analysis/lebanon-israel-comparison-v1.md:18:| casualties as **martyrs** | **8.9** | 0.0 |
+data/analysis/lebanon-israel-comparison-v1.md:19:| "foreign reports" censorship formula | 0.0 | 5.2 |
+data/analysis/lebanon-israel-comparison-v1.md:24:   31% vs Lebanon 3%. Casualties: Israel calls them terrorists (21% vs
+data/analysis/lebanon-israel-comparison-v1.md:25:   0.6%), Lebanon calls them martyrs (9% vs 0.0%). Zero-overlap mirror
+data/analysis/lebanon-israel-comparison-v1.md:27:2. **The agency paradox.** Attacker-side coverage uses *agentless* grammar
+data/analysis/lebanon-israel-comparison-v1.md:29:   "פיצוץ הביפרים" (the beeper explosion) under censorship-shaped caution
+data/analysis/lebanon-israel-comparison-v1.md:31:   agentive overall, driven by Al-Manar/MTV's تفجير. Grammar tracks
+data/analysis/lebanon-israel-comparison-v1.md:33:   (Kikar 100% agentive; Al-Manar 62%) breaking their own side's pattern.
+data/analysis/lebanon-israel-comparison-v1.md:35:   foreign reports" appears in 5.2% of Israeli records and 0.0% of
+data/analysis/lebanon-israel-comparison-v1.md:41:   measures (Kikar↔Ynet on terrorists 82↔14; Al-Manar↔LBCI on massacre
+data/analysis/lebanon-israel-comparison-v1.md:50:register ≈ unused, so the 7.2% Israeli row is mostly quoted terror/crime
+
+exec
+/bin/zsh -lc "sed -n '1,180p' data/scripts/build_viz.py; sed -n '1,240p' data/scripts/analyze_lebanon_smoke.py; sed -n '1,120p' data/israel/enumeration/notes.md; find data/lebanon -maxdepth 2 -type f | sort | sed -n '1,120p'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+#!/usr/bin/env python3
+"""Build the Lebanon↔Israel comparison viz doc.
+
+Computes the comparison payload from both corpus-v1.jsonl files (same
+matched term families as the v1 comparison table) plus the MTV
+displacement CSV, injects it into viz-template.html, writes
+data/analysis/lebanon-israel-viz-v1.html (self-contained, file:// ready;
+d3 from CDN).
+"""
+import csv, json
+from collections import Counter, defaultdict
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+
+# Matched per-language families — identical to lebanon-israel-comparison-v1.md
+M = {
+ "“the pagers exploded” — no actor": dict(ar=["انفجار", "انفجارات", "انفجرت"], he=["פיצוץ", "פיצוצים", "התפוצצ"], en=["explosion", "blast", "exploded"]),
+ "“detonated” — actor named": dict(ar=["تفجير", "تفجيرات"], he=["פוצצו", "פיצצה", "פיצץ", "פוצץ"], en=["detonat"]),
+ "an “operation”": dict(ar=["عملية أمنية", "العملية الإسرائيلية"], he=["מבצע"], en=["operation"]),
+ "an “attack”": dict(ar=["هجوم", "الهجوم"], he=["מתקפה", "מתקפת"], en=["attack"]),
+ "a “massacre” or “crime”": dict(ar=["عدوان", "العدوان", "مجزرة", "جريمة", "إرهاب", "ارهاب"], he=["טבח", "פשע מלחמה"], en=["massacre", "aggression", "war crime", "terror"]),
+ "the dead are “terrorists”": dict(ar=[], he=["מחבל"], en=["terrorist"]),
+ "the dead are “martyrs”": dict(ar=["شهيد", "شهداء", "استشهاد"], he=[], en=["martyr"]),
+ "“according to foreign reports”": dict(ar=[], he=["דיווחים זרים", "פרסומים זרים", "גורמים זרים"], en=[]),
+}
+SPECTRUM_MEASURES = ["“detonated” — actor named", "an “operation”",
+                     "the dead are “terrorists”", "the dead are “martyrs”"]
+OUTLET_LABEL = {"lbci": "LBCI", "mtv": "MTV", "aljadeed": "Al Jadeed",
+                "almanar": "Al-Manar", "nna": "NNA", "ynet": "Ynet",
+                "n12": "N12", "kikar": "Kikar HaShabbat", "makan": "Makan 33",
+                "abuali": "Abu Ali Express"}
+MASS = {"lbci", "mtv", "aljadeed", "almanar", "ynet", "n12"}
+
+
+def load(p):
+    rs = [json.loads(l) for l in open(p, encoding="utf-8")]
+    return [r for r in rs if r["deduplication"]["is_primary_record"]
+            and r["extraction"]["relevance"] in ("strong", "related")]
+
+
+def text(r):
+    return ((r["content"]["headline"] or "") + " " + (r["content"]["body"] or "")[:6000]).lower()
+
+
+def hit(r, fam):
+    t, l = text(r), r["source"]["language"]
+    keys = fam.get(l, []) + fam.get("en", []) if l in ("ar", "he") else fam.get("en", [])
+    return any(k in t for k in keys)
+
+
+def share(recs, fam):
+    return round(100 * sum(hit(r, fam) for r in recs) / len(recs), 1) if recs else 0.0
+
+
+def main():
+    LB = load(ROOT / "lebanon" / "corpus-v1.jsonl")
+    IL = load(ROOT / "israel" / "corpus-v1.jsonl")
+
+    measures = [{"name": n, "lb": share(LB, f), "il": share(IL, f)} for n, f in M.items()]
+
+    outlets = []
+    for country, recs in [("Lebanon", LB), ("Israel", IL)]:
+        byo = defaultdict(list)
+        for r in recs:
+            byo[r["source"]["page_publisher"]].append(r)
+        for o, rs in byo.items():
+            if len(rs) < 5:  # NNA n=2 — unusable for shares (smoke finding)
+                continue
+            outlets.append({"outlet": OUTLET_LABEL.get(o, o), "country": country,
+                            "n": len(rs), "mass": o in MASS,
+                            "values": {m: share(rs, M[m]) for m in SPECTRUM_MEASURES}})
+
+    daycurve = []
+    for country, recs in [("Lebanon", LB), ("Israel", IL)]:
+        d = Counter(r["publication"]["time_slot"] for r in recs
+                    if r["publication"]["time_slot"].startswith("day_"))
+        tot = sum(d.values())
+        daycurve.append({"country": country,
+                         "days": [{"day": i, "pct": round(100 * d.get(f"day_{i}", 0) / tot, 1)}
+                                  for i in range(8)]})
+
+    disp = [{"date": r["date"], "share": float(r["pager_share_pct"]), "total": int(r["mtv_total_output"])}
+            for r in csv.DictReader(open(ROOT / "lebanon" / "analysis" / "displacement-mtv.csv", encoding="utf-8"))
+            if r["date"] <= "2024-10-10"]
+
+    viz = {"generated": "2026-09-06", "n_lb": len(LB), "n_il": len(IL),
+           "measures": measures, "outlets": outlets, "daycurve": daycurve,
+           "displacement": disp, "spectrum_measures": SPECTRUM_MEASURES}
+
+    tpl = (ROOT / "analysis" / "viz-template.html").read_text(encoding="utf-8")
+    out = (tpl.replace("__DATA__", json.dumps(viz, ensure_ascii=False))
+              .replace("__GENERATED__", viz["generated"]))
+    (ROOT / "analysis" / "lebanon-israel-viz-v1.html").write_text(out, encoding="utf-8")
+    print("wrote lebanon-israel-viz-v1.html |", len(LB), "LB /", len(IL), "IL records |",
+          len(outlets), "outlets")
+
+
+if __name__ == "__main__":
+    main()
+#!/usr/bin/env python3
+"""Lebanon smoke-test analysis over corpus-v1.jsonl.
+
+Measures (spec):
+ A. Two-wave timeline: relevant records per outlet per day (event window).
+ B. Displacement: pager-story share of MTV's TOTAL dated output per day
+    (MTV has a complete sitemap publication denominator).
+ C. Framing vocabulary per outlet (headline+body presence shares):
+    - actor naming: plain "Israel" vs enemy/Zionist register
+    - event naming: intransitive explosion vs transitive detonation
+      (Arabic morphology encodes agency), aggression, attack, massacre,
+      crime/terror
+    - casualty register: martyr vs neutral killed/victim
+ D. Outlet-equal vs reach-weighted vocabulary shares (census tiers).
+ E. Wire vs local: vocabulary differences for Reuters/AFP-credited records.
+ F. Day-0/1 caution: attribution (any Israel/enemy mention) by day.
+Units: record-level presence; tickers/briefs analyzed on their full stored
+text (which is headline-dominated) - genre noted, not mixed silently.
+"""
+import json, re
+from collections import Counter, defaultdict
+from pathlib import Path
+import csv
+
+DATA = Path(__file__).resolve().parent.parent / "lebanon"
+
+FAM = {
+ "israel_plain": ["إسرائيل","اسرائيل","الإسرائيلي","الاسرائيلي","الإسرائيلية","الاسرائيلية","israel"],
+ "enemy_register": ["العدو","للعدو","الصهيوني","الصهيونية","صهيوني","zionist","enemy"],
+ "explosion_intrans": ["انفجار","انفجارات","انفجرت","انفجر","explosion","blast","exploded"],
+ "detonation_trans": ["تفجير","تفجيرات","detonat","bombing of"],
+ "aggression": ["عدوان","العدوان","اعتداء","الاعتداء","aggression"],
+ "attack": ["هجوم","الهجوم","هجمات","attack"],
+ "massacre": ["مجزرة","مجازر","massacre"],
+ "crime_terror": ["جريمة","إجرام","اجرام","إرهاب","ارهاب","إرهابية","ارهابية","terror","crime"],
+ "operation": ["عملية أمنية","العملية الإسرائيلية","العملية الاسرائيلية","operation"],
+ "martyr": ["شهيد","شهداء","استشهاد","استشهد","martyr"],
+ "casualty_neutral": ["قتيل","قتلى","ضحية","ضحايا","وفيات","killed","victim","dead","casualt"],
+}
+TIERS = {"lbci": 4, "mtv": 4, "aljadeed": 4, "almanar": 4, "nna": 1}  # census: 4 mass + context
+
+
+def text_of(r):
+    return ((r["content"]["headline"] or "") + " \n " + (r["content"]["body"] or "")).lower()
+
+
+def hits(t, fam):
+    return any(k.lower() in t for k in FAM[fam])
+
+
+def main():
+    recs = [json.loads(l) for l in open(DATA / "corpus-v1.jsonl", encoding="utf-8")]
+    recs = [r for r in recs if r["deduplication"]["is_primary_record"]]
+    outdir = DATA / "analysis"
+    outdir.mkdir(exist_ok=True)
+
+    # A. timeline per outlet/day
+    tl = defaultdict(Counter)
+    for r in recs:
+        d = r["publication"]["published_at"][:10]
+        if d:
+            tl[r["source"]["page_publisher"]][d] += 1
+    with open(outdir / "timeline-outlet-day.csv", "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f); w.writerow(["outlet", "date", "records"])
+        for o, days in tl.items():
+            for d, n in sorted(days.items()):
+                w.writerow([o, d, n])
+
+    # B. displacement vs MTV total output
+    mtv_total = Counter()
+    for r in csv.DictReader(open(DATA / "enumeration" / "mtv-urls.csv", encoding="utf-8")):
+        if r.get("publication_date"):
+            mtv_total[r["publication_date"][:10]] += 1
+    with open(outdir / "displacement-mtv.csv", "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f); w.writerow(["date", "mtv_total_output", "mtv_pager_records", "pager_share_pct"])
+        for d in sorted(mtv_total):
+            if "2024-09-14" <= d <= "2024-10-17":
+                p = tl["mtv"].get(d, 0)
+                w.writerow([d, mtv_total[d], p, round(100 * p / mtv_total[d], 2)])
+
+    # C. vocabulary per outlet (+ genre split)
+    vocab = defaultdict(lambda: defaultdict(int))
+    denom = Counter()
+    for r in recs:
+        o = r["source"]["page_publisher"]
+        t = text_of(r)
+        denom[o] += 1
+        for fam in FAM:
+            if hits(t, fam):
+                vocab[o][fam] += 1
+    with open(outdir / "vocabulary-outlet.csv", "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f); w.writerow(["outlet", "n"] + list(FAM))
+        for o in denom:
+            w.writerow([o, denom[o]] + [round(100 * vocab[o][fam] / denom[o], 1) for fam in FAM])
+
+    # D. outlet-equal vs reach-weighted shares
+    def agg(weighted):
+        num, den = Counter(), 0.0
+        for o in denom:
+            wgt = TIERS.get(o, 1) if weighted else 1
+            den += wgt
+            for fam in FAM:
+                num[fam] += wgt * vocab[o][fam] / denom[o]
+        return {fam: round(100 * num[fam] / den, 1) for fam in FAM}
+    eq, rw = agg(False), agg(True)
+
+    # E. wire vs local
+    wire_v, wire_n = defaultdict(int), Counter()
+    for r in recs:
+        grp = "wire" if r["provenance"]["credit"] in ("Reuters", "AFP", "AP") else "local"
+        wire_n[grp] += 1
+        t = text_of(r)
+        for fam in FAM:
+            if hits(t, fam):
+                wire_v[(grp, fam)] += 1
+
+    # F. attribution by day
+    att = defaultdict(lambda: [0, 0])
+    for r in recs:
+        slot = r["publication"]["time_slot"]
+        if slot.startswith("day_") and int(slot[4:]) <= 4:
+            t = text_of(r)
+            att[slot][1] += 1
+            if hits(t, "israel_plain") or hits(t, "enemy_register"):
+                att[slot][0] += 1
+
+    # ---- report ----
+    rep = ["# Lebanon smoke-test analysis (raw outputs)\n"]
+    rep.append("## A. Records per outlet per day (top days)\n")
+    for o, days in tl.items():
+        top = sorted(days.items())[:12]
+        rep.append(f"- **{o}**: " + ", ".join(f"{d[5:]}:{n}" for d, n in top))
+    rep.append("\n## C. Vocabulary shares per outlet (% of records containing family)\n")
+    hdr = "| outlet | n | " + " | ".join(FAM) + " |"
+    rep.append(hdr); rep.append("|" + "---|" * (len(FAM) + 2))
+    for o in ["lbci", "mtv", "aljadeed", "almanar", "nna"]:
+        if o in denom:
+            rep.append(f"| {o} | {denom[o]} | " + " | ".join(str(round(100 * vocab[o][f] / denom[o], 1)) for f in FAM) + " |")
+    rep.append("\n## D. Outlet-equal vs reach-weighted (Lebanon overall, %)\n")
+    rep.append("| family | outlet-equal | reach-weighted |"); rep.append("|---|---|---|")
+    for fam in FAM:
+        rep.append(f"| {fam} | {eq[fam]} | {rw[fam]} |")
+    rep.append("\n## E. Wire vs local (%)\n")
+    rep.append("| family | wire (n=%d) | local (n=%d) |" % (wire_n["wire"], wire_n["local"]))
+    rep.append("|---|---|---|")
+    for fam in FAM:
+        a = 100 * wire_v[("wire", fam)] / max(wire_n["wire"], 1)
+        b = 100 * wire_v[("local", fam)] / max(wire_n["local"], 1)
+        rep.append(f"| {fam} | {a:.1f} | {b:.1f} |")
+    rep.append("\n## F. Any Israel/enemy attribution by day\n")
+    for slot in sorted(att):
+        h, n = att[slot]
+        rep.append(f"- {slot}: {h}/{n} = {100*h/n:.0f}%")
+    (outdir / "smoke-raw.md").write_text("\n".join(rep), encoding="utf-8")
+    print("\n".join(rep))
+
+
+if __name__ == "__main__":
+    main()
+# Israel enumeration — notes (step 4, v1, 2026-09-06)
+
+Script: `data/scripts/enumerate_israel.py`; manifests in this directory.
+Window Sep 15 – Oct 17 2024. All four CDX enumerations **complete**
+(pagination finished, no caps hit).
+
+| outlet | urls / captures | peak capture day | note |
+| --- | --- | --- | --- |
+| Ynet | 13,492 | Sep 26 (3,339) | peak is a crawl surge (capture-date artifact — Lebanon lesson: not publication volume) |
+| N12 (mako paths) | 4,506 | Sep 18 (310) | peak aligns with the event — organic |
+| Kikar | 5,229 | Sep 15 (653) | crawl-schedule artifact |
+| Makan | 647 | Sep 16 (121) | modest but complete |
+| Abu Ali | 65 snapshots | — | see coverage caveat |
+
+## Key points
+
+1. **Capture-date ≠ publication date** (applied from Lebanon): per-day
+   counts above are crawl artifacts where flagged. Publication dates come
+   at step 5 from JSON-LD `datePublished`, which both Ynet and mako serve
+   in-page (review-verified) — expected date quality: high. Ynet exposes
+   no dated archive sitemaps (live rolling feeds only), so there is no
+   MTV-style sitemap denominator; the publication denominator will be
+   built from dated article pages instead.
+2. **Abu Ali coverage corrected**: 65 snapshots covering **20 of 33 days**
+   — not continuous. Each rolling-page capture holds only the ~20 latest
+   messages, so days without captures may have unarchived messages. The
+   register's fallback (live `t.me/s` `?before=` pagination) is therefore
+   a real requirement for completeness, not a formality. Extraction must
+   measure the per-day message gap explicitly.
+3. **Candidate tagging deferred by design**: Israeli article URLs are
+   opaque (Ynet alphanumeric, mako hex, Kikar short slugs) — zero slug
+   candidates expected and produced. Step 5 runs a title sweep (Ynet/mako
+   titles from captures or live pages) with Hebrew families:
+   ביפר/ביפרים, מכשירי קשר, איתורית, מבצע, plus register terms
+   (מחבלים, פיצוץ/פוצצו).
+4. n12.co.il alias URLs (shortlink domain) — canonicalized onto mako
+   paths per the access review.
+
+## Next (step 5)
+
+Title sweep over Ynet (13.5K) + mako (4.5K) + Kikar (5.2K) + Makan (647)
+via day-of captures or live pages; Abu Ali message extraction from the 65
+captures with cross-capture dedup + gap measurement; then extraction of
+tagged candidates through the (Lebanon-hardened) pipeline: container
+discipline, ticker genre-typing, boilerplate line/prefix QC, publication
+dates from JSON-LD.
+data/lebanon/access-notes.md
+data/lebanon/access-register-v1.csv
+data/lebanon/analysis/displacement-mtv.csv
+data/lebanon/analysis/smoke-findings.md
+data/lebanon/analysis/smoke-raw.md
+data/lebanon/analysis/timeline-outlet-day.csv
+data/lebanon/analysis/vocabulary-outlet.csv
+data/lebanon/census-notes-v2.md
+data/lebanon/census-notes.md
+data/lebanon/collection-gate-v1.csv
+data/lebanon/corpus-candidates-v1.jsonl
+data/lebanon/corpus-v1.jsonl
+data/lebanon/enumeration/aljadeed-urls.csv
+data/lebanon/enumeration/almanar-titles.csv
+data/lebanon/enumeration/almanar-urls-raw.csv
+data/lebanon/enumeration/almanar-urls.csv
+data/lebanon/enumeration/lbci-urls.csv
+data/lebanon/enumeration/mtv-urls.csv
+data/lebanon/enumeration/nna-urls.csv
+data/lebanon/enumeration/notes.md
+data/lebanon/enumeration/summary.csv
+data/lebanon/normalization-notes.md
+data/lebanon/normalization-quality.csv
+data/lebanon/outlet-census-v1.csv
+data/lebanon/outlet-census-v2.csv
+data/lebanon/triage-notes.md
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import json\\nfrom collections import Counter\\nM={\\\"agentless\\\":[\\\"انفجار\\\",\\\"انفجارات\\\",\\\"انفجرت\\\",\\\"פיצוץ\\\",\\\"פיצוצים\\\",\\\"התפוצצ\\\",\\\"explosion\\\",\\\"blast\\\",\\\"exploded\\\"],\\\"agentive\\\":[\\\"تفجير\\\",\\\"تفجيرات\\\",\\\"פוצצו\\\",\\\"פיצצה\\\",\\\"פיצץ\\\",\\\"פוצץ\\\",\\\"detonat\\\"],\\\"operation\\\":[\\\"عملية أمنية\\\",\\\"العملية الإسرائيلية\\\",\\\"מבצע\\\",\\\"operation\\\"],\\\"attack\\\":[\\\"هجوم\\\",\\\"الهجوم\\\",\\\"מתקפה\\\",\\\"מתקפת\\\",\\\"attack\\\"],\\\"crime\\\":[\\\"عدوان\\\",\\\"العدوان\\\",\\\"مجزرة\\\",\\\"جريمة\\\",\\\"إرهاب\\\",\\\"ارهاب\\\",\\\"טבח\\\",\\\"פשע מלחמה\\\",\\\"massacre\\\",\\\"aggression\\\",\\\"war crime\\\",\\\"terror\\\"],\\\"terrorists\\\":[\\\"מחבל\\\",\\\"terrorist\\\"],\\\"martyrs\\\":[\\\"شهيد\\\",\\\"شهداء\\\",\\\"استشهاد\\\",\\\"martyr\\\"],\\\"foreign\\\":[\\\"דיווחים זרים\\\",\\\"פרסומים זרים\\\",\\\"גורמים זרים\\\"]}\\ndef load(f): return [json.loads(x) for x in open(f) if (lambda r:r[\\\"deduplication\\\"][\\\"is_primary_record\\\"] and r[\\\"extraction\\\"][\\\"relevance\\\"] in (\\\"strong\\\",\\\"related\\\"))(json.loads(x))]\\ndef hit(r,ks): return any(k.lower() in ((r[\\\"content\\\"][\\\"headline\\\"] or \\\"\\\")+\\\" \\\"+(r[\\\"content\\\"][\\\"body\\\"] or \\\"\\\")[:6000]).lower() for k in ks)\\nfor name,f in [(\\\"LB\\\",\\\"data/lebanon/corpus-v1.jsonl\\\"),(\\\"IL\\\",\\\"data/israel/corpus-v1.jsonl\\\")]:\\n rs=load(f); print(name,len(rs)); print({k:(sum(hit(r,v) for r in rs),round(100*sum(hit(r,v) for r in rs)/len(rs),1)) for k,v in M.items()})\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 2ms:
+LB 338
+{'agentless': (147, 43.5), 'agentive': (153, 45.3), 'operation': (11, 3.3), 'attack': (52, 15.4), 'crime': (36, 10.7), 'terrorists': (2, 0.6), 'martyrs': (30, 8.9), 'foreign': (0, 0.0)}
+IL 153
+{'agentless': (130, 85.0), 'agentive': (87, 56.9), 'operation': (47, 30.7), 'attack': (47, 30.7), 'crime': (11, 7.2), 'terrorists': (32, 20.9), 'martyrs': (0, 0.0), 'foreign': (8, 5.2)}
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import json,collections\\nrs=[json.loads(x) for x in open(\\\"data/israel/corpus-candidates-v1.jsonl\\\")]\\nfor k in [\\\"extract_method\\\",\\\"date_source\\\"]: print(k,collections.Counter(r.get(k) for r in rs),collections.Counter((r[\\\"outlet\\\"],r.get(k)) for r in rs))\\nprint(\\\"nonfailure date missing\\\",[(r[\\\"outlet\\\"],r[\\\"title\\\"]) for r in rs if not r.get(\\\"published_at\\\")])\\ncor=[json.loads(x) for x in open(\\\"data/israel/corpus-v1.jsonl\\\")]; print(\\\"norm methods\\\",collections.Counter((r[\\\"source\\\"][\\\"page_publisher\\\"],r[\\\"extraction\\\"][\\\"method\\\"]) for r in cor)); print(\\\"norm dated\\\",collections.Counter((r[\\\"publication\\\"][\\\"date_source\\\"],r[\\\"source\\\"][\\\"page_publisher\\\"]) for r in cor))\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+extract_method Counter({'ld-json': 92, 'p-cluster': 43, None: 3}) Counter({('ynet', 'ld-json'): 92, ('kikar', 'p-cluster'): 22, ('makan', 'p-cluster'): 11, ('n12', 'p-cluster'): 10, ('n12', None): 2, ('makan', None): 1})
+date_source Counter({'ld-json': 134, None: 3, '': 1}) Counter({('ynet', 'ld-json'): 92, ('kikar', 'ld-json'): 22, ('makan', 'ld-json'): 11, ('n12', 'ld-json'): 9, ('n12', None): 2, ('makan', None): 1, ('n12', ''): 1})
+nonfailure date missing [('makan', 'بهذه السخرية غطت الصحافة العربية انفجارات اللاسلكي'), ('n12', 'N12 - הפרשנים: השאלות הגדולות אחרי "מבצע פיצוץ הביפרים" בלבנון'), ('n12', 'N12 - פרטים חדשים על מבצע הביפרים הנועז'), ('n12', 'N12 - מהו מכשיר הביפר, שפוצץ מרחוק לאנשי חיזבאללה?')]
+norm methods Counter({('ynet', 'ld-json'): 90, ('kikar', 'p-cluster'): 22, ('abuali', 'telegram-capture'): 20, ('makan', 'p-cluster'): 11, ('n12', 'p-cluster'): 10})
+norm dated Counter({('ld-json', 'ynet'): 90, ('ld-json', 'kikar'): 22, ('telegram-ts', 'abuali'): 20, ('ld-json', 'makan'): 11, ('ld-json', 'n12'): 9, ('', 'n12'): 1})
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import json,statistics,collections\\nrs=[json.loads(x) for x in open(\\\"data/israel/corpus-v1.jsonl\\\")]\\nfor o in [\\\"kikar\\\",\\\"n12\\\",\\\"makan\\\",\\\"ynet\\\"]:\\n x=[r[\\\"content\\\"][\\\"word_count\\\"] for r in rs if r[\\\"source\\\"][\\\"page_publisher\\\"]==o]; print(o,len(x),statistics.median(x),sorted(x))\\nprint(collections.Counter(r[\\\"publication\\\"][\\\"time_slot\\\"] for r in rs))\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+kikar 22 602.5 [332, 394, 413, 420, 429, 472, 518, 521, 547, 565, 585, 620, 621, 647, 670, 671, 700, 842, 870, 911, 914, 1221]
+n12 10 564.5 [268, 299, 388, 413, 443, 686, 687, 744, 1063, 1213]
+makan 11 229 [35, 117, 143, 171, 173, 229, 248, 266, 297, 301, 372]
+ynet 90 58.0 [12, 13, 16, 17, 17, 18, 18, 19, 19, 20, 22, 22, 22, 25, 25, 25, 26, 28, 29, 30, 30, 30, 33, 34, 37, 37, 38, 42, 42, 44, 45, 45, 45, 47, 48, 48, 48, 51, 51, 51, 53, 55, 57, 57, 58, 58, 58, 61, 62, 62, 63, 63, 66, 79, 81, 96, 105, 190, 249, 282, 287, 304, 331, 341, 362, 392, 395, 433, 447, 452, 505, 554, 594, 609, 617, 648, 654, 661, 680, 716, 735, 804, 834, 853, 854, 861, 912, 951, 1012, 1905]
+Counter({'day_1': 60, 'day_0': 34, 'day_2': 21, 'week_2': 10, 'first_month': 8, 'day_5': 6, 'day_3': 4, 'day_4': 4, 'day_6': 4, 'day_7': 1, '': 1})
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import json,collections\\nrs=[json.loads(x) for x in open(\\\"data/israel/corpus-v1.jsonl\\\")]\\nprint(collections.Counter(r[\\\"source\\\"][\\\"language\\\"] for r in rs))\\nprint(collections.Counter(r[\\\"publication\\\"][\\\"date_source\\\"] for r in rs))\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+Counter({'he': 142, 'ar': 11})
+Counter({'ld-json': 132, 'telegram-ts': 20, '': 1})
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import csv\\nfor f in [\\\"data/israel/enumeration/ynet-titles-0.csv\\\",\\\"data/israel/enumeration/ynet-titles-1.csv\\\"]:\\n for r in csv.DictReader(open(f,encoding=\\\"utf-8-sig\\\")):\\n  if r[\\\"relevance\\\"] and not any(x in r[\\\"title\\\"] for x in [\\\"ביפר\\\",\\\"ביפרים\\\",\\\"איתורית\\\",\\\"זימונית\\\",\\\"מכשירי הקשר\\\",\\\"מכשיר קשר\\\",\\\"התפוצצו\\\",\\\"פיצוץ מכשירי\\\",\\\"פיצוצי הביפרים\\\"]): print(r[\\\"relevance\\\"],r[\\\"url\\\"],r[\\\"title\\\"])\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+related https://www.ynet.co.il/news/article/BJNAIxVyd אפליקציה שמוחקת תמונות ומכשירי קשר: יחידת רועי הצאן של חיזבאללה
+related https://www.ynet.co.il/news/article/sj2saor6c גורם איראני: "הפסקת השימוש במכשירי קשר - מחשש לפגיעה במתקני הגרעין"
+related https://www.ynet.co.il/news/article/skka68006r מתקפת מכשירי ווקי טוקי בלבנון: הרוגים ומאות פצועים
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import csv,glob\\nfor f in glob.glob(\\\"data/israel/enumeration/*titles*.csv\\\"):\\n print(\\\"\\\\n\\\",f)\\n for r in csv.DictReader(open(f,encoding=\\\"utf-8-sig\\\")):\\n  if r[\\\"relevance\\\"]: print(r[\\\"relevance\\\"],r[\\\"url\\\"],r[\\\"title\\\"])\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+
+ data/israel/enumeration/kikar-titles-0.csv
+related http://www.kikar.co.il/security-news/sk0hto פיצוץ מכשירי קשר במתקפה נוספת בלבנון: מאות פצועים ו-5 הרוגים, מבנים עולים.. | כיכר השבת
+strong http://www.kikar.co.il/world-news/sjzo6c "חומר נפץ הושתל ב-5,000 ביפרים", ומה גרם לפיצוץ? | כל מה שידוע על המבצע ה.. | כיכר השבת
+strong http://www.kikar.co.il/world-news/sk21b9 בולגריה חוקרת: האם מפעל בסופיה סיפק לחיזבאללה את הביפרים שהתפוצצו בלבנון? | כיכר השבת
+strong http://www.kikar.co.il/world-news/sk953a פניקה באיראן: זו ההוראה שניתנה למשמרות המהפכה לאחר מתקפת הביפרים | כיכר השבת
+strong https://www.kikar.co.il/haredim-news/skpytm ב'ביפרים' השווצתי, אמש קיבלתי תשובה אמיתית | רבקה רביץ | כיכר השבת
+strong https://www.kikar.co.il/israel-news/sjylp5 תיעוד: מחבל חיזבאללה קונה ירקות - והביפר מתפוצץ | כיכר השבת
+strong https://www.kikar.co.il/music-news/sk1xmb כשמנדי ג'רופי חשף: מדוע הוא ורעייתו חייבים הכרת הטוב ל...ביפר | כיכר השבת
+strong https://www.kikar.co.il/security-news/sjyk6p אלפי מחבלים בלבנון נפצעו בפיצוץ הביפרים | בחיזבאללה מאשימים את ישראל ומא.. | כיכר השבת
+related https://www.kikar.co.il/security-news/sjyqc0 חיזבאללה מאשר: "התפוצצו מספר רב של מכשירי קשר, אנשים רבים נפצעו" | כיכר השבת
+strong https://www.kikar.co.il/security-news/sjznmt לאחר פיצוץ הביפרים בלבנון: אזעקות הופעלו בצפון הארץ | כטב"מ יורט באזור טב.. | כיכר השבת
+strong https://www.kikar.co.il/security-news/sk00o7 פעילי חיזבאללה חשדו בביפרים - וישראל החליטה לפוצץ אותם "בדקה ה-90" | פרטי.. | כיכר השבת
+strong https://www.kikar.co.il/security-news/sk247j ארכי ביפר | המכשיר המיושן שכמעט נעלם וחזר לחיינו בסדרת פיצוצים | כיכר השבת
+strong https://www.kikar.co.il/security-news/sk41nc דיווח: מתקפת הביפרים תוכננה במשך 15 שנה לפחות | כיכר השבת
+strong https://www.kikar.co.il/security-news/sk76t1 בתגובה ל"טבח הביפרים" | חיזבאללה לקח אחריות לירי לחיפה | כיכר השבת
+strong https://www.kikar.co.il/world-news/sjyxf8 מבצע ה'ביפרים' בראש הכותרות: כך סוקרה המתקפה בעולם | כיכר השבת
+strong https://www.kikar.co.il/world-news/sjz0vx רחפן תיעד: המוסד השתלט על משלוח הביפרים ומלכד אותם | כיכר השבת
+strong https://www.kikar.co.il/world-news/sk7wr9 האם ביפר ממולכד הוא שהפיל את המסוק של ראיסי? | כיכר השבת
+strong https://www.kikar.co.il/world-news/skb95w האנטישמיות הרוסית לא פוסחת על בלארוס: "שואת ביפרים" | כיכר השבת
+strong https://www.kikar.co.il/world-news/skd3gw ריגול ישראלי חובק עולם: גם נורבגיה פותחת בחקירת הביפרים | כיכר השבת
+strong https://www.kikar.co.il/world-news/skd50q מקור בחיזבאללה: איבדנו 1,500 לוחמים במתקפת הביפרים | כיכר השבת
+strong https://www.kikar.co.il/world-news/skkpf8 נסראללה חשש לחייו אחרי מתקפת הביפרים ונזהר - המוסד חדר לעומק הארגון | כיכר השבת
+strong https://www.kikar.co.il/world-news/slg7tf בין שני חלקי סוללה - יריעה דקה וקטלנית: כך הוטמן חומר הנפץ בביפרים של חיז.. | כיכר השבת
+
+ data/israel/enumeration/n12-titles-live.csv
+
+ data/israel/enumeration/ynet-titles-0.csv
+strong https://www.ynet.co.il/news/article/SJHBA8dTA בלבנון מדווחים: שוב פיצוצים של ביפרים בדאחייה בביירות ובאזורים נוספים
+strong https://www.ynet.co.il/news/article/b146i8zca דיווח: "כ-1,500 פעילי חיזבאללה יצאו מכשירות במתקפת הביפרים"
+strong https://www.ynet.co.il/news/article/b1aemw00pr רויטרס: מכשירי הקשר שהתפוצצו עתה ברחבי לבנון אינם ביפרים
+related https://www.ynet.co.il/news/article/b1cihlt60 אחרי פיצוץ מכשירי הקשר בלבנון: גלנט שוחח עם שר ההגנה האמריקני
+related https://www.ynet.co.il/news/article/b1dxchdp0 ההלם והבהלה בלבנון אחרי פיצוצי מכשירי הקשר, הדיווחים והשמועות
+strong https://www.ynet.co.il/news/article/b1nvs1d6c דיווח: פעילי חיזבאללה חשדו - ופיצוץ הביפרים "נכפה" על ישראל
+strong https://www.ynet.co.il/news/article/bj06phqt0 היעלמותו של רינסון חוזה, איש הייטק הודי, אחרי פיצוצי הביפרים בלבנון
+strong https://www.ynet.co.il/news/article/bjf64fupc רוסיה גינתה את פיצוץ הביפרים: "אלפי חפים מפשע נפגעו"
+related https://www.ynet.co.il/news/article/bjfcfvwar כך פיצוצי מכשירי הקשר בלבנון הקפיאו את החלפת גלנט בסער
+related https://www.ynet.co.il/news/article/bjwsqmdac "וול סטריט ג'ורנל": "התקבל מסר רגע לפני פיצוץ מכשירי הקשר"
+related https://www.ynet.co.il/news/article/byioqdutr ראש ממשלת לבנון על פיצוץ מכשירי הקשר: "לא ניתן לבטא את אכזריות הפשע"
+strong https://www.ynet.co.il/news/article/byvgmwypr מינהלת התעופה האזרחית בלבנון אסרה על העלאת ביפרים ומכשירי קשר לטיסות
+strong https://www.ynet.co.il/news/article/h1fz4p00tr דיווח: מכשירי הקשר שהתפוצצו בלבנון נרכשו ע"י חיזבאללה יחד עם הביפרים
+strong https://www.ynet.co.il/news/article/h1gl400ppr רונן ברגמן עם פרשנות מאחורי הקלעים של מבצע פיצוץ הביפרים של חיזבאללה
+strong https://www.ynet.co.il/news/article/h1rrqz9a0 יתרון הביפרים: כשהטכנולוגיה מקדמת תרבות זכויות אדם
+related https://www.ynet.co.il/news/article/hjd7a0v6a דיווח שמכשירי הקשר יובאו מחברה בטייוואן, שטוענת: "הם יוצרו במקום אחר"
+strong https://www.ynet.co.il/news/article/hk1zjiza0 דיווח: כ-1,500 מחבלי חיזבאללה התעוורו או איבדו יד בפיצוצי הביפרים ומכשירי הקשר
+related https://www.ynet.co.il/news/article/hkbfurwt0 דיווחים: "המוסד מלכד את מכשירי הקשר לפני שהועברו לחיזבאללה"
+related https://www.ynet.co.il/news/article/hkfki5uac דיווח: 95 פצועים לבנונים הועברו לטיפול באיראן בעקבות פיצוץ מכשירי הקשר
+strong https://www.ynet.co.il/news/article/hkgj7kua0 פיצוצי הביפרים: שגריר איראן בלבנון איבד את עינו ונפצע קשה בעין השנייה
+related https://www.ynet.co.il/news/article/hktu11dut0 משרד הבריאות הלבנוני: לפחות 9 נהרגו ו-300 נפצעו בפיצוץ מכשירי הקשר
+related https://www.ynet.co.il/news/article/hy0q5w00tc דיווחים: רבים נפצעו בבטן ובידיים מפיצוץ מכשירי הקשר, ר"מ לבנון עוקב
+strong https://www.ynet.co.il/news/article/hy110pgu6c נשיא מצרים על פיצוץ הביפרים: "תומכים בביטחון לבנון"
+strong https://www.ynet.co.il/news/article/hyam6ew60 פיצוץ ביפרים מסתורי: "מאות פעילי חיזבאללה נפגעו ברחבי לבנון" | תיעודים
+strong https://www.ynet.co.il/news/article/hyrrgl2ac בין "הערצה" ל"חרדה": פרטים חדשים על פיצוצי הביפרים והתדהמה בבית הלבן
+strong https://www.ynet.co.il/news/article/r1t4ked6c אחרי פיצוץ הביפרים: נסראללה ינאם מחר ב-17:00
+strong https://www.ynet.co.il/news/article/rjtcsjo6c הלעג בעולם הערבי לפיצוץ הביפרים
+related https://www.ynet.co.il/news/article/rknilnipa חברת Icom היפנית: "מאוד לא סביר שהמכשירים שהתפוצצו בלבנון הם שלנו"
+strong https://www.ynet.co.il/news/article/rkqgutat0 דיווח: פיצוץ מכשירי הקשר - חלק מפיתוח "הכפתור האדום" שנלחץ במבצע הביפרים
+related https://www.ynet.co.il/news/article/rkxmpzdp0 תיעוד מפיצוץ מכשירי הקשר - והודאת חיזבאללה: "פרצת האבטחה הגדולה ביותר"
+strong https://www.ynet.co.il/news/article/ry5gsapp0 ממוקמת בהונגריה, עוסקת ב"ייעוץ": זו החברה שייצרה את הביפרים שהתפוצצו בלבנון
+strong https://www.ynet.co.il/news/article/ryhs2ou60 שלב אחר שלב: מבצע פיצוץ הביפרים ומתקפת מכשירי הקשר
+strong https://www.ynet.co.il/news/article/s1d5hlq6c בלבנון טוענים שמכשירי הקשר והביפרים שהתפוצצו מולכדו לפני הגעתם למדינה
+strong https://www.ynet.co.il/news/article/s1t5bhdpc ירי רקטות ראשון מאז מתקפת הביפרים: 10 שיגורים נפלו בשטחים פתוחים בצפון
+related https://www.ynet.co.il/news/article/s1ytagbra חיזבאללה: "הטיל נורה לעבר מטה המוסד, שאחראי על פיצוץ מכשירי הקשר"
+strong https://www.ynet.co.il/news/article/sj1111spft0 שופר חיזבאללה על פיצוצי הביפרים: "ישראל רוצה לחסל את הארגון"
+strong https://www.ynet.co.il/news/article/sjawwdkj1e הביפרים שהפכו לסוס טרויאני בחיזבאללה: "רצינו שהמחבלים ישתמשו בשתי הידיים"
+strong https://www.ynet.co.il/news/article/sjsr47oa0 "יצרנית הביפרים" המסתורית רק מתווכת? הדף בדלת הכניסה, והאתר שירד מהרשת
+strong https://www.ynet.co.il/news/article/sydvx7aa0 חיזבאללה: "שיגרנו עשרות טילים למתקן של רפאל בקריות בתגובה למתקפות הביפרים"
+related https://www.ynet.co.il/news/article/synkesyp0 בעקבות הפיצוצים בלבנון: טורקיה בוחנת את בטיחות מכשירי הקשר שלה
+related https://www.ynet.co.il/news/article/syxufzf60 חברת Icom היפנית: "חוקרים בקשר למכשירים שהתפוצצו - שנושאים את הלוגו שלנו"
+
+ data/israel/enumeration/ynet-titles-1.csv
+related https://www.ynet.co.il/news/article/BJNAIxVyd אפליקציה שמוחקת תמונות ומכשירי קשר: יחידת רועי הצאן של חיזבאללה
+related https://www.ynet.co.il/news/article/HJgATZw60 סוכנות ידיעות איראנית: השגריר בלבנון נפגע בפיצוץ מכשירי הקשר
+strong https://www.ynet.co.il/news/article/HysU0oD6R לראשונה מאז פיצוץ הביפרים בלבנון: אזעקות בגליל ובאזור הכינרת
+related https://www.ynet.co.il/news/article/b1eqy7w60 דיווח: חמישה נהרגו בפיצוץ מכשירי הקשר, יותר מ-1,500 נפצעו
+related https://www.ynet.co.il/news/article/bj4ljvp6c פיצוצי מכשירי הקשר בלבנון: ישראל שותקת, הערכה שחיזבאללה יגיב
+strong https://www.ynet.co.il/news/article/bjs4kur6r בהלה בצמרת באיראן אחרי פיצוצי הביפרים: "משמרות המהפכה אסרו שימוש במכשירי קשר"
+related https://www.ynet.co.il/news/article/bkcj6uota לבנון: שריפות פרצו בעשרות חנויות בדרום המדינה בשל פיצוץ מכשירי הקשר
+related https://www.ynet.co.il/news/article/bkmsxxvaa שר לבנוני מאשים את ישראל בפיצוץ מכשירי הקשר
+strong https://www.ynet.co.il/news/article/bkqx8bp6r אחרי מבצע פיצוץ הביפרים: בצה"ל נערכים לתגובה | זה המסר האמריקני
+related https://www.ynet.co.il/news/article/bkuuwzhpc דיווח: איראן הוציאה משלחת לביירות כדי לחקור את אספקת מכשירי הקשר שהתפוצצו
+strong https://www.ynet.co.il/news/article/bkxlesdp0 רויטרס: "המוסד הטמין חומר נפץ ב-5,000 ביפרים בתהליך הייצור, 3,000 התפוצצו"
+strong https://www.ynet.co.il/news/article/byvgdfdtc "ניו יורק טיימס": חומר נפץ הושתל בביפרים, הודעה מ"הנהגת חיזבאללה" גרמה לפיצוץ
+related https://www.ynet.co.il/news/article/bywth2da0 לבנון: עלה ל-20 מניין ההרוגים מפיצוץ מכשירי הקשר
+related https://www.ynet.co.il/news/article/byznlmdt0 כ-3,000 נפצעו, לפחות 9 נהרגו: "חיזבאללה קיבל את מכשירי הקשר בימים האחרונים"
+strong https://www.ynet.co.il/news/article/h156exfta דיווח: ישראל ייצרה את הביפרים לחיזבאללה שהתפוצצו - ונאום נסראללה
+related https://www.ynet.co.il/news/article/h1ec6ddpr קרעי פרסם פסוק מהתנ"ך שרומז על אחריות לפיצוץ מכשירי הקשר
+related https://www.ynet.co.il/news/article/h1evylp6c פיצוץ מכשירי הקשר המחיש לחיזבאללה עד כמה הוא חדיר, אך זה לא מהלך משנה מציאות
+strong https://www.ynet.co.il/news/article/h1qj4wmra מסתמן: הדיווחים על תקיפה נוספת בדאחייה - פיצוץ מבוקר של ביפרים
+strong https://www.ynet.co.il/news/article/h1usqtatc משלב מיפוי חיזבאללה - עד לחיצה על ה"כפתור האדום": הרקע למתקפת הביפרים
+strong https://www.ynet.co.il/news/article/hj7lbi00ac סגנית ראש ממשלת בלגיה גינתה את מתקפת הביפרים: "שתיקה היא לא אופציה"
+strong https://www.ynet.co.il/news/article/hjcdscmkjl חבושים, עם אצבעות חסרות: תיעוד מאיראן של מחבלי חיזבאללה שנפגעו בפיצוץ הביפרים
+strong https://www.ynet.co.il/news/article/hjdsrvdp0 דיווח סעודי: 19 אנשי משמרות המהפכה נהרגו בפיצוץ הביפרים במזרח סוריה
+strong https://www.ynet.co.il/news/article/hk5ubtdtr "חומר נפץ הושתל ב-5,000 ביפרים, הודעה מ'הנהגת חיזבאללה' גרמה לפיצוץ": פרטים חדשים
+related https://www.ynet.co.il/news/article/hkgmcudpc דיווח על נפגעים בפיצוצי מכשירי הקשר הנוספים בלבנון, גם בתוך בתים
+related https://www.ynet.co.il/news/article/hy8a1w0060 מקור ביטחוני של רויטרס: מכשירי קשר של אנשי חיזבאללה התפוצצו ברחבי לבנון
+related https://www.ynet.co.il/news/article/hyos11no6a איראן: שומרים על זכותנו תחת החוק הבינ"ל להגיב לפיצוץ מכשירי הקשר בלבנון
+related https://www.ynet.co.il/news/article/hytouuutr דיווח: פיצוצים אירעו בעיראק במקביל לפיצוץ מכשירי הקשר בלבנון
+strong https://www.ynet.co.il/news/article/r174oenca "מעולם לא ראיתי דבר כזה": בלבנון ובעולם עדיין מנסים לפענח את מבצע הביפרים
+strong https://www.ynet.co.il/news/article/r1d2kd5aa שר הכלכלה של טייוואן: "הרכיבים לביפרים של חיזבאללה לא יוצרו אצלנו"
+related https://www.ynet.co.il/news/article/r1hmapo6r דיווח סעודי: מכשירי הקשר שהתפוצצו בלבנון הוכנסו לשירות לפני כחצי שנה
+related https://www.ynet.co.il/news/article/r1nkfqkaa חברת Icom היפנית: הפסקנו לייצר את המכשירים שהתפוצצו בלבנון לפני עשור
+related https://www.ynet.co.il/news/article/rjsoq11vpc דיווח בלבנון: כ-1,000 פצועים מפיצוץ מכשירי הקשר
+strong https://www.ynet.co.il/news/article/rke32000ac אחרי פיצוצי הביפרים: "משמרות המהפכה הורו להפסיק לחלוטין שימוש במכשירי קשר"
+strong https://www.ynet.co.il/news/article/rkimclu6c דיווח: פיצוצי הביפרים בביירות התרחשו במקביל להלוויית בנו של חבר פרלמנט
+strong https://www.ynet.co.il/news/article/rkwnnqvpc ברקע מבצע פיצוץ הביפרים בלבנון ובסוריה: גלנט שוחח עם אוסטין, שיגיע לישראל
+strong https://www.ynet.co.il/news/article/rkyjz756c גורמים בארה"ב: "מבצע הביפרים נגד חיזבאללה תוכנן במשך 15 שנים לפחות"
+strong https://www.ynet.co.il/news/article/rydjvlvac פיצוצי הביפרים בראש כותרות העולם: "כמו סרט הוליוודי, מבוכה עצומה לחיזבאללה"
+related https://www.ynet.co.il/news/article/ryy00sdopc דיווחים סותרים לגבי אופן פיצוץ מכשירי הקשר בלבנון
+strong https://www.ynet.co.il/news/article/s1gdqeot0 גורמים המעורים בפרטי פיצוץ הביפרים: "המטרה העיקרית - הרתעה"
+strong https://www.ynet.co.il/news/article/s1ilqeotc "המטרה הייתה הרתעה": התכלית במבצע הביפרים, וההופעה הגדולה שבוטלה בצפון
+related https://www.ynet.co.il/news/article/s1kw007o6c שר הבריאות של לבנון: 12 הרוגים, ובהם שני ילדים, בפיצוץ מכשירי הקשר
+related https://www.ynet.co.il/news/article/s1wbumpo60 דיווח סעודי: כ-100 פצועים כתוצאה מפיצוץ מכשירי הקשר בלבנון
+related https://www.ynet.co.il/news/article/s1xrvk3g6 הופסקו ההאזנות למכשירי הקשר של חמאס - וההתרעה לא הגיעה
+related https://www.ynet.co.il/news/article/sj2saor6c גורם איראני: "הפסקת השימוש במכשירי קשר - מחשש לפגיעה במתקני הגרעין"
+strong https://www.ynet.co.il/news/article/sk711eukpc "מנכ"לית יצרנית הביפרים? זו לא מי שבתמונה": בבודפשט, ליד משרדי החברה שבעין הסערה
+strong https://www.ynet.co.il/news/article/skavzjdt0 שאלת העיתוי, והדיווח: פעילי חיזבאללה חשדו - ופיצוץ הביפרים "נכפה" על ישראל
+related https://www.ynet.co.il/news/article/skjdh3kpc נסראללה: "בכירי חיזבאללה אינם נושאים את סוגי מכשירי הקשר שהתפוצצו"
+related https://www.ynet.co.il/news/article/skka68006r מתקפת מכשירי ווקי טוקי בלבנון: הרוגים ומאות פצועים
+related https://www.ynet.co.il/news/article/skqqwswp0 ארה"ב: לא היינו מעורבים בפיצוץ מכשירי הקשר של חיזבאללה
+related https://www.ynet.co.il/news/article/sydinfotc איראן גינתה את פיצוץ מכשירי הקשר בלבנון
+strong https://www.ynet.co.il/news/article/syvsedk1yl דיווח: הביפרים של פעילי חיזבאללה הורכבו בישראל, ונועדו לפצוע את שתי ידיהם
+
+ data/israel/enumeration/makan-titles-0.csv
+related https://www.makan.org.il/content/news/makan-news/makannews/801892/ اليابان: "آيكوم" تحقق بانفجار أجهزة لاسلكية تحمل شعارها في لبنان
+strong https://www.makan.org.il/content/news/makan-news/makannews/802593/ التنديد برسم كاريكاتيري: رشيدة طليب إلى جانب جهاز "بيجر"
+related https://www.makan.org.il/content/news/makan-news/makannews/802891/ السلطات المجرية تنفي علاقتها بأجهزة اللاسلكي المنفجرة في لبنان
+related https://www.makan.org.il/content/news/makan-news/p-11371/801251/ الصحة اللبنانية:إصابة نحو 4000 شخص في انفجارات اللاسلكي
+related https://www.makan.org.il/content/news/makan-news/p-11371/801469/ بهذه السخرية غطت الصحافة العربية انفجارات اللاسلكي
+related https://www.makan.org.il/content/news/makan-news/p-11371/801506/ انفجارات اللاسلكي في لبنان: التخطيط والتنفيذ
+strong https://www.makan.org.il/content/news/makan-news/p-11371/802310/ تايوان تستجوب رئيس شركة أجهزة البيجر بعد انفجارات لبنان
+related https://www.makan.org.il/content/news/makan-news/p-11371/808643/ واشنطن بوست: أجهزة اللاسلكي المتفجرة صنعت في إسرائيل
+related https://www.makan.org.il/content/news/makan-news/p-11693/801429/ حوار مع محلل لبناني حول تفجيرات اللاسلكي في لبنان
+related https://www.makan.org.il/content/news/makan-news/p-11693/801876/ لبنان: مقتل 20 شخصا وإصابة 450 في انفجارات اللاسلكي
+related https://www.makan.org.il/content/news/makan-news/p-11693/801926/ نيويورك تايمز: إسرائيل هي التي زودت حزب الله بأجهزة اللاسلكي
+related https://www.makan.org.il/content/news/makan-news/p-11693/813237/ احتيال وتسويق: تحقيق جديد في تفجير اللاسلكي لحزب الله
+
+ data/israel/enumeration/n12-titles-0.csv
+related https://www.mako.co.il/news-business/news/Article-cb7fb0f0c190291026.htm N12 - אחרי פיצוץ מכשירי הקשר: המנייה של היצרנית היפנית מתחזקת
+strong https://www.mako.co.il/news-columns/2024_q2/Article-bdd3df9ddc00291027.htm N12 - הפרשנים: השאלות הגדולות אחרי "מבצע פיצוץ הביפרים" בלבנון
+strong https://www.mako.co.il/news-military/036814c74a0e1910/Article-1d84e646f7a0291027.htm N12 - לאחר מתקפת הביפרים בלבנון: החל נאום נסראללה
+related https://www.mako.co.il/news-military/036814c74a0e1910/Article-20a0da95f750291026.htm N12 - אלפי מכשירי הקשר הצבאיים שהתפוצצו - רשת הקשר החלופית...
+strong https://www.mako.co.il/news-military/036814c74a0e1910/Article-b92cf9849606291026.htm N12 - הדרך שבה המוסד הבטיח פגיעה מקסימלית במבצע הביפרים
+strong https://www.mako.co.il/news-military/2024_q3/Article-664e7436e571291026.htm N12 - פרטים חדשים על מבצע הביפרים הנועז
+related https://www.mako.co.il/news-military/2024_q3/Article-c92783c70000291026.htm N12 - דיווחים בלבנון: עשרות נפגעים בפיצוץ של מכשירי קשר של...
+related https://www.mako.co.il/news-money/2024_q3/Article-d042a3928c50291027.htm N12 - אלה מכשירי הקשר שהתפוצצו בגל השני של הפיצוצים בלבנון
+strong https://www.mako.co.il/news-money/tech12/Article-3eb8c21a7d00291026.htm N12 - לאחר מבצע הביפרים: ברשתות בישראל - צוחקים כרגיל
+strong https://www.mako.co.il/news-money/tech12/Article-a58e1dee4500291026.htm N12 - מהו מכשיר הביפר, שפוצץ מרחוק לאנשי חיזבאללה?
+related https://www.mako.co.il/news-money/tech12/Article-d042a3928c50291027.htm N12 - אלה מכשירי הקשר שהתפוצצו בגל השני של הפיצוצים בלבנון
+strong https://www.mako.co.il/news-podcast_n12/one_a_day/Article-c5f7a7c9e070291026.htm N12 - ״אחד ביום״: מתקפת הביפרים בלבנון
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import json\\nfor x in [json.loads(x) for x in open(\\\"data/israel/corpus-v1.jsonl\\\")]:\\n u=x[\\\"publication\\\"][\\\"canonical_url\\\"]\\n if any(s in u for s in [\\\"skpytm\\\",\\\"sk7wr9\\\",\\\"BJNAIxVyd\\\",\\\"802593\\\",\\\"c5f7a7a9\\\"]): print(x[\\\"document_id\\\"],u,x[\\\"content\\\"][\\\"headline\\\"])\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+il_kikar_361888163b https://www.kikar.co.il/haredim-news/skpytm ב'ביפרים' השווצתי, אמש קיבלתי תשובה אמיתית | רבקה רביץ
+il_kikar_4e84dd272c https://www.kikar.co.il/world-news/sk7wr9 האם ביפר ממולכד הוא שהפיל את המסוק של ראיסי?
+il_makan_c9d393a825 https://www.makan.org.il/content/news/makan-news/makannews/802593/ التنديد برسم كاريكاتيري: رشيدة طليب إلى جانب جهاز "بيجر"
+
+exec
+/bin/zsh -lc "python3 -c 'import json; [print(r[\"document_id\"],r[\"publication\"][\"canonical_url\"],r[\"content\"][\"headline\"]) for r in [json.loads(x) for x in open(\"data/israel/corpus-v1.jsonl\")] if any(s in r[\"publication\"][\"canonical_url\"] for s in [\"BJNAIxVyd\",\"sj2saor6c\",\"skka68006r\"])]'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+il_ynet_4e4fba89cf https://www.ynet.co.il/news/article/sj2saor6c גורם איראני: "הפסקת השימוש במכשירי קשר - מחשש לפגיעה במתקני הגרעין"
+il_ynet_50c8c2a27c https://www.ynet.co.il/news/article/skka68006r מתקפת מכשירי קשר חדשה בלבנון: 14 הרוגים ו-450 פצועים, אש בבתים ובכלי רכב
+
+exec
+/bin/zsh -lc "python3 -c 'exec(\"\"\"import csv\\nrows=[]\\nfor f in [\\\"data/israel/enumeration/ynet-titles-0.csv\\\",\\\"data/israel/enumeration/ynet-titles-1.csv\\\"]: rows+=list(csv.DictReader(open(f,encoding=\\\"utf-8-sig\\\")))\\nseen=set()\\nfor term in [\\\"חיזבאללה\\\",\\\"לבנון\\\",\\\"מטען\\\"]:\\n n=0; print(\\\"TERM\\\",term)\\n for r in rows:\\n  if r[\\\"relevance\\\"] or term not in r[\\\"title\\\"] or r[\\\"url\\\"] in seen: continue\\n  seen.add(r[\\\"url\\\"]); print(r[\\\"url\\\"].split(\\\"/\\\")[-1],r[\\\"title\\\"]); n+=1\\n  if n==10: break\\n\"\"\")'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+TERM חיזבאללה
+B1eqAAJqT צה"ל: תקפנו מהאוויר מסלול תעופה ששימש את חיזבאללה
+BJX88oBC0 דיווח: היעד בתקיפה האחרונה בדאחייה - ראש המועצה המבצעת של חיזבאללה נביל קאווק
+BJqm11CM0C יעד החיסול בדאחייה - מפקד היחידה האווירית של חיזבאללה
+ByDSnxiTC מקורב לחיזבאללה לסוכנות הידיעות הצרפתית: איברהים עקיל חוסל בתקיפה
+S1ZznjS0R צה"ל: חיסלנו בדאחייה בכיר במטה המודיעין של חיזבאללה
+SJ0v1ii7v ידבר גם עם חיזבאללה: מקרון מנסה להציל את לבנון
+SkBrsk7RA גורמים ביטחוניים לרויטרס: מפקד היחידה האווירית של חיזבאללה חוסל בדאחייה
+b11dffrcr צה"ל: ממשיכים לתקוף מטרות חיזבאללה בשטח לבנון
+b13wgq0tr צפי למתקפה "בהיקפים עצומים" בלבנון: "חיזבאללה יגיב"
+b13xc7ugr פסיקה היסטורית בארגנטינה: איראן תכננה את פיגועי התופת בקהילה היהודית, חיזבאללה ביצע
+TERM לבנון
+BJYp35mXd מהומות בלבנון: הכבישים לביירות נחסמו, הנשיא קורא לצבא להתערב
+BkOfUtF0A לפחות רקטה אחת ששוגרה מלבנון התפוצצה באזור נתניה
+H15FwBLAC גורמים אמריקנים: "ייתכן שהחלו פעולות חוצות גבול בקנה מידה קטן בלבנון"
+H1bVxI2RA הותר לפרסום: סרן בן ציון פלח, קצין בצנחנים, נפל בקרב בדרום לבנון
+HJ5YCTekkl הותר לפרסום: רס"ר (במיל') איתי אזולאי, לוחם ביחידת הניוד, נפל בקרב בגבול לבנון
+S1VtFI7ou קריסה כלכלית בלבנון: מכות בתחנות דלק, התרופות נגמרות
+S1uZY11f00 כוח צה"ל ירה לעבר שתי דמויות חשודות בגבול לבנון, הנסיבות בבדיקה
+SJD5c0Cw00 לאחר חצי שנה: חודש המו"מ בין ישראל ללבנון על הגבול הימי
+SJo00RHDRR דיווח בלבנון על תקיפה בביירות
+SyJ0vFMiR דיווח בלבנון על תקיפות בעומק המדינה - כמעט 100 ק"מ מהגבול עם ישראל
+TERM מטען
+B1pErjwOp מבצע בג'נין: 4 לוחמי מג"ב נפצעו, בהם אחד קשה, ממטען שהוטמן בציר
+HkGNqVkhu "היום זה ירי ומטען, מחר ירצחו אותנו": זעקת העיתונאים הערבים
+b1x5iu00jc מאות בהלווייתו של רס"ל (מיל') ניתאי מיטודי, שנהרג מפיצוץ מטען בעזה
+bjkpilc9r רס"ן יותם נהרג מפיצוץ מטען בציר נצרים, באזרחות התנדב בעזרה למשפחות אבלות
+h1c2hksfp כוחות הביטחון עצרו הלילה 32 מבוקשים ביו"ש, לוחם נפצע בינוני ממטען חבלה
+h1i17hwfa צה"ל חיסל שני מחבלים שהשליכו מטען לעבר בסיס ליד רמאללה
+hkya5akv0 הותר לפרסום: רס"ל במיל' יהודה גטו נהרג מפיצוץ מטען ליד טול כרם
+hyp6kwki0 מטען צינור הופעל הלילה בבניין בבאר שבע, אין נפגעים
+hysblvds0 מחבלים זרקו מטען על כוחות שנכנסו לקלקיליה, אחד נפגע מירי הלוחמים
+rjiqz6het 5 חודשים אחרי שנפצע בפיצוץ מטען חבלה: גבר נרצח ביריות בעוספיה
+
+exec
+/bin/zsh -lc "python3 -c 'import json,collections; rs=[json.loads(x) for x in open(\"data/israel/corpus-v1.jsonl\")]; c=collections.Counter(r[\"content\"][\"body_sha256\"] for r in rs if r[\"deduplication\"][\"is_primary_record\"]); print([x for x in c.items() if x[1]>1])'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+[('93f5a986dddc9b2ec0b27b7ffd30223c74ffc08bafeb3992da2a98288ac81020', 2)]
+
+exec
+/bin/zsh -lc "python3 -c 'import json; rs=[json.loads(x) for x in open(\"data/israel/corpus-v1.jsonl\")]; h=\"93f5a986dddc9b2ec0b27b7ffd30223c74ffc08bafeb3992da2a98288ac81020\"; [print(r[\"document_id\"],r[\"source\"][\"page_publisher\"],r[\"publication\"][\"canonical_url\"],r[\"content\"][\"headline\"]) for r in rs if r[\"content\"][\"body_sha256\"]==h]'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+il_abuali_75840 abuali https://t.me/abualiexpress/75840 אלג'זירה מפי משרד הבריאות הלבנוני בדיווח ראשון על היקף הנפגעים: הרוג אחד ויותר מ 100 פצועים בפיצוץ מכשירי הקשר. כדי להגי
+il_abuali_75841 abuali https://t.me/abualiexpress/75841 אלג'זירה מפי משרד הבריאות הלבנוני בדיווח ראשון על היקף הנפגעים: הרוג אחד ויותר מ 100 פצועים בפיצוץ מכשירי הקשר. כדי להגי
+
+exec
+/bin/zsh -lc "python3 -c 'import csv; rows=sum([list(csv.DictReader(open(f,encoding=\"utf-8-sig\"))) for f in [\"data/israel/enumeration/ynet-titles-0.csv\",\"data/israel/enumeration/ynet-titles-1.csv\"]],[]); [print(r[\"url\"].split(\"/\")[-1],r[\"title\"]) for r in rows if not r[\"relevance\"] and \"מכשיר\" in r[\"title\"] and any(t in r[\"title\"] for t in [\"חיזבאללה\",\"לבנון\",\"מטען\"])]'" in /Users/jknauber/Documents/Projects/news
+ succeeded in 0ms:
+b1zo36v6c חיזבאללה: "מנהלים חקירה על המכשירים שהתפוצצו - החשבון יגיע"
+bjcjrcc60 דיווחים בלבנון: ישראל פורצת למכשירי רדיו ומתקשרת לתושבים, גם שר קיבל שיחה
+hygjdfv6a דיווח: שגריר איראן בלבנון נפצע ממכשיר שנשא אחד משומריו
+rjvbcko6c דיווח: הרוג בבקעת הלבנון כתוצאה מפיצוץ מכשיר קשר
+
+codex
+# Israel step-5 adversarial review
+
+## Verdict
+
+**Fail.**
+
+The corpus has several correct headline counts, but the scoped artifacts contain two extraction defects, a surviving exact-body duplicate, a tagging recall gap, an undocumented median-rounding issue, and one incorrect comparison-table figure.
+
+## Findings
+
+| # | Finding | Evidence | Severity | Suggested fix |
+|---|---|---|---|---|
+| 1 | Two normalized records retain identical bodies despite the note claiming no exact-body duplicates survived. | `data/israel/normalization-notes.md` says no exact-body duplicates survived. `il_abuali_75840` and `il_abuali_75841` in `data/israel/corpus-v1.jsonl` share body hash `93f5a986...81020`, with empty duplicate-cluster fields. | High | Deduplicate identical Abu Ali posts before analysis, or document why both should remain. |
+| 2 | Kikar extraction includes page chrome, related links, and footer text. | `il_kikar_cc202167d1`, `data/israel/raw/kikar/cc202167d19aa8b4.html`. Stored body begins with `"החלפת מצב תצוגה כיכר השבת פנו אלינו"` and ends with `"עוד בצבא וביטחון... כל הזכויות שמורות"`, rather than article text alone. The stored date, `2024-09-18`, does match the raw page date. | High | Restrict extraction to the article container and remove navigation, recommendations, and footer blocks. |
+| 3 | N12 extraction includes boilerplate before the article. | `il_n12_aaaa261aca`, `data/israel/raw/n12/aaaa261aca426bf1.html`. Stored body begins `"הדפסה Social-icon..."`; the raw article begins `"בלבנון מדווחים היום..."`. The date matches: `2024-09-17`. | High | Apply the same container and boilerplate-prefix cleanup used for article extraction elsewhere. |
+| 4 | The tagging sweep misses clear pager-event items using singular or generic device wording. | In the 30-row untagged Ynet sample from `data/israel/enumeration/ynet-titles-0.csv` and `ynet-titles-1.csv`, these rows are untagged: `b1zo36v6c` ("המכשירים שהתפוצצו"), `bjcjrcc60` ("מכשירי רדיו"), `hygjdfv6a` (Iranian ambassador injured by a device), and `rjvbcko6c` ("פיצוץ מכשיר קשר"). These are event-related items that the listed families did not catch. | High | Add singular and generic device variants, including `מכשיר קשר`, `מכשירים`, `מכשירי רדיו`, and contextual combinations with `התפוצץ/פיצוץ` plus Lebanon or Hezbollah. |
+| 5 | The tagging sample also contains clear false positives. | `il_kikar_361888163b`, CSV row URL ending `skpytm`, is a personal anecdote about a pager, not the 2024 event. `il_kikar_4e84dd272c`, URL ending `sk7wr9`, asks whether a booby-trapped pager caused Raisi's helicopter crash, also outside the event corpus. Both are tagged `strong` in `data/israel/enumeration/kikar-titles-0.csv`. A five-row check also included `il_makan_c9d393a825`, whose cartoon is event commentary, and event-related Ynet rows `il_ynet_4e4fba89cf` and `il_ynet_50c8c2a27c`. | Medium | Require event-window and Lebanon/Hezbollah context for generic `ביפר` hits; separate historical or speculative pager references from event coverage. |
+| 6 | The body medians in normalization notes are truncated without explanation. | `data/israel/normalization-notes.md` reports Kikar `602w` and N12 `564w`. Recomputed medians from `data/israel/corpus-v1.jsonl` are Kikar `602.5` words across 22 records, and N12 `564.5` words across 10 records. | Low | Report standard medians as `602.5` and `564.5`, or state that medians are truncated. |
+| 7 | The Lebanon agentive percentage in the headline table does not reproduce. | `data/analysis/lebanon-israel-comparison-v1.md` reports Lebanon agentive grammar as `45.0`. Using the term families in `data/scripts/build_viz.py` over the 338 primary Lebanon records gives 153/338 = **45.3%**. Israel reproduces at 87/153 = 56.9%. | Medium | Change the Lebanon value to `45.3`, then regenerate dependent prose or explain a different denominator. |
+
+## Checks that reproduced
+
+The following figures did reproduce from the scoped files:
+
+- `corpus-candidates-v1.jsonl`: 138 rows, consisting of 92 strong, 43 related, and 3 fetch-failed records.
+- Enumeration counts and tags: Ynet 13,492 with 50 strong and 42 related; N12 4,506 with 7 strong and 5 related; Kikar 5,229 with 20 strong and 2 related; Makan 647 with 2 strong and 10 related; Abu Ali 519 messages with 20 tagged. Sources: `data/israel/enumeration/*titles*.csv` and `abuali-messages.csv`.
+- Normalized corpus: 153 primary records, with outlet counts Ynet 90, Kikar 22, Abu Ali 20, Makan 11, and N12 10.
+- Document types: 78 articles, 55 `flash_or_lead`, and 20 Telegram posts.
+- Languages: 142 Hebrew and 11 Arabic.
+- Date coverage: 152 of 153 records dated, with 132 LD+JSON dates and 20 Telegram timestamps.
+- Time slots: day_0 34, day_1 60, day_2 21, week_2 10, and first_month 8.
+
+The five raw-page checks found matching dates in all five records, but only the Ynet and Makan samples were clean article-body extractions.
+hook: Stop
+hook: Stop Completed
+tokens used
+110,762

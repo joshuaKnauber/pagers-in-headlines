@@ -1,0 +1,12 @@
+outlet,source_kind,urls,complete
+fox,gdelt,11,NO
+cbs,sitemap,14510,yes
+nbc,sitemap,3333,yes
+ap,sitemap,27363,yes
+nyt,gdelt,1,NO
+yahoo,gdelt,6,NO
+usatoday,gdelt,0,NO
+abc,cdx,5635,NO
+cnn,cdx,7697,NO
+wapo,cdx,0,NO
+reuters,cdx,0,NO
