@@ -1,0 +1,28 @@
+outlet,tier,collection_gate,gate_reason,derived_from
+Tagesschau (ARD),mass,required,reach gate (mass tier),outlet-census.csv
+ZDF heute,mass,required,reach gate (mass tier),outlet-census.csv
+RTL Aktuell,mass,required,reach gate (mass tier),outlet-census.csv
+ntv,mass,required,reach gate (mass tier),outlet-census.csv
+Bild,mass,required,reach gate (mass tier),outlet-census.csv
+Der Spiegel,mass,required,reach gate (mass tier),outlet-census.csv
+WELT,mass,required,reach gate (mass tier),outlet-census.csv
+t-online,mass,required,reach gate (mass tier),outlet-census.csv
+Focus Online,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+WEB.DE News / GMX News,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+ZEIT / ZEIT Online,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+Sueddeutsche Zeitung,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+FAZ,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+stern,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Handelsblatt,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+taz,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+ProSiebenSat.1 :newstime,unresolved,optional,unresolved below mass candidacy; resolve or leave optional,outlet-census.csv
+Deutschlandfunk,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+Deutsche Welle (German service),context,optional,"context tier: perspective/context value, does not gate coverage",outlet-census.csv
+dpa,context,required-baseline,wire baseline (distribution-corpus design),outlet-census.csv
+Regional/local dailies (category),context,documentation-only,"category row, not a single outlet",outlet-census.csv
+RND (RedaktionsNetzwerk Deutschland),substantial,required-representative,documented representative of a mass-level category (project decision),outlet-census.csv
+NIUS,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Tichys Einblick,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Junge Freiheit,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+CNN,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Apollo News,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv

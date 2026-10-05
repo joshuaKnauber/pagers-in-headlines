@@ -1,0 +1,32 @@
+outlet,tier,collection_gate,gate_reason,derived_from
+LBCI,mass,required,reach gate (mass tier),outlet-census.csv
+MTV Lebanon,mass,required,reach gate (mass tier),outlet-census.csv
+Al-Jadeed,mass,required,reach gate (mass tier),outlet-census.csv
+Al-Manar,mass,required,reach gate (mass tier),outlet-census.csv
+OTV,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+NBN,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Tele Liban,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Al Jazeera,unresolved,optional,unresolved below mass candidacy; resolve or leave optional,outlet-census.csv
+Al Mayadeen,unresolved,optional,unresolved below mass candidacy; resolve or leave optional,outlet-census.csv
+Al Arabiya / Al Hadath,unresolved,optional,unresolved below mass candidacy; resolve or leave optional,outlet-census.csv
+Sky News Arabia,unresolved,optional,unresolved below mass candidacy; resolve or leave optional,outlet-census.csv
+BBC (Arabic/English),unresolved,optional,unresolved below mass candidacy; resolve or leave optional,outlet-census.csv
+Annahar,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+Al-Akhbar,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+Addiyar,unresolved,optional,unresolved below mass candidacy; resolve or leave optional,outlet-census.csv
+L'Orient-Le Jour / L'Orient Today,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Al Joumhouria,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Nidaa Al Watan,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Elnashra,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+Lebanon24,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+LebanonFiles,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Lebanon Debate,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Naharnet,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+The961,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+961today.com,unresolved,optional,unresolved below mass candidacy; resolve or leave optional,outlet-census.csv
+Megaphone,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+National News Agency (NNA),context,required-baseline,wire baseline (distribution-corpus design),outlet-census.csv
+Radio Al-Nour,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Radio Liban Libre,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Sawt El Shaab,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Voix du Liban,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv

@@ -1,0 +1,35 @@
+outlet,tier,collection_gate,gate_reason,derived_from
+Fox News,mass,required,reach gate (mass tier),outlet-census.csv
+CNN,mass,required,reach gate (mass tier),outlet-census.csv
+ABC News,mass,required,reach gate (mass tier),outlet-census.csv
+CBS News,mass,required,reach gate (mass tier),outlet-census.csv
+NBC News,mass,required,reach gate (mass tier),outlet-census.csv
+MS NOW (formerly MSNBC),substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+New York Times,mass,required,reach gate (mass tier),outlet-census.csv
+Washington Post,mass,required,reach gate (mass tier),outlet-census.csv
+Yahoo News,mass,required,reach gate (mass tier),outlet-census.csv
+USA Today,mass,required,reach gate (mass tier),outlet-census.csv
+Wall Street Journal,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+BBC News,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+NPR,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+New York Post,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+Joe Rogan Experience,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+The Daily Wire / Ben Shapiro,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+Tucker Carlson Network,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+Megyn Kelly,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+Candace Owens,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+MeidasTouch,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+Newsmax,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+One America News,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Breaking Points,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+PBS NewsHour / PBS News,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Los Angeles Times,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Axios,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+Al Jazeera English,niche,optional,"niche tier: perspective/context value, does not gate coverage",outlet-census.csv
+N+ Univision (Noticias Univision),substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+Noticias Telemundo,substantial,optional,"substantial tier: perspective/context value, does not gate coverage",outlet-census.csv
+Associated Press,context,required-baseline,wire baseline (distribution-corpus design),outlet-census.csv
+Reuters,context,required-baseline,wire baseline (distribution-corpus design),outlet-census.csv
+Local TV news (category),context,documentation-only,"category row, not a single outlet",outlet-census.csv
+Local radio news (category),context,documentation-only,"category row, not a single outlet",outlet-census.csv
+Regional/local newspapers (category),context,documentation-only,"category row, not a single outlet",outlet-census.csv
