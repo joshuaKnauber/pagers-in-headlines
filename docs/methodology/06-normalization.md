@@ -16,8 +16,8 @@ the step-4 manifests and `raw/`, and fetch nothing.
 | `content` | `headline`, `body`, `word_count`, `body_sha256` | |
 | `provenance` | `credit`, `content_origin` | wire credits (dpa, AP, Reuters, …) kept separately from the outlet |
 | `capture` | `collection_route`, `raw_path` | `raw_path` is relative to `data/<country>/` |
-| `extraction` | `method`, `relevance`, `warnings` | relevance `strong` or `related` from step 5 |
-| `deduplication` | `exact_duplicate_cluster_id`, `is_primary_record` | analysis uses primary records only |
+| `extraction` | `method`, `relevance`, `warnings` | relevance `strong` or `related` from step 5; `context` (since v1.3) for records that never mention the devices, e.g. escalation coverage |
+| `deduplication` | `exact_duplicate_cluster_id`, `is_primary_record`, `version_of`, `relation` | analysis uses primary records only; `relation` (since v1.3) is `earlier_version`, `near_duplicate` or `repost` and `version_of` names the primary record |
 
 ## Rules
 
@@ -28,7 +28,8 @@ the step-4 manifests and `raw/`, and fetch nothing.
   today). `date_source` records which one was used; a `-v12` suffix marks dates repaired
   in step 7.
 - **Document type.** `article`, `live_ticker`, `brief`, `flash_or_lead` (paywall leads and
-  bodies under about 90 words), `telegram_post`, `press_review`, `video_page`. Lebanese
+  bodies under about 90 words), `telegram_post`, `press_review`, `video_page`, and since v1.3
+  `live_blog` and `podcast_page`. Lebanese
   coverage is heavy on tickers and briefs, Israeli coverage on paywall leads. These are
   not quality failures; they decide whether an item is analysed by headline or by body.
 - **Chrome removal.** Lines that recur in 30% or more of one outlet's bodies are cut
@@ -38,6 +39,9 @@ the step-4 manifests and `raw/`, and fetch nothing.
   by container re-extraction (step 7, v1.1).
 - **Duplicates.** Records with identical bodies form a cluster with one primary record.
   URL variants (AMP, mobile, path twins) were collapsed later, in the step-7 repairs.
+
+Records removed by a repair pass are not deleted: they move to `06-corpus/excluded.jsonl`
+with `exclusion.version` and `exclusion.reason`.
 
 Per-country results and limitations: `data/<country>/06-corpus/normalization-notes.md`
 (Lebanon, Israel) and `05-extraction/triage-notes.md` (Germany, US, which document

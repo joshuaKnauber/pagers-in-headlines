@@ -1,7 +1,300 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import data from "../data/reader.json";
 ---
 
 <Layout>
-	<h1>Welcome to Astro!</h1>
+	<main class="mx-auto max-w-3xl px-6 pb-40">
+		<header class="pt-28 pb-20">
+			<h1 class="font-serif text-6xl leading-[1.05] tracking-tight">Same attack,<br />different news</h1>
+			<p class="mt-8 max-w-xl text-lg leading-relaxed text-[var(--ink-2)]">
+				On 17 and 18 September 2024, thousands of pagers and walkie-talkies exploded across Lebanon.
+				Pick a country and an outlet to see what its readers were told in the weeks after.
+			</p>
+		</header>
+
+		<section aria-label="Pick a reader">
+			<div id="countries" class="flex flex-wrap gap-2"></div>
+			<div id="outlets" class="mt-4 flex flex-wrap gap-2"></div>
+
+			<div class="pt-16">
+				<h2 id="reader-title" class="font-serif text-4xl leading-tight"></h2>
+				<p id="reader-summary" class="mt-5 max-w-xl text-lg leading-relaxed text-[var(--ink-2)]"></p>
+			</div>
+
+			<div class="pt-16">
+				<h3 class="font-serif text-2xl">Articles per day</h3>
+				<div id="days-chart" class="relative mt-6"></div>
+			</div>
+
+			<div class="pt-16">
+				<h3 class="font-serif text-2xl">What they were told</h3>
+				<p class="mt-2 text-sm text-[var(--ink-3)]">
+					In order of first appearance. The dot shows where it appeared at its most prominent.
+				</p>
+				<div class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[var(--ink-2)]" id="legend-told"></div>
+				<ol id="told" class="mt-8 space-y-1"></ol>
+			</div>
+
+			<details class="pt-12 group" id="untold-wrap">
+				<summary class="cursor-pointer list-none font-serif text-2xl">
+					<span id="untold-title"></span>
+					<span class="ml-2 text-base text-[var(--ink-3)] group-open:hidden">show</span>
+				</summary>
+				<p class="mt-2 max-w-xl text-sm text-[var(--ink-3)]" id="untold-note"></p>
+				<ul id="untold" class="mt-6 space-y-3 text-[var(--ink-2)]"></ul>
+			</details>
+
+			<div class="pt-16">
+				<h3 class="font-serif text-2xl">Day by day</h3>
+				<div id="timeline" class="mt-8 space-y-10"></div>
+			</div>
+		</section>
+	</main>
+
+	<section aria-label="Compare readers" class="mx-auto max-w-6xl px-6 pb-40">
+		<div class="mx-auto max-w-3xl">
+			<h2 class="font-serif text-4xl leading-tight">Who was told what</h2>
+			<p class="mt-5 max-w-xl text-lg leading-relaxed text-[var(--ink-2)]">
+				The pilot claims, by outlet. A grey dot means the claim is not in our sample of that outlet, which
+				is not the same as never published: the number under each outlet is how much of its coverage we hold.
+			</p>
+			<div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[var(--ink-2)]" id="legend-matrix"></div>
+		</div>
+		<div class="mt-12 overflow-x-auto" id="matrix"></div>
+	</section>
+
+	<div
+		id="tip"
+		class="pointer-events-none fixed z-10 hidden max-w-xs rounded-md bg-[var(--ink)] px-3 py-2 text-sm leading-snug text-[var(--surface)] shadow-lg"
+	></div>
+
+	<script type="application/json" id="reader-data" set:html={JSON.stringify(data)} />
 </Layout>
+
+<script>
+	type Claim = { claim_id: string; statement_en: string; category: string; status: string; pilot: boolean };
+	type Article = {
+		id: string; outlet: string; country: string; date: string; time: string; type: string; lang: string;
+		headline: string; words: number; url: string; archive: string; claims: [string, string, string][];
+	};
+	type Outlet = { id: string; name: string; country: string; recall: number | null; recall_note: string };
+	const D = JSON.parse(document.getElementById("reader-data")!.textContent!) as {
+		window: [string, string]; countries: { id: string; name: string }[]; outlets: Outlet[];
+		claims: Claim[]; articles: Article[];
+	};
+
+	const SAL = ["headline", "lead", "body"];
+	const SAL_LABEL: Record<string, string> = { headline: "in a headline", lead: "in an opening paragraph", body: "further down" };
+	const CAT: Record<string, string> = {
+		casualties: "How many were hurt", victim_identity: "Who was hit", attribution: "Who did it",
+		mechanism_supply_chain: "How it was done", israel_official_stance: "What Israel said",
+		hezbollah_response: "How Hezbollah responded", legality_condemnation: "Was it legal",
+		explainer_consumer: "Explainers", consequences: "Consequences", timing_motive: "Why then",
+	};
+	const claimById = Object.fromEntries(D.claims.map((c) => [c.claim_id, c]));
+	const outletById = Object.fromEntries(D.outlets.map((o) => [o.id, o]));
+	const byOutlet: Record<string, Article[]> = {};
+	for (const a of D.articles) (byOutlet[a.outlet] ??= []).push(a);
+
+	const state = { country: "germany", outlet: "bild" };
+	const $ = (id: string) => document.getElementById(id)!;
+	const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+	const fmtDate = (d: string) => new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+	const fmtDay = (d: string) => new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+
+	// ---- tooltip
+	const tip = $("tip");
+	function showTip(e: MouseEvent, html: string) {
+		tip.innerHTML = html; tip.classList.remove("hidden");
+		const x = Math.min(e.clientX + 14, window.innerWidth - tip.offsetWidth - 12);
+		tip.style.left = x + "px"; tip.style.top = e.clientY + 16 + "px";
+	}
+	const hideTip = () => tip.classList.add("hidden");
+	function bindTips(root: HTMLElement) {
+		root.querySelectorAll<HTMLElement>("[data-tip]").forEach((el) => {
+			el.addEventListener("mousemove", (e) => showTip(e, el.dataset.tip!));
+			el.addEventListener("mouseleave", hideTip);
+		});
+	}
+
+	// ---- marks
+	function dot(sal: string | null, conf: string | null, size = 10) {
+		if (!sal) return `<span class="inline-block rounded-full" style="width:${size - 4}px;height:${size - 4}px;margin:2px;background:var(--empty)"></span>`;
+		const c = `var(--sal-${sal})`;
+		return conf === "seed"
+			? `<span class="inline-block rounded-full" style="width:${size}px;height:${size}px;background:${c}"></span>`
+			: `<span class="inline-block rounded-full" style="width:${size}px;height:${size}px;box-shadow:inset 0 0 0 2px ${c}"></span>`;
+	}
+	function legend(el: HTMLElement, withEmpty: boolean) {
+		const items = SAL.map((s) => `${dot(s, "seed")}<span>${SAL_LABEL[s].replace(/^./, (c) => c.toUpperCase())}</span>`);
+		items.push(`${dot("lead", "hint")}<span>Keyword match only, not checked</span>`);
+		if (withEmpty) items.push(`${dot(null, null)}<span>Not in our sample</span>`);
+		el.innerHTML = items.map((i) => `<span class="inline-flex items-center gap-2">${i}</span>`).join("");
+	}
+
+	function bestFor(arts: Article[]) {
+		const m: Record<string, { sal: string; conf: string; first: string; arts: Article[] }> = {};
+		for (const a of arts)
+			for (const [cid, sal, conf] of a.claims) {
+				const cur = (m[cid] ??= { sal, conf, first: a.date, arts: [] });
+				if (SAL.indexOf(sal) < SAL.indexOf(cur.sal)) cur.sal = sal;
+				if (conf === "seed") cur.conf = "seed";
+				if (a.date < cur.first) cur.first = a.date;
+				cur.arts.push(a);
+			}
+		return m;
+	}
+
+	// ---- picker
+	function renderPicker() {
+		const btn = (active: boolean, label: string, attrs: string) =>
+			`<button ${attrs} class="rounded-full px-4 py-1.5 text-sm transition-colors ${active ? "bg-[var(--ink)] text-[var(--surface)]" : "bg-[var(--wash)] text-[var(--ink-2)] hover:text-[var(--ink)]"}">${label}</button>`;
+		$("countries").innerHTML = D.countries.map((c) => btn(c.id === state.country, c.name, `data-country="${c.id}"`)).join("");
+		$("outlets").innerHTML = D.outlets
+			.filter((o) => o.country === state.country)
+			.map((o) => btn(o.id === state.outlet, `${esc(o.name)} <span class="opacity-50">${(byOutlet[o.id] ?? []).length}</span>`, `data-outlet="${o.id}"`))
+			.join("");
+		$("countries").querySelectorAll<HTMLElement>("[data-country]").forEach((b) =>
+			b.addEventListener("click", () => {
+				state.country = b.dataset.country!;
+				const first = D.outlets.filter((o) => o.country === state.country).sort((a, b) => (byOutlet[b.id]?.length ?? 0) - (byOutlet[a.id]?.length ?? 0))[0];
+				state.outlet = first.id; render();
+			}));
+		$("outlets").querySelectorAll<HTMLElement>("[data-outlet]").forEach((b) =>
+			b.addEventListener("click", () => { state.outlet = b.dataset.outlet!; render(); }));
+	}
+
+	// ---- reader
+	function renderReader() {
+		const o = outletById[state.outlet];
+		const arts = byOutlet[o.id] ?? [];
+		const best = bestFor(arts);
+		const told = Object.entries(best).sort((a, b) => a[1].first.localeCompare(b[1].first));
+		$("reader-title").textContent = `What ${o.name} readers saw`;
+		const rec = o.recall == null
+			? `We could not measure how much of ${esc(o.name)}'s coverage we hold${o.recall_note ? ` (${o.recall_note})` : ""}.`
+			: `We hold about ${Math.round(o.recall * 100)}% of what ${esc(o.name)} published in the first week, so a missing claim is weak evidence.`;
+		$("reader-summary").innerHTML = `${arts.length} articles about the attacks in our sample, between ${fmtDate(D.window[0])} and ${fmtDate(D.window[1])}. They carry ${told.length} of the ${D.claims.length} claims we track. ${rec}`;
+
+		// told list
+		legend($("legend-told"), false);
+		$("told").innerHTML = told.map(([cid, b]) => {
+			const c = claimById[cid];
+			const list = b.arts.slice(0, 8).map((a) => articleLine(a)).join("");
+			return `<li><details class="group/c">
+				<summary class="grid cursor-pointer list-none grid-cols-[4.5rem_1rem_1fr] items-baseline gap-x-4 rounded-md py-2.5 hover:bg-[var(--wash)]">
+					<span class="text-sm tabular-nums text-[var(--ink-3)]">${fmtDate(b.first)}</span>
+					<span class="translate-y-0.5" data-tip="${esc(SAL_LABEL[b.sal])}${b.conf === "hint" ? ", keyword match only" : ""}">${dot(b.sal, b.conf)}</span>
+					<span class="leading-snug">${esc(c.statement_en)} <span class="text-sm text-[var(--ink-3)]">${b.arts.length > 1 ? b.arts.length + " articles" : "1 article"}</span></span>
+				</summary>
+				<div class="ml-[6.5rem] space-y-3 pb-4 pt-2">${list}</div>
+			</details></li>`;
+		}).join("");
+
+		// untold
+		const untold = D.claims.filter((c) => !best[c.claim_id]);
+		$("untold-title").textContent = `Not in our sample (${untold.length})`;
+		$("untold-note").textContent = o.recall == null || o.recall < 0.5
+			? "Our sample of this outlet is thin, so many of these may simply be missing from it."
+			: "These claims do not appear in any article we hold from this outlet.";
+		$("untold").innerHTML = untold.map((c) => `<li class="leading-snug">${esc(c.statement_en)}</li>`).join("");
+
+		renderDays(arts);
+		renderTimeline(arts);
+		bindTips($("told"));
+	}
+
+	function articleLine(a: Article) {
+		const rtl = a.lang === "ar" || a.lang === "he";
+		return `<div>
+			<a href="${esc(a.url)}" target="_blank" rel="noopener" dir="${rtl ? "rtl" : "ltr"}" class="block font-serif text-lg leading-snug hover:underline ${rtl ? "text-right" : ""}">${esc(a.headline) || "<span class='text-[var(--ink-3)]'>(no headline)</span>"}</a>
+			<div class="mt-1 text-sm text-[var(--ink-3)]">${fmtDate(a.date)}${a.time ? " " + a.time : ""} · ${a.type.replace(/_/g, " ")}${a.archive ? ` · <a class="underline decoration-[var(--hairline)] hover:decoration-current" href="${esc(a.archive)}" target="_blank" rel="noopener">archived copy</a>` : ""}</div>
+		</div>`;
+	}
+
+	// ---- daily columns (one series, one hue)
+	function renderDays(arts: Article[]) {
+		const days: string[] = [];
+		for (let d = new Date(D.window[0] + "T12:00:00Z"); d <= new Date(D.window[1] + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + 1))
+			days.push(d.toISOString().slice(0, 10));
+		const n = Object.fromEntries(days.map((d) => [d, 0]));
+		arts.forEach((a) => (n[a.date] = (n[a.date] ?? 0) + 1));
+		const max = Math.max(1, ...Object.values(n));
+		const W = 720, H = 120, gap = 2, bw = (W - gap * (days.length - 1)) / days.length;
+		const bars = days.map((d, i) => {
+			const h = n[d] ? Math.max(3, (n[d] / max) * (H - 4)) : 0;
+			const x = i * (bw + gap);
+			return `<g data-tip="${fmtDate(d)}: ${n[d]} article${n[d] === 1 ? "" : "s"}">
+				<rect x="${x}" y="0" width="${bw + gap}" height="${H}" fill="transparent"/>
+				${h ? `<path d="M${x},${H} v${-(h - 3)} q0,-3 3,-3 h${bw - 6} q3,0 3,3 v${h - 3} z" fill="var(--sal-lead)"/>` : ""}
+			</g>`;
+		}).join("");
+		$("days-chart").innerHTML = `<svg viewBox="0 0 ${W} ${H + 22}" class="w-full overflow-visible" role="img" aria-label="Articles per day">
+			<line x1="0" x2="${W}" y1="${H}" y2="${H}" stroke="var(--hairline)"/>
+			${bars}
+			<text x="0" y="${H + 18}" font-size="12" fill="var(--ink-3)">${fmtDate(days[0])}</text>
+			<text x="${W}" y="${H + 18}" font-size="12" fill="var(--ink-3)" text-anchor="end">${fmtDate(days[days.length - 1])}</text>
+			<text x="0" y="-6" font-size="12" fill="var(--ink-3)">${max} max</text>
+		</svg>`;
+		bindTips($("days-chart"));
+	}
+
+	function renderTimeline(arts: Article[]) {
+		const g: Record<string, Article[]> = {};
+		arts.forEach((a) => (g[a.date] ??= []).push(a));
+		$("timeline").innerHTML = Object.keys(g).sort().map((d) => `<div>
+			<div class="text-sm font-medium text-[var(--ink-2)]">${fmtDay(d)}</div>
+			<div class="mt-4 space-y-5">${g[d].map(articleLine).join("")}</div>
+		</div>`).join("");
+	}
+
+	// ---- matrix
+	function renderMatrix() {
+		legend($("legend-matrix"), true);
+		const claims = D.claims.filter((c) => c.pilot).sort((a, b) => a.category.localeCompare(b.category));
+		const cols = D.outlets;
+		const best = Object.fromEntries(cols.map((o) => [o.id, bestFor(byOutlet[o.id] ?? [])]));
+		const head = D.countries.map((c) => {
+			const os = cols.filter((o) => o.country === c.id);
+			return `<th colspan="${os.length}" class="px-1 pb-2 text-left text-sm font-medium text-[var(--ink-2)]">${c.name}</th>`;
+		}).join("");
+		const names = cols.map((o, i) => {
+			const sep = i > 0 && cols[i - 1].country !== o.country ? "pl-4" : "";
+			return `<th class="${sep} h-36 w-7 align-bottom font-normal">
+				<button data-pick="${o.id}" class="origin-bottom-left translate-x-3 -rotate-60 whitespace-nowrap text-left text-sm text-[var(--ink-2)] hover:text-[var(--ink)] ${o.id === state.outlet ? "font-semibold text-[var(--ink)]" : ""}">${esc(o.name)}</button>
+			</th>`;
+		}).join("");
+		const rec = cols.map((o, i) => {
+			const sep = i > 0 && cols[i - 1].country !== o.country ? "pl-4" : "";
+			return `<td class="${sep} pb-3 pt-1 text-center text-[11px] tabular-nums text-[var(--ink-3)]" data-tip="${o.recall == null ? "Coverage not measurable" + (o.recall_note ? ": " + o.recall_note : "") : `We hold about ${Math.round(o.recall * 100)}% of ${esc(o.name)}'s first-week coverage`}">${o.recall == null ? "?" : Math.round(o.recall * 100)}</td>`;
+		}).join("");
+		let lastCat = "";
+		const rows = claims.map((c) => {
+			const catRow = c.category !== lastCat
+				? `<tr><td colspan="${cols.length + 1}" class="pb-2 pt-8 font-serif text-lg">${CAT[c.category] ?? c.category}</td></tr>` : "";
+			lastCat = c.category;
+			const cells = cols.map((o, i) => {
+				const b = best[o.id][c.claim_id];
+				const sep = i > 0 && cols[i - 1].country !== o.country ? "pl-4" : "";
+				const t = b
+					? `<b>${esc(o.name)}</b>: ${SAL_LABEL[b.sal]}, ${b.arts.length} article${b.arts.length > 1 ? "s" : ""}, first ${fmtDate(b.first)}${b.conf === "hint" ? "<br>keyword match only" : ""}`
+					: `<b>${esc(o.name)}</b>: not in our sample${o.recall != null ? ` (we hold ~${Math.round(o.recall * 100)}%)` : ""}`;
+				return `<td class="${sep} h-8 text-center ${o.id === state.outlet ? "bg-[var(--wash)]" : ""}" data-tip="${t}">${dot(b?.sal ?? null, b?.conf ?? null)}</td>`;
+			}).join("");
+			return `${catRow}<tr class="hover:bg-[var(--wash)]"><td class="max-w-[22rem] py-1 pr-6 text-sm leading-snug text-[var(--ink-2)]" data-tip="${esc(c.statement_en)}"><span class="line-clamp-2">${esc(c.statement_en)}</span></td>${cells}</tr>`;
+		}).join("");
+		$("matrix").innerHTML = `<table class="mx-auto border-separate border-spacing-0">
+			<thead><tr><th></th>${head}</tr><tr><th></th>${names}</tr><tr><td class="pb-3 pt-1 pr-6 text-right text-[11px] text-[var(--ink-3)]">% of coverage we hold</td>${rec}</tr></thead>
+			<tbody>${rows}</tbody></table>`;
+		$("matrix").querySelectorAll<HTMLElement>("[data-pick]").forEach((b) =>
+			b.addEventListener("click", () => {
+				state.outlet = b.dataset.pick!; state.country = outletById[state.outlet].country; render();
+				document.querySelector('[aria-label="Pick a reader"]')!.scrollIntoView({ behavior: "smooth" });
+			}));
+		bindTips($("matrix"));
+	}
+
+	function render() { renderPicker(); renderReader(); renderMatrix(); }
+	render();
+</script>

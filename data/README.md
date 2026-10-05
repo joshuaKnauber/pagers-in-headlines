@@ -29,8 +29,10 @@ Method documents for each step: `docs/methodology/`. Scripts: `pipeline/`.
 ## Using the corpus
 
 Read `06-corpus/corpus.jsonl` and keep records with
-`deduplication.is_primary_record == true`. Current primary counts: Lebanon 359,
-Israel 166, Germany 176, US 131 (corpus v1.2.1). Before using any count of the form
+`deduplication.is_primary_record == true`. For questions about the attacks, also drop
+`extraction.relevance == "context"` (records that never mention the devices). Current
+primary counts (corpus v1.3.1): Lebanon 357, Israel 168, Germany 172, US 143. Records
+removed by repairs are in `06-corpus/excluded.jsonl`, with reasons. Before using any count of the form
 "outlet X never said Y", check that outlet's recall in `08-recall-audit/`.
 
 ## Lineage: what produced each file
@@ -55,6 +57,7 @@ notes); no script regenerates them.
 | 05 | `israel/05-extraction/candidates.jsonl` (v1.1 bodies) | `pipeline/07-repair/repair_v11_israel.py` | `raw/` |
 | 06 | `06-corpus/corpus.jsonl` (v1/v1.1) | `pipeline/06-normalization/normalize_lebanon.py`, `normalize_israel.py`, `normalize_de_us.py` | `candidates.jsonl`, manifests, `raw/`, Abu Ali messages |
 | 07 | `06-corpus/corpus.jsonl` (v1.2, v1.2.1) | `pipeline/07-repair/repair_v12.py`, `repair_v12_almanar_recover.py` | the v1.1 corpus, `raw/` |
+| 07 | `06-corpus/corpus.jsonl` (v1.3, v1.3.1), `06-corpus/excluded.jsonl` | `pipeline/07-repair/repair_v13.py` | v1.2.1 corpus, `08-recall-audit/raw/corpus-issues.csv`, `raw/`; AP pages from Wayback; Abu Ali live preview |
 | 08 | `08-recall-audit/reference-set.csv`, `gap-manifest.csv` | DE, US: `pipeline/08-recall-audit/recall_audit_build.py` (pool, verify, report); IL, LB: `recall_audit_il_lb_tasks.py`, `_check.py`, `_build.py` | independent discovery routes (Media Cloud, GDELT, outlet listings, archived homepages, live-blog paths), corpus, candidates, manifests |
 | 08 | `08-recall-audit/recall-audit-notes.md` | written from the outputs above; tables from `recall_audit_analyze.py`, `recall_audit_il_lb_report.py`, `recall_audit_us_summary.py`, `recall_audit_us_yahoo.py` | |
 | 09 | `cross-country/09-claims/claim-catalogue.jsonl` | manual research with corpus keyword sweeps, see `claim-catalogue-notes.md` | all four corpora |
@@ -62,4 +65,4 @@ notes); no script regenerates them.
 Re-running steps 04, 05 and the fetch parts of 08 hits live sites and the Wayback
 Machine, so results will differ from the stored files. Steps 02, 06 and the report
 parts of 08 are offline and reproduce the stored files exactly. Re-running 06
-gives the v1.1 corpus; apply 07 afterwards to get the current version.
+gives the v1.1 corpus; apply 07 (v1.2 and its fixups, v1.3 and its fixups) afterwards to get the current version.

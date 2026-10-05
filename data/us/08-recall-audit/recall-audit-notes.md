@@ -3,6 +3,12 @@
 Audit run 2026-10-04/05. Scripts: `pipeline/08-recall-audit/recall_audit_*.py`. Nothing in the corpus, the
 manifests or the pipeline notes was changed.
 
+
+> **Update 2026-10-05 (corpus v1.3).** AP was re-collected from Wayback and 18 AP records added. The
+> report was re-run: AP recall is now 15/35 (0.43; central 0.50), and US recall without Yahoo is
+> 93/369 (0.25), with Yahoo 114/799 (0.14). `reference-set.csv`, `gap-manifest.csv` and `raw/recall-table.csv`
+> reflect this; figures in the text below are from the first run (AP 0/35).
+
 ## Bottom line
 
 - The reference set has **799 verified items** that substantively mention the pager or walkie-talkie

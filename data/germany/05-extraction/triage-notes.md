@@ -60,3 +60,21 @@ Script: `pipeline/07-repair/repair_v12.py germany` (raw report
   AR-924«"): bodies cleared, retyped flash_or_lead — headline-only
   rows now, honestly typed. Live re-fetch parked (paywall).
 - Count unchanged: **176 primary**.
+
+## v1.3 repair pass (2026-10-05, recall-audit fixes)
+
+Script: `pipeline/07-repair/repair_v13.py germany` (`--dry` prints the changes). Source of the fixes: the recall audit, `08-recall-audit/recall-audit-notes.md` and `raw/corpus-issues.csv`. Records that do not belong in the corpus moved to `06-corpus/excluded.jsonl` with an `exclusion.reason`; every touched record carries a `*_v13` warning.
+
+- RND: four articles were stored twice because RND changed the slug and headline while updating them (same article ID). The later version (by `dateModified`) is primary; the earlier one is kept with `deduplication.relation = earlier_version` and `version_of`, because readers saw it and the claim catalogue cites some earlier versions.
+- 31 `related` records listed by the audit as having no pager, walkie-talkie or device wording → relevance `context` (mostly escalation coverage from Sep 20 on). Three of them do mention the devices; reversed in v1.3.1, leaving 28.
+- `ge_tonline_1e9c010a33` retyped `live_blog` (t-online's rolling newsblog, one snapshot). Three ntv `der_tag` entries retyped `live_ticker`.
+- Effect: **172 primary (was 176).**
+
+### v1.3.1 (review fix-ups, same day)
+
+Review of v1.3 (general-purpose subagent, 2026-10-05): pass with fixes. Applied as `python3 pipeline/07-repair/repair_v13.py fixups`; the v1.3 stages now also skip anything the fix-ups reversed, so replaying all stages from v1.2.1 gives this version.
+
+- Three `context` downgrades reversed: `ge_spiegel_0c74f9ad5e` (page lead: "Im Libanon sind zahlreiche Walkie-Talkies explodiert", now `strong`), `ge_tagesschau_5d524e455b` ("Angriffen auf Kommunikationstechnik der Hisbollah") and `ge_zdfheute_ad2e30a014` ("Explosion von Kommunikationsausrüstung im Libanon"), both `related`. The audit's term list missed these words; `repair_v13.py` now re-checks every record against a wider device pattern before downgrading.
+- The five SPIEGEL+ paywall shells (`0c74f9ad5e`, `8be8faca25`, `56bd1c4430`, `eb13e72e65`, `176d1e0d56`) get their lead from the page's meta description as body (18–30 words): what a non-subscriber saw.
+- `ge_ntv_5a5721af9d` (a `der_tag` entry typed `flash_or_lead`) retyped `live_ticker`.
+- Effect: **190 records, 172 primary; 28 `context`.**

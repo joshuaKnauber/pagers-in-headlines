@@ -2,7 +2,7 @@
 
 Outlets collected (step 2 gate): Tagesschau, ZDFheute, RTL, ntv, Bild, Spiegel, WELT, t-online; RND for the regional press; dpa as the wire baseline (no own route, seen through t-online and WELT).
 
-Corpus v1.2.1: 176 primary records (t-online 36, Spiegel 33, Bild 26, RND 21, WELT 16, Tagesschau 15, ZDFheute 15, ntv 12, RTL 2).
+Corpus v1.3.1: 172 primary records (t-online 36, Spiegel 33, Bild 26, RND 17, WELT 16, Tagesschau 15, ZDFheute 15, ntv 12, RTL 2), 28 of them `context` (no device wording, mostly escalation coverage).
 
 Read before using:
 

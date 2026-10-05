@@ -70,3 +70,22 @@ defect re-verified against the corpus before fixing.
 Codex review verdict: fail → fixed same session; see
 `data/cross-country/reviews/07-repair-v12-review-codex.md`. Fox newsletter
 tails cut (17).
+
+## v1.3 repair pass (2026-10-05, recall-audit fixes)
+
+Script: `pipeline/07-repair/repair_v13.py us` and `repair_v13.py ap` (`--dry` prints the changes). Source of the fixes: the recall audit, `08-recall-audit/recall-audit-notes.md` and `raw/corpus-issues.csv`. Records that do not belong in the corpus moved to `06-corpus/excluded.jsonl` with an `exclusion.reason`; every touched record carries a `*_v13` warning.
+
+- AP: every AP candidate had been fetched as a Cloudflare challenge page and rated irrelevant. All 23 were re-collected from Wayback (17 from the recall audit's cache, the rest via CDX with status 200), extracted from the `RichTextStoryBody` container, and 18 were added: 17 articles and one video page (headline only). The AP live blog is left for the gap fill, which splits live blogs into entries. Of the other four, three do not mention the attacks and one (Oct 30) is outside the window.
+- 7 CNN video pages (Sep 27 – Oct 4) and `us_cbs_8d3f0e89ac` → relevance `context`.
+- Excluded: `us_cbs_deca8d7e0f` (Oct 31) and `us_nbc_d7d1591943` (Oct 29), out of window; `us_cbs_b6fde07557` (CBS Chicago local station) and Yahoo Canada, Finance and Singapore copies (`6b6ad5ce8c`, `ae4f6eb3f5`, `e4c4db9ea5`), out of scope.
+- `us_yahoo_5f33d95679` (36 words) retyped `brief`.
+- Effect: **143 primary (was 131).**
+
+### v1.3.1 (review fix-ups, same day)
+
+Review of v1.3 (general-purpose subagent, 2026-10-05): pass with fixes. Applied as `python3 pipeline/07-repair/repair_v13.py fixups`; the v1.3 stages now also skip anything the fix-ups reversed, so replaying all stages from v1.2.1 gives this version.
+
+- `us_abc_fd43fc1794` and `us_yahoo_3820a5161a` credited to AP (`syndicated_or_adapted`): about 99% identical to `us_ap_00afe7047e`.
+- The AP editor's note "More explosions have been reported … Follow AP's live updates." cut from the start of `us_ap_924d0a76d1` and `us_ap_3d587773c6`.
+- Empty body of `us_ap_3049232971` carries the empty-string hash.
+- Effect: **173 records, 143 primary; 9 `context`.**

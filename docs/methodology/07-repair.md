@@ -14,6 +14,7 @@ Rules that every pass so far has followed:
   extractor.
 - Every pass gets one adversarial review of its delta. If that review fails, the
   fix-ups are a new minor version (v1.2 → v1.2.1).
+- Never delete a record: excluded records move to `06-corpus/excluded.jsonl` with a reason.
 - Retract findings that depended on a defect, in the ledger, in so many words (for
   example Al Jadeed's 68% "names Israel" figure, which was body chrome).
 
@@ -22,6 +23,6 @@ Rules that every pass so far has followed:
 | v1.1 | `repair_v11_israel.py` (Israel); inline fixes in the other countries' review rounds | step-5 review findings: chrome in Kikar and N12 bodies, duplicates, relevance tags |
 | v1.2 | `repair_v12.py <country>`, `repair_v12_almanar_recover.py` | the 2026-09-16 deep-dive defects: 2026 chrome in Fox, CNN, Yahoo and Al Jadeed bodies, AMP and path-twin duplicates, t-online headlines, Spiegel paywall shells, Al-Manar dates and day-0 gap, Israeli publication times |
 | v1.2.1 | `repair_v12.py fixups` | the review of v1.2: Fox newsletter tails, Al Jadeed bodies that were all chrome, word counts |
-| v1.3 | planned | recall-audit findings, see `data/cross-country/08-recall-audit-summary.md` |
+| v1.3, v1.3.1 | `repair_v13.py <country>\|ap\|claims\|fixups\|all` | recall-audit findings: off-topic and out-of-scope records excluded, records without device wording marked `context`, RND article versions linked, missing dates, retyping, Abu Ali's first post added, AP re-collected from Wayback; v1.3.1 reversed two exclusions and three downgrades after review |
 
 `repair_v12.py <country> --dry` prints what it would change without writing.

@@ -34,7 +34,7 @@ Pipeline steps, in order:
 4. **Enumeration.** Every URL each outlet published in the event window.
 5. **Extraction.** Triage the URLs, fetch the event-related ones, parse them.
 6. **Normalization.** One record schema for all countries: `06-corpus/corpus.jsonl`.
-7. **Repair.** Versioned fixes to the corpus after reviews (v1.1, v1.2, v1.2.1).
+7. **Repair.** Versioned fixes to the corpus after reviews and the recall audit (v1.1 to v1.3.1).
 8. **Recall audit.** How complete the corpus is per outlet, and what is missing.
 9. **Claims.** Catalogue of claims made about the attacks, to code per outlet (in progress).
 
@@ -52,15 +52,15 @@ Pipeline steps, in order:
 
 ## Status
 
-- Corpus v1.2.1: Lebanon 359, Israel 166, Germany 176, US 131 primary records
-  (event window Sep 17 – Oct 2024).
+- Corpus v1.3.1: Lebanon 357, Israel 168, Germany 172, US 143 primary records
+  (event window Sep 17 – Oct 17 2024).
 - Recall audit done for all four countries
   (`data/cross-country/08-recall-audit-summary.md`): the corpus holds roughly 5–60%
   of each outlet's coverage from Sep 17 to 24, and almost none of the articles that
   mention the attacks only in the body.
 - Claim catalogue v1: 81 claims (`data/cross-country/09-claims/`).
-- Next: v1.3 corpus fixes, then filling the collection gaps using full-text
-  selection, then coding claims per outlet.
+- Next: filling the collection gaps using full-text selection, then coding claims
+  per outlet.
 
 ## Setup
 

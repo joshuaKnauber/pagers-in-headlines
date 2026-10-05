@@ -26,12 +26,12 @@ first paragraph) and **mention** (it comes up in the body only).
 | Lebanon | MTV | 40% | 0% | 33% | medium |
 | Lebanon | Al Jadeed | 50% | 0% | 43% | medium |
 | Lebanon | Al-Manar | 57% | 10% | 43% (≈29%) | strong (Media Cloud + GDELT) |
-| Lebanon | NNA | – | – | – | none |
+| Lebanon | NNA | 33% | 0% | 29% | none (7 items, not reliable) |
 | Israel | Ynet | 54% | 0% | 40% | medium (GDELT 51%) |
-| Israel | N12 | 22% | 0% | ~5% | weak, extrapolated |
+| Israel | N12 | 24% | 0% | ~6% | weak, extrapolated |
 | Israel | Kikar | 77% | 0% | 38% | medium |
 | Israel | Makan | 90% | 0% | ~58% | none independent |
-| Israel | Abu Ali | 16% | 7% | 15% | strong (live channel dump) |
+| Israel | Abu Ali | 20% | 7% | 18% | strong (live channel dump) |
 | Germany | Bild | 76% | 20% | 58% | strong |
 | Germany | ntv | 19% | 0% | 14% | strong |
 | Germany | RND | 62% | 18% | 42% | strong |
@@ -42,7 +42,7 @@ first paragraph) and **mention** (it comes up in the body only).
 | Germany | WELT | 30% | 0% | 22% | strong |
 | Germany | ZDFheute | 100% | 75% | 91% | weak (11 items) |
 | US | ABC | 7% | 0% | 6% | medium |
-| US | AP | 0% | 0% | 0% (fetch bug) | medium |
+| US | AP | 50% | 0% | 43% (after the v1.3 re-collection; 0% before) | medium |
 | US | CBS | 23% | 0% | 19% | medium |
 | US | CNN | 61% | 0% | 41% | strong |
 | US | Fox | 58% | 40% | 53% | strong |
@@ -53,7 +53,7 @@ first paragraph) and **mention** (it comes up in the body only).
 | US | WaPo | – | – | (24%) | none independent (4 items) |
 | US | Yahoo | 6% | 1% | 5% | weak (3 of 430 items are Yahoo's own) |
 
-US overall: 21% without Yahoo (78 of 369), 12% with it. Yahoo is almost entirely
+US overall: 25% without Yahoo (93 of 369; 21% before the AP fix in v1.3), 14% with it. Yahoo is almost entirely
 syndicated copy (wire services and partner outlets), so its figure is not US recall.
 
 All figures are lower bounds on what readers saw: the relevance tests are lexical
@@ -93,7 +93,14 @@ and miss allusive wording ("the operation in Lebanon", "العدوان").
 | Germany | 196 | 189 verified + 7 live blogs not readable from capture |
 | US | 721 | 312 without Yahoo; incl. 20 ABC live blogs with empty captures |
 
-## Corpus fixes for v1.3 (listed by the audits, not applied yet)
+## Corpus fixes for v1.3 (applied 2026-10-05)
+
+Applied by `pipeline/07-repair/repair_v13.py`; what was done, and where it differs from this
+list, is in each country's `06-corpus/CHANGELOG.md`. Two differences: the Al Jadeed pair
+`502553`/`502564` turned out to be two separate items and both stay, and the RND pairs are
+kept as linked versions of one article rather than dropped. A review of v1.3 then reversed
+two exclusions (`lb_aljadeed_507118`, `il_abuali_75669`) and three German `context` downgrades
+(v1.3.1). Figures in the recall table above are from the re-run on the v1.3.1 corpus.
 
 **Lebanon**
 - `lb_lbci_797960`: off-topic (wireless earbuds), drop.
@@ -131,8 +138,7 @@ and miss allusive wording ("the operation in Lebanon", "العدوان").
 
 ## Next steps
 
-1. v1.3 repair pass with the fixes above.
-2. Gap fill with full-text selection: outlet-native listings as the manifest of
+1. Gap fill with full-text selection: outlet-native listings as the manifest of
    record, topic re-sweep with body check, live blogs split into timestamped
    entries, wire feeds and teletext as their own document type.
-3. Re-run the audits, publish a completeness figure per outlet.
+2. Re-run the audits, publish a completeness figure per outlet.

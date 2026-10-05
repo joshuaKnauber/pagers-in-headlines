@@ -24,6 +24,14 @@ Nothing in the existing corpus, manifests or notes was changed. The Lebanon
 notes (`data/lebanon/08-recall-audit/recall-audit-notes.md`) describe the shared
 method in more detail; the summary below covers what differs for Israel.
 
+
+> **Update 2026-10-05 (corpus v1.3.1).** Two changes since the first run. (1) The Telegram parser read the
+> quote box of reply posts as the post's own text (199 of 872 messages in `raw/abuali-live-messages.csv`);
+> fixed in `recall_audit_il_lb_abuali.py` and re-parsed from the cached pages. Abu Ali's reference shrank
+> from 103 to 96 central items. (2) The corpus gained 75653 (12:57 UTC) and its two replies, and
+> `il_abuali_75669` stays in. Re-run: Abu Ali recall 20% central, 18% overall; N12 24% central, ~6% overall
+> (one N12 article now dated). Tables below are from the first run; `raw/recall-tables.json` holds the re-run.
+
 ## 1. Method
 
 ### Relevance test

@@ -2,11 +2,11 @@
 
 Outlets collected (step 2 gate): LBCI, MTV, Al Jadeed, Al-Manar; NNA as the wire baseline.
 
-Corpus v1.2.1: 359 primary records (LBCI 110, MTV 125, Al-Manar 63, Al Jadeed 59, NNA 2).
+Corpus v1.3.1: 357 primary records (MTV 125, LBCI 109, Al-Manar 63, Al Jadeed 58, NNA 2), 10 of them `context` (Al-Manar martyr notices).
 
 Read before using:
 
-- Recall Sep 17–24: 33–45% per outlet; 10% or less for articles that only mention the attacks in the body. NNA could not be measured.
+- Recall Sep 17–24: 33–45% per outlet; 10% or less for articles that only mention the attacks in the body. NNA's reference is too thin to trust (29% on 7 items).
 - Many records are live-ticker items and briefs: analyse them by headline.
 - Al Jadeed records are headline-only (bodies were page chrome, removed in v1.2.1).
 - Census v1 is in `archive/lebanon-census-v1/`.

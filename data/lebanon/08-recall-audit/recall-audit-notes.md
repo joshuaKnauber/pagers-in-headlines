@@ -22,6 +22,11 @@ Files in this directory:
 
 Nothing in the existing corpus, manifests or notes was changed.
 
+
+> **Update 2026-10-05 (corpus v1.3.1).** The two NNA records now have dates, so NNA enters the census
+> table: 2 of 7 known items (29%). Seven items are too few to call this a recall figure. Other Lebanese
+> figures are unchanged; `raw/recall-tables.json` holds the re-run.
+
 ## 1. Method
 
 ### Relevance test

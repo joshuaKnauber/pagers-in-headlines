@@ -54,3 +54,7 @@ These come from headline reading and keyword sweeps. The matrix may overturn the
 - **Germany-heavy.** Explainers ("nicht ortbarer Handy-Vorläufer"), consumer fear ("Kann der Geheimdienst auch mein Handy sprengen?"), the legal debate (Völkerrecht pieces, CCW Protocol II, scholars divided), and Bild's "Hisbollah-Terroristen verwundet" framing. No PETN mention found in the German corpus.
 - **US-heavy or US-only.** Fatima Abdullah by name (NYT and AP; otherwise a single line in an Al-Manar digest), Panetta's "form of terrorism", AOC's IHL statement, "senior US official says Israel behind", and the iPhone fact-check. The 15-year claim and the Reuters 1,500 figure seem absent from the US corpus even though both originated in US or wire media.
 - **Victim identity is the likeliest splitter.** "Most were civilians" appears in Lebanon and in NBC. "Most were Hezbollah/terrorists" appears in Israel, Bild and WaPo. I have not checked how often both appear in the same record.
+
+## Changes after v1
+
+- 2026-10-05 (corpus v1.3): seed `us_yahoo_e4c4db9ea5` removed from `explosive_up_to_3g`. The record was excluded from the corpus as a Yahoo Singapore copy, not Yahoo News US; the claim keeps three seeds. Some seeds point at RND records that v1.3 marked as earlier versions of an article (`deduplication.relation = earlier_version`). They stay valid: readers saw those versions.

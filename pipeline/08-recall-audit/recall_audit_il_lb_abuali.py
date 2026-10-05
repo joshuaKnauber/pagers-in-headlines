@@ -26,7 +26,9 @@ def parse(t):
             continue
         pid = int(m.group(1))
         dt = re.search(r'<time datetime="([^"]+)"', blk)
-        tx = re.search(r'<div class="tgme_widget_message_text[^"]*"[^>]*>(.*?)</div>', blk, re.S)
+        # the post's own text; reply posts also carry the quoted post in a message_text div
+        # (js-message_reply_text), which must not be read as this post's text
+        tx = re.search(r'<div class="tgme_widget_message_text js-message_text"[^>]*>(.*?)</div>', blk, re.S)
         text = ""
         if tx:
             text = H.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"<br\s*/?>", "\n", tx.group(1))))

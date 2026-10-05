@@ -2,11 +2,11 @@
 
 Outlets collected (step 2 gate): Fox, CNN, ABC, CBS, NBC, NYT, WaPo, Yahoo News, USA Today; AP and Reuters as wire baselines.
 
-Corpus v1.2.1: 131 primary records (CNN 30, Yahoo 30, Fox 21, NBC 15, WaPo 12, CBS 10, ABC 4, NYT 4, Reuters 4, USA Today 1). No AP records: every AP candidate fetch returned a Cloudflare challenge page.
+Corpus v1.3.1: 143 primary records (CNN 30, Yahoo 27, Fox 21, AP 18, NBC 14, WaPo 12, CBS 8, ABC 4, NYT 4, Reuters 4, USA Today 1), 9 of them `context`. AP was re-collected from Wayback in v1.3; the first fetch had only returned Cloudflare challenge pages.
 
 Read before using:
 
-- Recall Sep 17–24: 21% without Yahoo (Fox 53%, NBC 45%, CNN 41%; ABC, NYT, USA Today 5–6%). Reuters and WaPo could not be measured.
+- Recall Sep 17–24: 25% without Yahoo (Fox 53%, NBC 45%, AP 43%, CNN 41%; ABC, NYT, USA Today 5–6%). Reuters and WaPo could not be measured.
 - Yahoo is almost all syndicated copy: treat Yahoo's own items and the syndicated feed separately.
 - No live blogs or newsletters yet; video pages only from CNN.
 - Steps 5 and 6 are documented together in `05-extraction/triage-notes.md`.

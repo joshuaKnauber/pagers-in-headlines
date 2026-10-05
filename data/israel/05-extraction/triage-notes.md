@@ -79,6 +79,8 @@ Script: `pipeline/07-repair/repair_v12.py israel` + inline Abu Ali add
   ynet/kikar/makan/n12; telegram timestamps for abuali). Headline
   finding this enables: N12 12:59 UTC beat Abu Ali's 13:19 — the
   "Telegram was first" reading was a date-granularity artifact.
+  **Corrected in v1.3:** Abu Ali posted at 12:57 UTC (message 75653), before N12. The
+  corpus already held 75657 (13:06) and 75659 (13:15), so 13:19 was a misreading.
   Caveat: timestamps carry mixed timezone formats (+0300 vs Z);
   normalize before sorting.
 - N12 mako path twin collapsed (`pathdup_*`; n12 10 → 9).
@@ -88,3 +90,23 @@ Script: `pipeline/07-repair/repair_v12.py israel` + inline Abu Ali add
   quote (75665, strong) and the gloat stream (Genesis 34, revenge-
   index — related). `recovered_v12_no_deviceword_rule`.
 - Effect: **166 primary** (was 157).
+
+## v1.3 repair pass (2026-10-05, recall-audit fixes)
+
+Script: `pipeline/07-repair/repair_v13.py israel` (`--dry` prints the changes). Source of the fixes: the recall audit, `08-recall-audit/recall-audit-notes.md` and `raw/corpus-issues.csv`. Records that do not belong in the corpus moved to `06-corpus/excluded.jsonl` with an `exclusion.reason`; every touched record carries a `*_v13` warning.
+
+- Excluded: `il_ynet_35be01752a` (Sep 23 reports of Israel phoning residents to evacuate, a different event) and `il_abuali_75669` (car bomb in Damascus; restored in v1.3.1).
+- `il_n12_ae690238dc` retyped `podcast_page`. `il_n12_42fc90d847` dated Sep 17 (article:published_time 22:00 +03:00).
+- Added Abu Ali 75653 (Sep 17 12:57:18 UTC), the channel's first pager post, and 75655 and 75656 (stored as reposts with the wrong text; corrected in v1.3.1: they are replies). Source: the live `t.me/s` preview fetched by the recall audit, copied to `raw/abuali/live-a0bedcf293cca3cc.html`.
+- Correction: the v1.2 note that N12 (12:59 UTC) beat Abu Ali (13:19) is wrong. Abu Ali posted at 12:57 (75653, not in the Wayback captures). The v1.2 note also misread the corpus it had: 75657 (13:06) and 75659 (13:15, naming זימונית) were already in it.
+- Effect: **165 primary (was 166).**
+
+### v1.3.1 (review fix-ups, same day)
+
+Review of v1.3 (general-purpose subagent, 2026-10-05): pass with fixes. Applied as `python3 pipeline/07-repair/repair_v13.py fixups`; the v1.3 stages now also skip anything the fix-ups reversed, so replaying all stages from v1.2.1 gives this version.
+
+- `il_abuali_75669` restored as `related` with warning `possible_syrian_wave_v131`: posted at 13:35 UTC among the pager posts, and the channel's 75676 (14:03) links explosions in Syria to Hezbollah pagers. Probably the Syrian part of the attack, not a separate incident.
+- `il_abuali_75655` and `75656` are replies to 75653, not reposts. v1.3 stored the quoted text of 75653; they now carry their own text ("דוגמא למכשירי הזימונית שהתפוצצו בביירות.", "אלג'זירה מפי מקורותיה: מכשירי הזימונית פוצצו בטכנולוגיה אלחוטית.") and are primary. Cause: the recall audit's Telegram parser read the reply-quote box as the post's text, fixed in `recall_audit_il_lb_abuali.py` (199 of 872 messages affected).
+- `il_abuali_75653`: warning `live_text_post_edit_v131`; the live page marks the post as edited, so the stored text is the current wording.
+- `il_n12_42fc90d847` `published_time` in N12's `+0300` format.
+- Effect: **170 records, 168 primary.**
