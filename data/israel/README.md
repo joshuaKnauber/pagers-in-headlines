@@ -2,10 +2,11 @@
 
 Outlets collected (step 2 gate): Ynet, N12; Kikar HaShabbat (Haredi), Makan 33 (Arabic) and Abu Ali Express (Telegram) as representatives of their layers.
 
-Corpus v1.3.1: 168 primary records (Ynet 94, Abu Ali 32, Kikar 22, Makan 11, N12 9).
+Corpus v2.0: 470 primary records (Ynet 221, Abu Ali 123, N12 59, Kikar 50, Makan 17), 11 of them `context`.
 
 Read before using:
 
+- Recall figures below are from the audit of corpus v1. Against the same reference set v2 is near 100% by construction (round 2 collected exactly those items); a fresh audit after the stage-3 re-sweep is pending.
 - Recall Sep 17–24: Ynet 40%, Kikar 38%, Abu Ali 18%, N12 about 6%; Makan has no independent check.
 - Ynet bodies are paywall leads (`flash_or_lead`): analyse by headline and lead.
 - Abu Ali's first pager post is 12:57 UTC (message 75653, added in v1.3), two minutes before N12's first item.

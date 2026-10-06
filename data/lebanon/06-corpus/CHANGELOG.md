@@ -44,3 +44,18 @@ Produced by: `pipeline/07-repair/repair_v13.py fixups`. Review of v1.3 (general-
 - `lb_aljadeed_507118` restored (headline-only `brief`, `related`): the headline reports the Washington Post's Oct 5–6 investigation (Israel listened in on Hezbollah walkie-talkies for nine years and kept the option of turning them into bombs). That is the walkie-talkie operation, not a separate event, and Oct 6 is inside the window.
 - Empty bodies now carry the hash of the empty string, as in earlier versions; `lb_nna_722542` `published_time` in UTC with `Z`.
 - The audit listed 11 martyr notices; only 10 records carry the martyr flag, and those 10 were marked `context`.
+
+## v2.0 (2026-10-06): collection round 2
+
+Produced by: `pipeline/06-normalization/build_corpus_v2.py lebanon`, from the round-2 staging files in
+`05-extraction/round2/` (extractors in `pipeline/05-extraction/round2/`). Method:
+`docs/methodology/round2-gap-fill.md`. Reviewed before release (Sonnet subagent, pass with fixes); the fixes
+are included in this version.
+
+838 records, 837 primary (was 357).
+
+- Added: 464 gap items (MTV 215, LBCI 124, Al Jadeed 62, Al-Manar 58, NNA 5). New records have `extraction.round = 2` and warning `added_v2_gapfill` or `added_v2_liveblog`.
+- Re-extracted: 202 existing bodies, with the same validated extractor as the new items (warning `body_reextracted_v2`). Headlines unchanged.
+- Schema `1.2.0`: `extraction.salience` (central / mention / allusive / none) on every record, and `extraction.relevance` now follows it (central → strong, mention and allusive → related, none → context). `extraction.round`; document type `live_blog_entry` with `publication.liveblog_url`; `deduplication.same_text_as` for a copy of another outlet's text, which stays primary.
+- Dates: `published_at` is the date in the outlet's home time zone wherever an exact time is known.
+- Al Jadeed: 38 stored bodies were wrong (LongDesc copied twice, or text from another story); 15 stories that v1 had grouped as duplicates because they shared that wrong text are primary again. Al-Manar: bodies were cut at the first embedded video in v1 (26 pages longer now). 324 primary records (38%) are headline-only: live tickers and briefs without body text; their salience comes from the headline. 11 hand decisions (`MANUAL`).

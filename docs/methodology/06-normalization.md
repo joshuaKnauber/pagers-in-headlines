@@ -1,7 +1,9 @@
 # Step 6: normalization
 
 Turns the step-5 candidates into one record schema shared by all countries,
-`data/<country>/06-corpus/corpus.jsonl` (schema `1.1.0-phase1`).
+`data/<country>/06-corpus/corpus.jsonl` (schema `1.2.0` since corpus v2.0; `1.1.0-phase1` before).
+Corpus v2.0 was built by `build_corpus_v2.py`, which merges collection round 2 into the v1.3.1
+corpus; see `round2-gap-fill.md`.
 
 Scripts: `pipeline/06-normalization/normalize_lebanon.py`, `normalize_israel.py`,
 `normalize_de_us.py <germany|us>`. Offline: they read `05-extraction/candidates.jsonl`,
@@ -16,12 +18,14 @@ the step-4 manifests and `raw/`, and fetch nothing.
 | `content` | `headline`, `body`, `word_count`, `body_sha256` | |
 | `provenance` | `credit`, `content_origin` | wire credits (dpa, AP, Reuters, …) kept separately from the outlet |
 | `capture` | `collection_route`, `raw_path` | `raw_path` is relative to `data/<country>/` |
-| `extraction` | `method`, `relevance`, `warnings` | relevance `strong` or `related` from step 5; `context` (since v1.3) for records that never mention the devices, e.g. escalation coverage |
-| `deduplication` | `exact_duplicate_cluster_id`, `is_primary_record`, `version_of`, `relation` | analysis uses primary records only; `relation` (since v1.3) is `earlier_version`, `near_duplicate` or `repost` and `version_of` names the primary record |
+| `extraction` | `method`, `relevance`, `salience`, `round`, `warnings` | relevance `strong` or `related` from step 5; `context` (since v1.3) for records that never mention the devices, e.g. escalation coverage. `salience` (since v2.0): `central` (attack named in the headline or the first 400 characters), `mention` (only further down), `allusive` (refers to it without naming it; read by hand or from audit evidence), `none`. Since v2.0 `relevance` follows salience: central → strong, mention/allusive → related, none → context. `round`: 1 or 2 (collection round) |
+| `deduplication` | `exact_duplicate_cluster_id`, `is_primary_record`, `version_of`, `relation`, `same_text_as` | analysis uses primary records only; `relation` is `earlier_version`, `near_duplicate`, `repost`, `exact_duplicate` or `liveblog_near_duplicate`, and `version_of` names the primary record. Duplicates are clustered within one outlet; a copy of another outlet's text stays primary with `same_text_as` (since v2.0) |
 
 ## Rules
 
-- **Window.** Records dated outside Sep 17 – Oct 17 2024 are dropped. Recaptures of
+- **Window.** Records dated outside Sep 17 – Oct 17 2024 are dropped. Since v2.0, `published_at` is
+  the date in the outlet's home time zone (UTC+3 Lebanon/Israel, UTC+2 Germany, UTC−4 US Eastern)
+  wherever `published_time` carries an exact time. Recaptures of
   older pages that enumeration picked up are caught here.
 - **Dates.** In order of preference: page JSON-LD or meta, Telegram timestamps, sitemap
   lastmod, and as a last resort interpolation from sequential article IDs (24 MTV records
@@ -29,7 +33,8 @@ the step-4 manifests and `raw/`, and fetch nothing.
   in step 7.
 - **Document type.** `article`, `live_ticker`, `brief`, `flash_or_lead` (paywall leads and
   bodies under about 90 words), `telegram_post`, `press_review`, `video_page`, and since v1.3
-  `live_blog` and `podcast_page`. Lebanese
+  `live_blog` and `podcast_page`, and since v2.0 `live_blog_entry` (one entry of a live blog, with
+  `publication.liveblog_url` and `liveblog_entry_id`), `wire_feed`, `teletext`, `newsletter`. Lebanese
   coverage is heavy on tickers and briefs, Israeli coverage on paywall leads. These are
   not quality failures; they decide whether an item is analysed by headline or by body.
 - **Chrome removal.** Lines that recur in 30% or more of one outlet's bodies are cut

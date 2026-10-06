@@ -2,10 +2,11 @@
 
 Outlets collected (step 2 gate): Tagesschau, ZDFheute, RTL, ntv, Bild, Spiegel, WELT, t-online; RND for the regional press; dpa as the wire baseline (no own route, seen through t-online and WELT).
 
-Corpus v1.3.1: 172 primary records (t-online 36, Spiegel 33, Bild 26, RND 17, WELT 16, Tagesschau 15, ZDFheute 15, ntv 12, RTL 2), 28 of them `context` (no device wording, mostly escalation coverage).
+Corpus v2.0: 407 primary records (Tagesschau 80 incl. 56 live-blog entries, WELT 63, Spiegel 62, ntv 60, t-online 49, Bild 39, RND 30, ZDFheute 16, RTL 8), 32 of them `context` (no device wording, mostly escalation coverage).
 
 Read before using:
 
+- Recall figures below are from the audit of corpus v1. Against the same reference set v2 is near 100% by construction (round 2 collected exactly those items); a fresh audit after the stage-3 re-sweep is pending.
 - Recall Sep 17–24: 39% overall (ntv 14%, WELT 22%, t-online 64%); 16% for articles that only mention the attacks.
 - No live blogs, no dpa newsticker pages, no RTL teletext yet.
 - Steps 5 and 6 are documented together in `05-extraction/triage-notes.md`.

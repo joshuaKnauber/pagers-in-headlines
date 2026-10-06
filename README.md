@@ -52,15 +52,17 @@ Pipeline steps, in order:
 
 ## Status
 
-- Corpus v1.3.1: Lebanon 357, Israel 168, Germany 172, US 143 primary records
-  (event window Sep 17 – Oct 17 2024).
+- Corpus v2.0: Lebanon 837, Israel 470, Germany 407, US 1,015 primary records
+  (event window Sep 17 – Oct 17 2024), after collection round 2
+  (`docs/methodology/round2-gap-fill.md`): the items the recall audit found missing, live-blog
+  entries, and one validated extractor per outlet for old and new records.
 - Recall audit done for all four countries
   (`data/cross-country/08-recall-audit-summary.md`): the corpus holds roughly 5–60%
   of each outlet's coverage from Sep 17 to 24, and almost none of the articles that
   mention the attacks only in the body.
 - Claim catalogue v1: 81 claims (`data/cross-country/09-claims/`).
-- Next: filling the collection gaps using full-text selection, then coding claims
-  per outlet.
+- Next: round 2 stage 3 (full re-sweep of outlet listings with full-text selection) and a
+  fresh recall audit; then coding claims per outlet.
 
 ## Setup
 

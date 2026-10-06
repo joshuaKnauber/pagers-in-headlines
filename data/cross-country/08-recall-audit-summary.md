@@ -142,3 +142,12 @@ two exclusions (`lb_aljadeed_507118`, `il_abuali_75669`) and three German `conte
    record, topic re-sweep with body check, live blogs split into timestamped
    entries, wire feeds and teletext as their own document type.
 2. Re-run the audits, publish a completeness figure per outlet.
+
+## After collection round 2 (corpus v2.0, 2026-10-06)
+
+Round 2 collected the gap-manifest items and live-blog entries. Re-running the report against the
+same reference sets gives near 100% for almost every outlet. That is circular and is not a
+completeness figure. What still shows a real gap: N12 (about 44% once its unsampled untitled
+URLs are extrapolated), Yahoo syndicated items (72%), and the live blogs that had no entries in
+any capture (RND, ABC, NBC). A fresh audit needs a new independent manifest (round 2 stage 3).
+

@@ -31,7 +31,8 @@ Method documents for each step: `docs/methodology/`. Scripts: `pipeline/`.
 Read `06-corpus/corpus.jsonl` and keep records with
 `deduplication.is_primary_record == true`. For questions about the attacks, also drop
 `extraction.relevance == "context"` (records that never mention the devices). Current
-primary counts (corpus v1.3.1): Lebanon 357, Israel 168, Germany 172, US 143. Records
+primary counts (corpus v2.0): Lebanon 837, Israel 470, Germany 407, US 1,015. `extraction.salience`
+tells whether the attack is central to a record or only mentioned further down. Records
 removed by repairs are in `06-corpus/excluded.jsonl`, with reasons. Before using any count of the form
 "outlet X never said Y", check that outlet's recall in `08-recall-audit/`.
 
@@ -58,6 +59,8 @@ notes); no script regenerates them.
 | 06 | `06-corpus/corpus.jsonl` (v1/v1.1) | `pipeline/06-normalization/normalize_lebanon.py`, `normalize_israel.py`, `normalize_de_us.py` | `candidates.jsonl`, manifests, `raw/`, Abu Ali messages |
 | 07 | `06-corpus/corpus.jsonl` (v1.2, v1.2.1) | `pipeline/07-repair/repair_v12.py`, `repair_v12_almanar_recover.py` | the v1.1 corpus, `raw/` |
 | 07 | `06-corpus/corpus.jsonl` (v1.3, v1.3.1), `06-corpus/excluded.jsonl` | `pipeline/07-repair/repair_v13.py` | v1.2.1 corpus, `08-recall-audit/raw/corpus-issues.csv`, `raw/`; AP pages from Wayback; Abu Ali live preview |
+| 05 (round 2) | `05-extraction/round2/candidates.jsonl`, `reextract-v1.jsonl`, `liveblog-entries.jsonl`, reports; new raw `raw/<outlet>/r2-*.html.gz`, `r2lb-*.html.gz` | `pipeline/05-extraction/round2/extract_cached_il_lb.py`, `extract_cached_de_us.py`, `liveblogs.py` (written by delegated agents, briefs in `docs/agent-briefs/`) | gap manifests, the audit's saved pages, Wayback captures of live blogs |
+| 06 | `06-corpus/corpus.jsonl` (v2.0) | `pipeline/06-normalization/build_corpus_v2.py` | v1.3.1 corpus and the round-2 files |
 | 08 | `08-recall-audit/reference-set.csv`, `gap-manifest.csv` | DE, US: `pipeline/08-recall-audit/recall_audit_build.py` (pool, verify, report); IL, LB: `recall_audit_il_lb_tasks.py`, `_check.py`, `_build.py` | independent discovery routes (Media Cloud, GDELT, outlet listings, archived homepages, live-blog paths), corpus, candidates, manifests |
 | 08 | `08-recall-audit/recall-audit-notes.md` | written from the outputs above; tables from `recall_audit_analyze.py`, `recall_audit_il_lb_report.py`, `recall_audit_us_summary.py`, `recall_audit_us_yahoo.py` | |
 | 09 | `cross-country/09-claims/claim-catalogue.jsonl` | manual research with corpus keyword sweeps, see `claim-catalogue-notes.md` | all four corpora |

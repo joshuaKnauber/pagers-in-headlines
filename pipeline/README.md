@@ -10,7 +10,8 @@ Steps 1 (census) and 3 (access verification) are research steps with no scripts.
 | `02-gate/` | `derive_collection_gate.py`: gate status for every census row, from the census fields alone | no |
 | `04-enumeration/` | `enumerate_lebanon.py`, `enumerate_israel.py`, `enumerate_de_us.py <germany\|us\|all>`: URL manifests per outlet. `verify_enum_slices.py`: re-opens CDX slices that silently returned Wayback 504 pages. `title_sweep_israel.py`: fetches titles for Israel's opaque article URLs | yes |
 | `05-extraction/` | `extract_lebanon.py`, `extract_israel.py <outlet…>`, `extract_de_us.py <germany\|us>`: fetch tagged candidates, save `raw/`, write `candidates.jsonl` | yes |
-| `06-normalization/` | `normalize_lebanon.py`, `normalize_israel.py`, `normalize_de_us.py <germany\|us>`: candidates → `corpus.jsonl` | no |
+| `05-extraction/round2/` | collection round 2: `extract_cached_il_lb.py`, `extract_cached_de_us.py <country> [--regression-only]` (gap items from saved pages, and re-extraction of the existing corpus), `liveblogs.py` (live-blog entries from Wayback) | `liveblogs.py` only |
+| `06-normalization/` | `normalize_lebanon.py`, `normalize_israel.py`, `normalize_de_us.py <germany\|us>`: candidates → `corpus.jsonl` (v1). `build_corpus_v2.py <country> [--dry]`: merges round 2 → corpus v2.0 | no |
 | `07-repair/` | `repair_v11_israel.py`, `repair_v12.py <country>\|fixups [--dry]`, `repair_v12_almanar_recover.py`, `repair_v13.py <country>\|ap\|claims\|fixups\|all [--dry]`: versioned repair passes on the corpus | only the Al-Manar recovery and `repair_v13.py ap` |
 | `08-recall-audit/` | discovery, verification and report scripts, see `docs/methodology/08-recall-audit.md` | discovery and verify: yes; report: no |
 

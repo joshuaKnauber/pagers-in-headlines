@@ -50,3 +50,18 @@ Produced by: `pipeline/07-repair/repair_v13.py fixups`. Review of v1.3 (general-
 - `il_abuali_75655` and `75656` are replies to 75653, not reposts. v1.3 stored the quoted text of 75653; they now carry their own text ("דוגמא למכשירי הזימונית שהתפוצצו בביירות.", "אלג'זירה מפי מקורותיה: מכשירי הזימונית פוצצו בטכנולוגיה אלחוטית.") and are primary. Cause: the recall audit's Telegram parser read the reply-quote box as the post's text, fixed in `recall_audit_il_lb_abuali.py` (199 of 872 messages affected).
 - `il_abuali_75653`: warning `live_text_post_edit_v131`; the live page marks the post as edited, so the stored text is the current wording.
 - `il_n12_42fc90d847` `published_time` in N12's `+0300` format.
+
+## v2.0 (2026-10-06): collection round 2
+
+Produced by: `pipeline/06-normalization/build_corpus_v2.py israel`, from the round-2 staging files in
+`05-extraction/round2/` (extractors in `pipeline/05-extraction/round2/`). Method:
+`docs/methodology/round2-gap-fill.md`. Reviewed before release (Sonnet subagent, pass with fixes); the fixes
+are included in this version.
+
+471 records, 470 primary (was 168).
+
+- Added: 301 gap items (Ynet 127, Abu Ali 90, N12 50, Kikar 28, Makan 6). New records have `extraction.round = 2` and warning `added_v2_gapfill` or `added_v2_liveblog`.
+- Re-extracted: 41 existing bodies, with the same validated extractor as the new items (warning `body_reextracted_v2`). Headlines unchanged.
+- Schema `1.2.0`: `extraction.salience` (central / mention / allusive / none) on every record, and `extraction.relevance` now follows it (central → strong, mention and allusive → related, none → context). `extraction.round`; document type `live_blog_entry` with `publication.liveblog_url`; `deduplication.same_text_as` for a copy of another outlet's text, which stays primary.
+- Dates: `published_at` is the date in the outlet's home time zone wherever an exact time is known.
+- Kikar and N12 bodies were truncated in v1 and in the first v2 build (Kikar stopped at a recommended-story card, N12 dropped sub-headings and lists); the review caught it and the full article text is now in (Kikar median 134 → 273 words). Abu Ali: reply posts carry their own text; the comment-link footer is removed (`content.footer_comment_link`). One hand decision (`MANUAL`).

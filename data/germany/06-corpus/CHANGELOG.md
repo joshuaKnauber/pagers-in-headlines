@@ -42,3 +42,18 @@ Produced by: `pipeline/07-repair/repair_v13.py fixups`. Review of v1.3 (general-
 - Three `context` downgrades reversed: `ge_spiegel_0c74f9ad5e` (page lead: "Im Libanon sind zahlreiche Walkie-Talkies explodiert", now `strong`), `ge_tagesschau_5d524e455b` ("Angriffen auf Kommunikationstechnik der Hisbollah") and `ge_zdfheute_ad2e30a014` ("Explosion von Kommunikationsausrüstung im Libanon"), both `related`. The audit's term list missed these words; `repair_v13.py` now re-checks every record against a wider device pattern before downgrading.
 - The five SPIEGEL+ paywall shells (`0c74f9ad5e`, `8be8faca25`, `56bd1c4430`, `eb13e72e65`, `176d1e0d56`) get their lead from the page's meta description as body (18–30 words): what a non-subscriber saw.
 - `ge_ntv_5a5721af9d` (a `der_tag` entry typed `flash_or_lead`) retyped `live_ticker`.
+
+## v2.0 (2026-10-06): collection round 2
+
+Produced by: `pipeline/06-normalization/build_corpus_v2.py germany`, from the round-2 staging files in
+`05-extraction/round2/` (extractors in `pipeline/05-extraction/round2/`). Method:
+`docs/methodology/round2-gap-fill.md`. Reviewed before release (Sonnet subagent, pass with fixes); the fixes
+are included in this version.
+
+424 records, 407 primary (was 172).
+
+- Added: 176 gap items (ntv 47, WELT 47 incl. dpa wire-feed pages, Spiegel 29, Bild 13, t-online 13, RND 12, Tagesschau 9, RTL 6 teletext pages) and 58 live-blog entries (Tagesschau 56, ZDF 1, ntv 1). New records have `extraction.round = 2` and warning `added_v2_gapfill` or `added_v2_liveblog`.
+- Re-extracted: 162 existing bodies, with the same validated extractor as the new items (warning `body_reextracted_v2`). Headlines unchanged.
+- Schema `1.2.0`: `extraction.salience` (central / mention / allusive / none) on every record, and `extraction.relevance` now follows it (central → strong, mention and allusive → related, none → context). `extraction.round`; document type `live_blog_entry` with `publication.liveblog_url`; `deduplication.same_text_as` for a copy of another outlet's text, which stays primary.
+- Dates: `published_at` is the date in the outlet's home time zone wherever an exact time is known.
+- 79 stored bodies carried chrome (share bars, audio-player code, video overlays) and were re-extracted. Three audit false positives were not added (two ice-hockey pieces, one fire-brigade piece).
